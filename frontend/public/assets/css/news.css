@@ -1,0 +1,77 @@
+/* css middle */
+.all__section {
+    width: 1200px;
+    min-height: 600px;
+    margin: auto;
+    background-color: var(--white-color);
+    margin-top: 5px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.all__section-header {
+    height: 40px;
+    line-height: 40px;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.all__section-header-text::after {
+    content: "›";
+    margin: 0 5px;
+}
+
+/* .all__section-main {
+
+} */
+
+.all__section-main span:first-child {
+    font-size: 18px;
+    padding: 10px 20px;
+    font-weight: bold   ;
+}
+
+.newslist {
+    list-style: none;
+}
+
+.newslist li{
+    padding: 20px;
+}
+
+.newslist li a{
+    text-decoration: none;
+    display: flex;
+}
+
+.text-tempvideo {
+    width: 515px;
+    margin-left: 30px;
+}
+
+.text-tempvideo h3{
+    font-size: 22px;
+    color: #333;
+    white-space: normal;
+    margin-bottom: 20px;
+    opacity: 0.7;
+}
+
+.text-tempvideo span{
+    font-size: 15px;
+    color: #333;
+    white-space: normal;
+    line-height: 20px;
+}
+
+.line-a {
+    width: 800px;
+    height: 0.5px;
+    background-color: #ccc;
+    margin-bottom: 15px;
+}
+
+.img-video {
+    width: 250px;
+    height: 140px;
+}

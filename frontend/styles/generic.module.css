@@ -1,0 +1,29 @@
+.card {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-right: 35px;
+}
+
+.field {
+    margin-bottom: 1rem;
+}
+
+.fontBold {
+    font-weight: bold;
+}
+
+.pFluid {
+    width: 100%;
+    
+}
+
+.pError {
+    color: #dc3545;
+}
+
+.confirmationContent {
+    display: flex;
+    align-items: center;
+}
