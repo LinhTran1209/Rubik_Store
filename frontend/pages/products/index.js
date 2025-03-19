@@ -7,7 +7,7 @@ import GenericForm from '../../components/Admin_page/GenericForm';
 import ConfirmDeleteDialog from '../../components/Admin_page/ConfirmDeleteDialog';
 
 
-const product = () => {
+const Product = () => {
     const [products, setproducts] = useState([]);
     const [product, setproduct] = useState({ id_product: null, id_categorie: '', name: '', image_url: '', quantity: '', price: '', desc: '', created_at: '', updated_at: '' });
     const [categories, setcategories] = useState([]); // Danh sách categories để kiểm tra id_categorie
@@ -247,4 +247,4 @@ const product = () => {
     );
 };
 
-export default product;
+export default Product;

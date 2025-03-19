@@ -6,7 +6,7 @@ import GenericForm from '../../components/Admin_page/GenericForm';
 import ConfirmDeleteDialog from '../../components/Admin_page/ConfirmDeleteDialog';
 
 
-function supplier() {
+function Supplier() {
     const [suppliers, setsuppliers] = useState([]);
     const [supplier, setsupplier] = useState({ id_supplier: null, name: '', email: '', phone: '', address: '', created_at: '', updated_at: '' });
     const [globalFilter, setGlobalFilter] = useState('');
@@ -218,4 +218,4 @@ function supplier() {
     );
 };
 
-export default supplier;
+export default Supplier;

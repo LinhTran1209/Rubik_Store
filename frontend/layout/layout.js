@@ -10,6 +10,9 @@ import AppConfig from './AppConfig';
 import { LayoutContext } from './context/layoutcontext';
 import PrimeReact from 'primereact/api';
 
+
+
+
 const Layout = (props) => {
     const { layoutConfig, layoutState, setLayoutState } = useContext(LayoutContext);
     const topbarRef = useRef(null);
@@ -116,6 +119,10 @@ const Layout = (props) => {
                 <meta property="og:image" content="https://www.primefaces.org/static/social/sakai-nextjs.png"></meta>
                 <meta property="og:ttl" content="604800"></meta>
                 <link rel="icon" href={`/faviconRubik.ico`} type="image/x-icon"></link>
+
+
+
+
             </Head>
 
             <div className={containerClass}>

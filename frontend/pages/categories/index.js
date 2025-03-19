@@ -6,7 +6,7 @@ import GenericForm from '../../components/Admin_page/GenericForm';
 import ConfirmDeleteDialog from '../../components/Admin_page/ConfirmDeleteDialog';
 
 
-function categorie() {
+function Categorie() {
     const [categories, setcategories] = useState([]);
     const [categorie, setcategorie] = useState({ id_categorie: null, name: '', desc: '', created_at: '', updated_at: '' });
     const [globalFilter, setGlobalFilter] = useState('');
@@ -205,4 +205,4 @@ function categorie() {
     );
 };
 
-export default categorie;
+export default Categorie;

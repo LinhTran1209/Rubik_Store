@@ -7,7 +7,7 @@ import GenericForm from '../../components/Admin_page/GenericForm';
 import ConfirmDeleteDialog from '../../components/Admin_page/ConfirmDeleteDialog';
 
 
-function customer() {
+function Customer() {
     const [customers, setcustomers] = useState([]);
     const [customer, setcustomer] = useState({ id_customer: null, name: '', email: '', phone: '', address: '', created_at: '', updated_at: '' });
     const [roles, setRoles] = useState([]); // Danh sách roles để kiểm tra id_role
@@ -231,4 +231,4 @@ function customer() {
     );
 };
 
-export default customer;
+export default Customer;

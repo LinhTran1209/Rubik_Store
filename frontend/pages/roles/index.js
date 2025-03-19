@@ -6,7 +6,7 @@ import GenericForm from '../../components/Admin_page/GenericForm';
 import ConfirmDeleteDialog from '../../components/Admin_page/ConfirmDeleteDialog';
 
 
-const role = () => {
+const Role = () => {
     const [roles, setroles] = useState([]);
     const [role, setrole] = useState({ id_role: null, name: '', desc: '' });
     const [globalFilter, setGlobalFilter] = useState('');
@@ -193,4 +193,4 @@ const role = () => {
     );
 };
 
-export default role;
+export default Role;

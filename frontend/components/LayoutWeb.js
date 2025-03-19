@@ -5,8 +5,10 @@ import { classNames, DomHandler } from 'primereact/utils';
 import React, { useContext, useEffect, useRef } from 'react';
 import HeaderHome from './Header/HeaderHome';
 import FooterHome from './Footer/FooterHome';
+import Support from './Support';
+import BackTop from './BackTop';
 
-const LayoutWeb = (props) => {
+const LayoutWeb = ({ props, children }) => {
 
     return (
         <React.Fragment>
@@ -22,9 +24,10 @@ const LayoutWeb = (props) => {
 
                 <link rel="stylesheet" href="/assets/css/base.css"/>
                 <link rel="stylesheet" href="/assets/css/index.css"/>
-                <link rel="stylesheet" href="/assets/css/modal_login_register.css"/>
-                <link rel="stylesheet" href="/assets/css/manualRubik.css"/>
+                <link rel="stylesheet" href="/assets/css/introduce.css"/>
                 <link rel="stylesheet" href="/assets/css/news.css"/>
+                <link rel="stylesheet" href="/assets/css/manualRubik.css"/>
+                <link rel="stylesheet" href="/assets/css/modal_login_register.css"/>
 
                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"/>
                 <link rel="stylesheet" href="/assets/fonts/fontawesome-free-6.5.2-web/css/all.min.css"/>
@@ -34,8 +37,9 @@ const LayoutWeb = (props) => {
             <div id="top-app" className="app">
                 <HeaderHome />
 
-                <div className="middle">{props.children}</div>
-                {/* <MiddleHome /> */}
+                <div className="middle">
+                    {children}
+                </div>
                 <FooterHome />
                 <Support />
                 <BackTop />

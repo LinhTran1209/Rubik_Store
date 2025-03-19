@@ -11,7 +11,7 @@ import GenericForm from '../../components/Admin_page/GenericForm';
 import ConfirmDeleteDialog from '../../components/Admin_page/ConfirmDeleteDialog';
 
 
-const saleInvoice = () => {
+const SaleInvoice = () => {
     const [sale_invoices, setSaleInvoices] = useState([]);
     const [sale_invoice, setSaleInvoice] = useState({ id_sale_invoice: null, id_customer: '', desc: '', total: '', pay: '', status: '', created_at: '', updated_at: '' });
     const [sale_invoiceDialog, setSaleInvoiceDialog] = useState(false);
@@ -440,4 +440,4 @@ const saleInvoice = () => {
     );
 };
 
-export default saleInvoice;
+export default SaleInvoice;

@@ -24,7 +24,7 @@ const HeaderTop = () => {
                 <div className="header__top-a" href="#">
                     <i className="fa-solid fa-user"></i>
                     <span>
-                        <a className="a-register-login" href="#">Đăng nhập</a><br />
+                        <a className="a-register-login" href="/login">Đăng nhập</a><br />
                         <a className="a-register-login" href="#">Đăng ký</a>
                     </span>
                 </div>
