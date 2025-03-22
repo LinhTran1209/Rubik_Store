@@ -15,14 +15,14 @@ const Products = (products) => {
 
 };
 
-// Lấy sản phẩm theo mã loại sản phẩm
-// Products.getProductByIdCatori = (id, callback) => {
-//   const sqlString = "SELECT * FROM products WHERE id_product = ?";
-//   db.query(sqlString, [id], (err, result) => {
-//     if (err) return callback(err);
-//     callback(null, result);
-//   });
-// };
+// Tìm kiếm mọi col sản phẩm theo querydata và trả về object
+Products.getData = (col, querydata, callback) => {
+  const sqlString = `SELECT * FROM product WHERE ?? = ?`;
+  db.query(sqlString, [col, querydata], (err, result) => {
+    if (err) return callback(err);
+    callback(null, result);
+  });
+};
 
 Products.getById = (id, callback) => {
   const sqlString = "SELECT * FROM products WHERE id_product = ?";

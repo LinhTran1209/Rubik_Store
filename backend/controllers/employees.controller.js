@@ -3,6 +3,10 @@ const Employees = require("../models/employees.model");
 
 module.exports = {
   getAll: (req, res) => {
+    // Kiểm tra quyền
+    if (req.user.type !== 'employee' || req.user.role !== 1) {
+      return res.status(403).send('Chỉ admin mới có quyền truy cập!');
+    }
     Employees.getAll((err, result) => {
       if (err) return res.status(500).send(err);
       res.send(result);

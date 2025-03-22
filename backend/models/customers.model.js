@@ -9,9 +9,18 @@ const Customers = (customers) => {
   this.phone = customers.phone;
   this.address = customers.address;
   this.status = customers.status;
+  this.password = customers.password;
   this.created_at = customers.created_at;
   this.updated_at = customers.updated_at;
 
+};
+
+Customers.findByPhoneAndRole = (phone, id_role, callback) => {
+  const sqlString = "SELECT * FROM customers WHERE phone = ? AND id_role = ?";
+  db.query(sqlString, [phone, id_role], (err, result) => {
+      if (err) return callback(err);
+      callback(null, result[0]);
+  });
 };
 
 Customers.getById = (id, callback) => {

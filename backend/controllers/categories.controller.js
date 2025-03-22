@@ -3,16 +3,14 @@ const Categories = require("../models/categories.model");
 
 module.exports = {
   // Lấy id sản phẩm theo tên 
-  getIdbyName: (req, res) => {
-    const name = req.params.name; // Lấy tên từ tham số URL
-    Categories.getIdbyName(name, (err, result) => {
+  getData: (req, res) => {
+    const querydata = req.params.querydata; 
+    const col = req.params.col; 
+    Categories.getData(col, querydata, (err, result) => {
         if (err) {
-            return res.status(500).send(err); // Trả về lỗi 500 nếu có lỗi
+            return res.status(500).send(err); 
         }
-        if (result.length === 0) {
-            return res.status(404).send('Category not found'); // Trả về lỗi 404 nếu không tìm thấy
-        }
-        res.send(result); // Gửi kết quả (ID) về client
+        res.send(result); 
     });
 },
 

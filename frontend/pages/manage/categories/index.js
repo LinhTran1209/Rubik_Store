@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Toast } from 'primereact/toast';
-import categorieService from '../../services/categorieService';
-import GenericTable from '../../components/Admin_page/GenericTable';
-import GenericForm from '../../components/Admin_page/GenericForm';
-import ConfirmDeleteDialog from '../../components/Admin_page/ConfirmDeleteDialog';
+import categorieService from '../../../services/categorieService';
+import GenericTable from '../../../components/Admin_page/GenericTable';
+import GenericForm from '../../../components/Admin_page/GenericForm';
+import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDialog';
 
 
 function Categorie() {
@@ -23,8 +23,9 @@ function Categorie() {
             const data = await categorieService.getAllcategories();
             setcategories(data);
         } catch (error) {
-            console.error('Lỗi khi lấy dữ liệu:', error);
-            toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải dữ liệu', life: 3000 });
+            // console.error('Lỗi khi lấy dữ liệu:', error);
+            // console.log('', error.message)
+            toast.current.show({ severity: 'error', summary: 'Lỗi', detail: error.message, life: 3000 });
         }
     };
 

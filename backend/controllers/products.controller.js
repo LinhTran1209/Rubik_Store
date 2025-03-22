@@ -2,6 +2,19 @@
 const Products = require("../models/products.model");
 
 module.exports = {
+
+    // Lấy id sản phẩm theo tên 
+  getData: (req, res) => {
+      const querydata = req.params.querydata; 
+      const col = req.params.col; 
+      Categories.getData(col, querydata, (err, result) => {
+          if (err) {
+              return res.status(500).send(err); 
+          }
+          res.send(result); 
+      });
+  },
+
   getAll: (req, res) => {
     Products.getAll((err, result) => {
       if (err) return res.status(500).send(err);

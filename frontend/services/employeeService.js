@@ -1,11 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/employees';
-
-const getAuthHeaders = () => {
-    const token = localStorage.getItem('token') || '';
-    return token ? { Authorization: `Bearer ${token}` } : {};
-};
+const API_URL = 'http://localhost:5000/employees'; // Điều chỉnh port theo backend
 
 const formatDateFields = (data) => {
     if (Array.isArray(data)) {
@@ -24,7 +19,7 @@ const employeeService = {
     getAllemployees: async () => {
         try {
             const response = await axios.get(API_URL, {
-                headers: getAuthHeaders(),
+                withCredentials: true,
                 timeout: 10000,
             });
             const data = response.data || [];
@@ -37,7 +32,7 @@ const employeeService = {
     getemployeeById: async (id) => {
         try {
             const response = await axios.get(`${API_URL}/${id}`, {
-                headers: getAuthHeaders(),
+                withCredentials: true,
                 timeout: 10000,
             });
             return formatDateFields(response.data);
@@ -49,7 +44,7 @@ const employeeService = {
     addemployee: async (employeeData) => {
         try {
             const response = await axios.post(API_URL, employeeData, {
-                headers: getAuthHeaders(),
+                withCredentials: true,
                 timeout: 10000,
             });
             return response.data;
@@ -60,12 +55,12 @@ const employeeService = {
     },
     updateemployee: async (id, employeeData) => {
         try {
-            console.log('Ở service: ', employeeData)
+            console.log('Ở service: ', employeeData);
             const response = await axios.put(`${API_URL}/${id}`, employeeData, {
-                headers: getAuthHeaders(),
+                withCredentials: true,
                 timeout: 10000,
             });
-            console.log('Đây là response.data',response.data)
+            console.log('Đây là response.data', response.data);
             return response.data;
         } catch (error) {
             console.error(`Error updating record with ID ${id}:`, error.response?.data || error.message);
@@ -75,7 +70,7 @@ const employeeService = {
     deleteemployee: async (id) => {
         try {
             const response = await axios.delete(`${API_URL}/${id}`, {
-                headers: getAuthHeaders(),
+                withCredentials: true,
                 timeout: 10000,
             });
             return response.data;

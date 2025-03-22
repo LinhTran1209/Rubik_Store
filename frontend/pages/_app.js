@@ -7,7 +7,13 @@ import 'primeicons/primeicons.css';
 import '../styles/layout/layout.scss';
 import '../styles/demo/Demos.scss';
 
+
+
+
+import '../public/assets/css/base.css';
 import '../public/assets/css/index.css';
+
+
 
 //LayoutWeb này là layout cho trang web bán hàng
 import LayoutWeb from '../components/LayoutWeb';
@@ -36,16 +42,4 @@ export default function MyApp({ Component, pageProps }) {
             </LayoutProvider>
         );
     }
-
-    // return (
-    //     <Router>
-    //         <dir clasName="App">
-    //             <Routes>
-
-
-
-    //             </Routes>
-    //         </dir>
-    //     </Router>
-    // )
 }

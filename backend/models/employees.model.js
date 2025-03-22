@@ -8,10 +8,20 @@ const Employees = (employees) => {
   this.email = employees.email;
   this.phone = employees.phone;
   this.address = employees.address;
+  this.password = customers.password;
   this.status = employees.status;
   this.created_at = employees.created_at;
   this.updated_at = employees.updated_at;
 
+};
+
+
+Employees.findByPhoneAndRole = (phone, id_role, callback) => {
+  const sqlString = "SELECT * FROM employees WHERE phone = ? AND id_role = ?";
+  db.query(sqlString, [phone, id_role], (err, result) => {
+      if (err) return callback(err);
+      callback(null, result[0]);
+  });
 };
 
 Employees.getById = (id, callback) => {

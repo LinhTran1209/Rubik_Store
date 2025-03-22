@@ -11,10 +11,10 @@ const Categories = (categories) => {
 
 };
 
-// Tìm kiếm tên loại sản phẩm theo trả về id
-Categories.getIdbyName = (name, callback) => {
-  const sqlString = "SELECT id_categorie  FROM categories WHERE name = ?";
-  db.query(sqlString, [name], (err, result) => {
+// Tìm kiếm tên loại sản phẩm theo querydata và trả về object
+Categories.getData = (col, querydata, callback) => {
+  const sqlString = `SELECT * FROM categories WHERE ?? = ?`;
+  db.query(sqlString, [col, querydata], (err, result) => {
     if (err) return callback(err);
     callback(null, result);
   });

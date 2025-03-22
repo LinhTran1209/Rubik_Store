@@ -1,0 +1,4 @@
+*.log
+node_modules/
+frontend/.next/
+frontend/public/assets/js/jquery-3.7.1.js

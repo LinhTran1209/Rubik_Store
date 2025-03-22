@@ -1,4 +1,5 @@
 import React, { useContext, useRef, useState, useEffect } from "react";
+import productService from '../../services/productService';
 
 const Home = () => {
 
@@ -6,35 +7,22 @@ const Home = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const data = await productService.getAllproducts();
-                setProducts(data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProducts();
-    }, []);
+    const fetchProducts = async () => {
+        setLoading(true);
+        try {
+            const data = await productService.getAllproducts();
+            setProducts(data);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const data = await productService.getAllproducts();
-                setProducts(data);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
+        fetchProducts(); // Gọi hàm fetchProducts mỗi lần component được mount
+    }, []); // Chỉ chạy một lần khi component được mount
 
-        fetchProducts();
-    }, []);
 
     const backImg = () => {
         // Logic để quay lại hình ảnh
@@ -47,7 +35,7 @@ const Home = () => {
 
     
     return (
-        <div  className="middle">
+        <div  className="home">
             <div className="middle__header">
                 <div className="middle__header-left">
                     <img src="/assets/img/adv1.jpg" alt="" className="img-adv-big" id="id-img-adv" />
@@ -123,10 +111,10 @@ const Home = () => {
 
 
             {/* <!-- Sản phẩm của Rubik biến thể --> */}
-            <div class="container__middle-products">
-                <div class="container__middle-products-title">
-                    <div class="product-title">RUBIK BIẾN THỂ</div>
-                    <div class="extra-product-title">
+            <div className="container__middle-products">
+                <div className="container__middle-products-title">
+                    <div className="product-title">RUBIK BIẾN THỂ</div>
+                    <div className="extra-product-title">
                         <a href="#">Rubik Biến Thể 4 mặt</a>
                         <a href="#">Rubik Biến Thể 6 mặt</a>
                         <a href="#">Rubik Biến Thể 12 mặt</a>

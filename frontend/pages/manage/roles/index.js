@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Toast } from 'primereact/toast';
-import roleService from '../../services/roleService';
-import GenericTable from '../../components/Admin_page/GenericTable';
-import GenericForm from '../../components/Admin_page/GenericForm';
-import ConfirmDeleteDialog from '../../components/Admin_page/ConfirmDeleteDialog';
+import roleService from '../../../services/roleService';
+import GenericTable from '../../../components/Admin_page/GenericTable';
+import GenericForm from '../../../components/Admin_page/GenericForm';
+import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDialog';
 
 
 const Role = () => {

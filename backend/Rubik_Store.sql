@@ -1,50 +1,16 @@
 -- Tạo cơ sở dữ liệu cho website bán Rubik
-CREATE DATABASE rubik_store;
-USE rubik_store;
+CREATE DATABASE rubik_store_1;
+USE rubik_store_1;
 
--- Tạo bảng Roles
-CREATE TABLE Roles (
-    id_role INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    `desc` TEXT
-);
-
--- Tạo bảng Employees
-CREATE TABLE Employees (
-    id_employee INT AUTO_INCREMENT PRIMARY KEY,
-    id_role INT,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    phone VARCHAR(10) NOT NULL UNIQUE ,
-    address TEXT,
-    status ENUM('hiện', 'ẩn') DEFAULT 'hiện',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- INSERT INTO Employees (id_role, name, email, phone, address, status)
--- VALUES (1, 'Nguyễn Văn A', 'nguyenvana@example.com', '0123456789', '123 Đường Láng, Hà Nội', 'hiện');
-
--- Tạo bảng Customers
-CREATE TABLE Customers (
-    id_customer INT AUTO_INCREMENT PRIMARY KEY,
-    id_role INT DEFAULT 3,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    phone VARCHAR(10) NOT NULL UNIQUE ,
-    address TEXT,
-    status ENUM('hiện', 'ẩn') DEFAULT 'hiện',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- Tạo bảng Suppliers
-CREATE TABLE Suppliers (
-    id_supplier INT AUTO_INCREMENT PRIMARY KEY,
+-- Tạo bảng users
+CREATE TABLE Users (
+    id_user INT AUTO_INCREMENT PRIMARY KEY,
+	role ENUM('customer', 'admin') DEFAULT 'customer',
     name VARCHAR(200) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(200) NOT NULL UNIQUE,
     phone VARCHAR(10) NOT NULL UNIQUE ,
     address TEXT,
+    password TEXT,
     status ENUM('hiện', 'ẩn') DEFAULT 'hiện',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -74,32 +40,9 @@ CREATE TABLE Products (
     updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tạo bảng Buy_invoices
-CREATE TABLE Buy_invoices (
-    id_buy_invoice INT AUTO_INCREMENT PRIMARY KEY,
-    id_supplier INT,
-    id_employee INT,
-    `desc` TEXT,
-    total INT,
-    status ENUM('Đang xác nhận', 'Đang lấy hàng', 'Đang giao hàng', 'Hoàn thành') DEFAULT 'Đang xác nhận',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
--- Tạo bảng Buy_invoice_details
-CREATE TABLE Buy_invoice_details (
-    id_buy_invoice INT,
-    id_product INT,
-    quantity  INT CHECK (quantity  > 0),
-    price INT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id_buy_invoice, id_product)
-);
-
 -- Tạo bảng Carts
 CREATE TABLE Carts (
-    id_customer INT,
+    id_user INT,
     id_product INT,
     quantity  INT CHECK (quantity  > 0),
     price INT NOT NULL,
@@ -111,7 +54,7 @@ CREATE TABLE Carts (
 -- Tạo bảng Sale_invoices
 CREATE TABLE Sale_invoices (
     id_sale_invoice INT AUTO_INCREMENT PRIMARY KEY,
-    id_customer INT,
+    id_user INT,
     `desc` TEXT,
     total INT,
     pay ENUM('COD', 'QR') DEFAULT 'COD',
@@ -131,13 +74,15 @@ CREATE TABLE Sale_invoice_details (
     PRIMARY KEY (id_sale_invoice, id_product)
 );
 
+create table News (
+	id_new int auto_increment primary key,
+    title text,
+    `desc` text,
+    image_url varchar(500),
+    
 
+);
 
--- Thêm 3 bản ghi cho Roles
-INSERT INTO Roles (name, `desc`) VALUES
-('Admin', 'Quản trị viên hệ thống'),
-('Seller', 'Nhân viên bán hàng'),
-('Buyer', 'Khách hàng mua sắm');
 
 
 -- Thêm 3 bản ghi cho Employees
@@ -147,25 +92,15 @@ INSERT INTO Employees (id_role, name, email, phone, address, status) VALUES
 (1, 'Lê Văn C', 'levanc@example.com', '0912345678', '78 Hùng Vương, Đà Nẵng', 'hiện');
 
 
--- Thêm 3 bản ghi cho Customers
-INSERT INTO Customers (id_role, name, email, phone, address, status) VALUES
-(3, 'Phạm Thị D', 'phamthid@example.com', '0934567890', '12 Nguyễn Huệ, Huế', 'hiện'),
-(3, 'Hoàng Văn E', 'hoangvane@example.com', '0891234567', '56 Trần Phú, Nha Trang', 'hiện'),
-(3, 'Đỗ Thị F', 'dothif@example.com', '0978123456', '89 Kim Mã, Hà Nội', 'hiện');
-
-
--- Thêm 3 bản ghi cho Suppliers
-INSERT INTO Suppliers (name, email, phone, address, status) VALUES
-('Công ty Rubik VN', 'rubikvn@example.com', '0945678901', '101 Điện Biên Phủ, TP.HCM', 'hiện'),
-('Nhà cung cấp XYZ', 'xyzsupplier@example.com', '0856789012', '34 Pasteur, Đà Lạt', 'hiện'),
-('Rubik Shop', 'rubikshop@example.com', '0967890123', '67 Bà Triệu, Hà Nội', 'hiện');
-
-
 -- Thêm 3 bản ghi cho Categories
 INSERT INTO Categories (name, `desc`, status) VALUES
-('Rubik 3x3', 'Rubik lập phương 3x3 cơ bản', 'hiện'),
-('Rubik 4x4', 'Rubik lập phương 4x4 nâng cao', 'hiện'),
-('Rubik Pyraminx', 'Rubik hình tam giác', 'hiện');
+('Rubik cơ bản 2x2x2', 'Rubik lập phương bao gồm 2x2x2', 'hiện'),
+('Rubik cơ bản 3x3x3', 'Rubik lập phương bao gồm 3x3x3', 'hiện'),
+('Rubik cơ bản 4x4x4', 'Rubik lập phương bao gồm 4x4x4', 'hiện'),
+('Rubik cơ bản 5x5x5', 'Rubik lập phương bao gồm 5x5x5', 'hiện'),
+('Rubik biến thể 4 mặt', 'Rubik biến thể gồm các loại 4 mặt', 'hiện'),
+('Rubik biến thể 4 mặt', 'Rubik biến thể gồm các loại 4 mặt', 'hiện'),
+('Combo rubik', '"Bao gồm nhiều rubik các loại', 'hiện');
 
 -- Thêm 3 bản ghi cho Products
 INSERT INTO Products (id_categorie, name, image_url, quantity, price, `desc`, status) VALUES

@@ -11,21 +11,21 @@ const FooterHome = () => {
                 <p><strong>-Hưng Yên</strong>: Trịnh Mỹ, Ngô Quyền, Tiên Lữ, Hưng Yên</p>
                 <p>Email: linh3789@gmail.com</p>
                 <p>GPKD số 0106475927 do Sở Kế hoạch đầu tư Hà Nội cấp ngày 06/03/2014 - MST: 0106475927</p>
-                <li class="social-link">
-                        <a class="a-img-contact" href="">
-                            <img class="img-contact" src="/assets/img/facebook.png" alt=""/>
+                <li className="social-link">
+                        <a className="a-img-contact" href="">
+                            <img className="img-contact" src="/assets/img/facebook.png" alt=""/>
                         </a>
-                        <a class="a-img-contact" href="">
-                            <img class="img-contact" src="/assets/img/messager.png" alt=""/>
+                        <a className="a-img-contact" href="">
+                            <img className="img-contact" src="/assets/img/messager.png" alt=""/>
                         </a>
-                        <a class="a-img-contact" href="">
-                            <img class="img-contact" src="/assets/img/zalo.png" alt=""/>
+                        <a className="a-img-contact" href="">
+                            <img className="img-contact" src="/assets/img/zalo.png" alt=""/>
                         </a>
-                        <a class="a-img-contact" href="">
-                            <img class="img-contact" src="/assets/img/youtube.png" alt=""/>
+                        <a className="a-img-contact" href="">
+                            <img className="img-contact" src="/assets/img/youtube.png" alt=""/>
                         </a>
-                        <a class="a-img-payment" href="">
-                            <img class="img-payment" src="/assets/img/payment.png" alt=""/>
+                        <a className="a-img-payment" href="">
+                            <img className="img-payment" src="/assets/img/payment.png" alt=""/>
                         </a>
                     </li>
             </div>

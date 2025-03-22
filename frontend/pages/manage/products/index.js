@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Toast } from 'primereact/toast';
-import productService from '../../services/productService';
-import categorieService from '../../services/categorieService'
-import GenericTable from '../../components/Admin_page/GenericTable';
-import GenericForm from '../../components/Admin_page/GenericForm';
-import ConfirmDeleteDialog from '../../components/Admin_page/ConfirmDeleteDialog';
+import productService from '../../../services/productService';
+import categorieService from '../../../services/categorieService'
+import GenericTable from '../../../components/Admin_page/GenericTable';
+import GenericForm from '../../../components/Admin_page/GenericForm';
+import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDialog';
 
 
 const Product = () => {

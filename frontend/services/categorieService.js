@@ -2,10 +2,6 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:5000/categories';
 
-const getAuthHeaders = () => {
-    const token = localStorage.getItem('token') || '';
-    return token ? { Authorization: `Bearer ${token}` } : {};
-};
 
 const formatDateFields = (data) => {
     if (Array.isArray(data)) {
@@ -23,23 +19,18 @@ const formatDateFields = (data) => {
 const categorieService = {
     getAllcategories: async () => {
         try {
-            const response = await axios.get(API_URL, {
-                headers: getAuthHeaders(),
-                timeout: 10000,
-            });
+            const response = await axios.get(API_URL);
+            console.log('Response:', response);
             const data = response.data || [];
             return formatDateFields(data);
         } catch (error) {
             console.error('Error fetching data:', error.response?.data || error.message);
-            throw new Error('Error fetching data');
+            throw new Error(error.response?.data?.message || 'Error fetching data');
         }
     },
     getcategorieById: async (id) => {
         try {
-            const response = await axios.get(`${API_URL}/${id}`, {
-                headers: getAuthHeaders(),
-                timeout: 10000,
-            });
+            const response = await axios.get(`${API_URL}/${id}`);
             return formatDateFields(response.data);
         } catch (error) {
             console.error(`Error fetching record by ID ${id}:`, error.response?.data || error.message);
@@ -48,10 +39,7 @@ const categorieService = {
     },
     addcategorie: async (categorieData) => {
         try {
-            const response = await axios.post(API_URL, categorieData, {
-                headers: getAuthHeaders(),
-                timeout: 10000,
-            });
+            const response = await axios.post(API_URL, categorieData);
             return response.data;
         } catch (error) {
             console.error('Error adding record:', error.response?.data || error.message);
@@ -60,10 +48,7 @@ const categorieService = {
     },
     updatecategorie: async (id, categorieData) => {
         try {
-            const response = await axios.put(`${API_URL}/${id}`, categorieData, {
-                headers: getAuthHeaders(),
-                timeout: 10000,
-            });
+            const response = await axios.put(`${API_URL}/${id}`, categorieData);
             return response.data;
         } catch (error) {
             console.error(`Error updating record with ID ${id}:`, error.response?.data || error.message);
@@ -72,10 +57,7 @@ const categorieService = {
     },
     deletecategorie: async (id) => {
         try {
-            const response = await axios.delete(`${API_URL}/${id}`, {
-                headers: getAuthHeaders(),
-                timeout: 10000,
-            });
+            const response = await axios.delete(`${API_URL}/${id}`);
             return response.data;
         } catch (error) {
             console.error(`Error deleting record with ID ${id}:`, error.response?.data || error.message);

@@ -2,12 +2,13 @@
 var express = require('express');
 var router = express.Router();
 const categoriescontroller = require("../controllers/categories.controller");
+const authenticateToken = require('../authMiddleware');
 
 /* Routes for categories */
-router.get('/', categoriescontroller.getAll);
+router.get('/', authenticateToken, categoriescontroller.getAll);
 router.get('/:id', categoriescontroller.getById);
-router.get('/getIdbyName/:name', categoriescontroller.getIdbyName)
-
+router.get('/getData/:col/:querydata', categoriescontroller.getData)
+    
 
 
 router.post('/', categoriescontroller.insert);

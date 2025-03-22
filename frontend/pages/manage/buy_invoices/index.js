@@ -1,46 +1,45 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Toast } from 'primereact/toast';
 
-import sale_invoiceService from '../../services/sale_invoiceService';
-import saleInvoiceDetailsService from '../../services/sale_invoice_detailsService';
-import productService from '../../services/productService';
-import customerService from '../../services/customerService';
+import buy_invoiceService from '../../../services/buy_invoiceService';
+import buyInvoiceDetailsService from '../../../services/buy_invoice_detailsService';
+import productService from '../../../services/productService';
+import supplierService from '../../../services/supplierService';
 
-import GenericTable from '../../components/Admin_page/GenericTable';
-import GenericForm from '../../components/Admin_page/GenericForm';
-import ConfirmDeleteDialog from '../../components/Admin_page/ConfirmDeleteDialog';
+import GenericTable from '../../../components/Admin_page/GenericTable';
+import GenericForm from '../../../components/Admin_page/GenericForm';
+import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDialog';
 
-
-const SaleInvoice = () => {
-    const [sale_invoices, setSaleInvoices] = useState([]);
-    const [sale_invoice, setSaleInvoice] = useState({ id_sale_invoice: null, id_customer: '', desc: '', total: '', pay: '', status: '', created_at: '', updated_at: '' });
-    const [sale_invoiceDialog, setSaleInvoiceDialog] = useState(false);
-    const [selectedSaleInvoices, setSelectedSaleInvoices] = useState([]);
-    const [deleteSaleInvoiceDialog, setDeleteSaleInvoiceDialog] = useState(false);
-    const [submittedSaleInvoice, setSubmittedSaleInvoice] = useState(false);
+const BuyInvoice = () => {
+    const [buy_invoices, setBuyInvoices] = useState([]);
+    const [buy_invoice, setBuyInvoice] = useState({ id_buy_invoice: null, id_supplier: '', desc: '', total: '', status: '', created_at: '', updated_at: '' });
+    const [buy_invoiceDialog, setBuyInvoiceDialog] = useState(false);
+    const [selectedBuyInvoices, setSelectedBuyInvoices] = useState([]);
+    const [deleteBuyInvoiceDialog, setDeleteBuyInvoiceDialog] = useState(false);
+    const [submittedBuyInvoice, setSubmittedBuyInvoice] = useState(false);
     
     const [globalFilter, setGlobalFilter] = useState('');
     
     const [details, setDetails] = useState({});
-    const [detail, setDetail] = useState({ id_sale_invoice: null, id_product: '', quantity: '', price: '', created_at: '', updated_at: '' });
+    const [detail, setDetail] = useState({ id_buy_invoice: null, id_product: '', quantity: '', price: '', created_at: '', updated_at: '' });
     const [DetailDialog, setDetailDialog] = useState(false);
-    const [selectedSaleDetails, setSelectedSaleDetails] = useState([]);
-    const [deleteSaleDetailDialog, setDeleteSaleDetailDialog] = useState(false);
-    const [submittedSaleDetail, setSubmittedSaleDetail] = useState(false);
+    const [selectedBuyDetails, setSelectedBuyDetails] = useState([]);
+    const [deleteBuyDetailDialog, setDeleteBuyDetailDialog] = useState(false);
+    const [submittedBuyDetail, setSubmittedBuyDetail] = useState(false);
 
 
     const [isAdd, setIsAdd] = useState(true);
     const [products, setProducts] = useState([]);   
-    const [customers, setcustomers] = useState([]);
+    const [suppliers, setSuppliers] = useState([]);
     const toast = useRef(null);
 
-    const fetchcustomers = async () => {
+    const fetchSuppliers = async () => {
         try {
-            const data = await customerService.getAllcustomers();
-            setcustomers(data || []);
+            const data = await supplierService.getAllsuppliers();
+            setSuppliers(data || []);
         } catch (error) {
-            console.error('Error fetching customers:', error);
-            toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải danh sách Khách hàng', life: 3000 });
+            console.error('Error fetching suppliers:', error);
+            toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải danh sách nhà cung cấp', life: 3000 });
         }
     };
 
@@ -56,7 +55,7 @@ const SaleInvoice = () => {
 
     const fetchDetails = async (invoiceId) => {
         try {
-            const data = await saleInvoiceDetailsService.getAllByInvoiceId(invoiceId);
+            const data = await buyInvoiceDetailsService.getAllByInvoiceId(invoiceId);
             setDetails(prev => ({ ...prev, [invoiceId]: Array.isArray(data) ? data : [] }));
         } catch (error) {
             console.error('Error fetching details:', error);
@@ -67,28 +66,28 @@ const SaleInvoice = () => {
 
     const show_invoices = async () => {
         try {
-            const data = await sale_invoiceService.getAllsale_invoices();
-            setSaleInvoices(data);
+            const data = await buy_invoiceService.getAllbuy_invoices();
+            setBuyInvoices(data);
         } catch (error) {
             console.error('Lỗi khi lấy dữ liệu:', error);
-            setSaleInvoices([]);
+            setBuyInvoices([]);
             toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải dữ liệu', life: 3000 });
         }
     };
   
     useEffect(() => {
         show_invoices();
-        fetchcustomers();
+        fetchSuppliers();
         fetchProducts();
     }, []);
 
     useEffect(() => {
-        selectedSaleInvoices.forEach(invoice => {
-            if (!details[invoice.id_sale_invoice]) {
-                fetchDetails(invoice.id_sale_invoice);
+        selectedBuyInvoices.forEach(invoice => {
+            if (!details[invoice.id_buy_invoice]) {
+                fetchDetails(invoice.id_buy_invoice);
             }
         });
-    }, [selectedSaleInvoices]);
+    }, [selectedBuyInvoices]);
 
     // 1 hàm xác nhận không thể sửa thêm hay xóa
     const notification = (data, string) => {
@@ -101,70 +100,62 @@ const SaleInvoice = () => {
     }
 
     const openNewInvoice = () => {
-        setSaleInvoice({ id_sale_invoice: null, id_customer: '', desc: '', total: 0, pay: '', status: 'Đang xác nhận' });
-        setSubmittedSaleInvoice(false);
-        setSaleInvoiceDialog(true);
+        setBuyInvoice({ id_buy_invoice: null, id_supplier: '', desc: '', total: 0, status: 'Đang xác nhận' });
+        setSubmittedBuyInvoice(false);
+        setBuyInvoiceDialog(true);
     };
 
-    const openNewDetail = (id_sale_invoice) => {
+    const openNewDetail = (id_buy_invoice) => {
         setIsAdd(true);
-        setDetail({ id_sale_invoice: id_sale_invoice, id_product: '', quantity: '', price: '' });
-        setSubmittedSaleDetail(false)
+        setDetail({ id_buy_invoice: id_buy_invoice, id_product: '', quantity: '', price: '' });
+        setSubmittedBuyDetail(false)
         setDetailDialog(true);
     };
 
     const hideDialogInvoice = () => {
-        setSubmittedSaleInvoice(false);
-        setSaleInvoiceDialog(false);
+        setSubmittedBuyInvoice(false);
+        setBuyInvoiceDialog(false);
     };
 
     const hideDialogDetail = () => {
         setDetailDialog(false);
-        setDetail({ id_sale_invoice: null, id_product: '', quantity: '', price: '' });
+        setDetail({ id_buy_invoice: null, id_product: '', quantity: '', price: '' });
     };
 
-    const savesaleInvoice = () => {
-        setSubmittedSaleInvoice(true);
-        if (!sale_invoice.id_customer || !sale_invoice.pay || !sale_invoice.status ) {
+    const saveBuyInvoice = () => {
+        setSubmittedBuyInvoice(true);
+        if (!buy_invoice.id_supplier || !buy_invoice.status) {
             toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Vui lòng điền đầy đủ thông tin bắt buộc', life: 3000 });
             return;
         }
     
-        if (!customers.some(customer => customer.id_customer === parseInt(sale_invoice.id_customer))) {
-            toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Khách hàng không tồn tại', life: 3000 });
+        if (!suppliers.some(supplier => supplier.id_supplier === parseInt(buy_invoice.id_supplier))) {
+            toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Nhà cung cấp không tồn tại', life: 3000 });
             return;
         }
     
-        if (typeof sale_invoice.desc !== 'string' || sale_invoice.desc.length >= 200) {
+        if (typeof buy_invoice.desc !== 'string' || buy_invoice.desc.length >= 200) {
             toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mô tả không được quá 200 ký tự' });
-            return;
-        }
-
-        const validPay = ['COD', 'QR'];
-        if (!validPay.includes(sale_invoice.pay)) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Thanh toán không hợp lệ (COD or QR)!' });
             return;
         }
     
         const validStatuses = ['Đang xác nhận', 'Đang lấy hàng', 'Đang giao hàng', 'Hoàn thành'];
-        if (!validStatuses.includes(sale_invoice.status)) {
+        if (!validStatuses.includes(buy_invoice.status)) {
             toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Trạng thái không hợp lệ' });
             return;
         }
 
-
-
-        const saleInvoiceData = { ...sale_invoice };
-        if (sale_invoice.id_sale_invoice) { // Cập nhật
-            if (sale_invoices.some(sale_invoice => JSON.stringify(sale_invoice) === JSON.stringify(saleInvoiceData))) {
+        const buyInvoiceData = { ...buy_invoice };
+        if (buy_invoice.id_buy_invoice) { // Cập nhật
+            if (buy_invoices.some(buy_invoice => JSON.stringify(buy_invoice) === JSON.stringify(buyInvoiceData))) {
                 toast.current.show({ severity: 'info', summary: 'Thông báo', detail: 'Không có thay đổi nào được thực hiện' });
                 return;
             }
 
-            saleInvoiceData.updated_at = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
-            saleInvoiceData.created_at = new Date(new Date(saleInvoiceData.created_at).setDate(new Date(saleInvoiceData.created_at).getDate() + 1)).toISOString().split('T')[0];
+            buyInvoiceData.updated_at = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
+            buyInvoiceData.created_at = new Date(new Date(buyInvoiceData.created_at).setDate(new Date(buyInvoiceData.created_at).getDate() + 1)).toISOString().split('T')[0];
             
-            sale_invoiceService.updatesale_invoice(sale_invoice.id_sale_invoice, saleInvoiceData)
+            buy_invoiceService.updatebuy_invoice(buy_invoice.id_buy_invoice, buyInvoiceData)
                 .then(() => {
                     show_invoices();
                     toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Cập nhật thành công', life: 3000 });
@@ -173,10 +164,9 @@ const SaleInvoice = () => {
                     toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Cập nhật thất bại', life: 3000 });
                 });
         } else { // Thêm mới
-            sale_invoiceService.addsale_invoice(saleInvoiceData)
+            buy_invoiceService.addbuy_invoice(buyInvoiceData)
                 .then(() => {
                     show_invoices();
-                    fetchProducts();
                     toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Thêm thành công', life: 3000 });
                 })
                 .catch(error => {
@@ -187,8 +177,8 @@ const SaleInvoice = () => {
         hideDialogInvoice();
     };
 
-    const savesaleDetail = () => {
-        setSubmittedSaleInvoice(true);
+    const saveBuyDetail = () => {
+        setSubmittedBuyInvoice(true);
         if (!detail.id_product || !detail.quantity || !detail.price) {
             toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Vui lòng điền đầy đủ thông tin', life: 3000 });
             return;
@@ -212,10 +202,7 @@ const SaleInvoice = () => {
         }
 
         const detailData = { ...detail };
-        const invoiceId = detailData.id_sale_invoice;
-
-        const requestedQuantity = parseInt(detailData.quantity);
-        const productId = parseInt(detailData.id_product); // Chuyển đổi sang số
+        const invoiceId = detailData.id_buy_invoice;
         if (!isAdd) { // Cập nhật lại chi tiết     
             // Kiểm tra xem có cập nhật thông tin nào không
             console.log(details)
@@ -224,19 +211,13 @@ const SaleInvoice = () => {
                 toast.current.show({ severity: 'info', summary: 'Thông báo', detail: 'Không có thay đổi nào được thực hiện' });
                 return;
             }
-            
-            if (products.some(product => (product.id_product === productId) && 
-                                        (product.quantity < requestedQuantity))) {
-                toast.current.show({ severity: 'info', summary: 'Thông báo', detail: 'Số lượng sản phẩm không đủ', life: 3000 });
-                return;
-            }
 
             detailData.updated_at = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
             detailData.created_at = new Date(new Date(detailData.created_at).setDate(new Date(detailData.created_at).getDate() + 1)).toISOString().split('T')[0];
 
-            saleInvoiceDetailsService.updateDetail(detail.id_sale_invoice, detail.id_product, detailData)
+            buyInvoiceDetailsService.updateDetail(detail.id_buy_invoice, detail.id_product, detailData)
                 .then(() => {
-                    fetchDetails(detail.id_sale_invoice); // Cập nhật lại chi tiết
+                    fetchDetails(detail.id_buy_invoice); // Cập nhật lại chi tiết
                     toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Cập nhật thành công', life: 3000 });
                 })
                 .catch(error => {
@@ -247,13 +228,8 @@ const SaleInvoice = () => {
                 toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Sản phẩm đã có trong chi tiết hóa đơn' });
                 return;
             }
-            
-            if (products.some(product => product.id_product === productId && product.quantity < requestedQuantity)) {
-                toast.current.show({ severity: 'info', summary: 'Thông báo', detail: 'Số lượng sản phẩm không đủ', life: 3000 });
-                return;
-            }
 
-            saleInvoiceDetailsService.addDetail(detailData)
+            buyInvoiceDetailsService.addDetail(detailData)
                 .then(() => {
                     fetchDetails(invoiceId); // Cập nhật lại chi tiết
                     toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Thêm thành công', life: 3000 });
@@ -266,39 +242,39 @@ const SaleInvoice = () => {
         hideDialogDetail();
     };
 // ------------------------------------------------------------- Nhớ sửa lại
-    const editsaleInvoice = (sale_invoice) => {
-        // if (notification(sale_invoice, 'sửa')) return;
-        console.log(sale_invoice)
-        setSaleInvoice({ ...sale_invoice });
-        setSaleInvoiceDialog(true);
+    const editBuyInvoice = (buy_invoice) => {
+        if (notification(buy_invoice, 'sửa')) return;
+        console.log(buy_invoice)
+        setBuyInvoice({ ...buy_invoice });
+        setBuyInvoiceDialog(true);
 
 
     };
 
-    const editsaleDetail = (detail) => {
+    const editBuyDetail = (detail) => {
         console.log(detail)
         setIsAdd(false);
         setDetail({ ...detail });
         setDetailDialog(true);
     };
 
-    const confirmDeletesaleInvoice = (sale_invoice) => {
-        setSaleInvoice(sale_invoice);
-        setDeleteSaleInvoiceDialog(true);
+    const confirmDeleteBuyInvoice = (buy_invoice) => {
+        setBuyInvoice(buy_invoice);
+        setDeleteBuyInvoiceDialog(true);
     };
 
-    const confirmDeletesaleDetail = (detail) => {
+    const confirmDeleteBuyDetail = (detail) => {
         // kiểm tra xem có được xóa hay không
-        console.log(sale_invoice)
+        console.log(buy_invoice)
         setDetail(detail);
-        setDeleteSaleDetailDialog(true);
+        setDeleteBuyDetailDialog(true);
     };
 
-    const deletesaleInvoice = () => {
-        sale_invoiceService.deletesale_invoice(sale_invoice.id_sale_invoice)
+    const deleteBuyInvoice = () => {
+        buy_invoiceService.deletebuy_invoice(buy_invoice.id_buy_invoice)
             .then(() => {
                 show_invoices();
-                setDeleteSaleInvoiceDialog(false);
+                setDeleteBuyInvoiceDialog(false);
                 toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Xóa thành công', life: 3000 });
             })
             .catch(error => {
@@ -307,11 +283,11 @@ const SaleInvoice = () => {
         
     };
 
-    const deletesaleDetail = () => {
-        saleInvoiceDetailsService.deleteDetail(detail.id_sale_invoice, detail.id_product)
+    const deleteBuyDetail = () => {
+        buyInvoiceDetailsService.deleteDetail(detail.id_buy_invoice, detail.id_product)
             .then(() => {
-                fetchDetails(detail.id_sale_invoice);
-                setDeleteSaleDetailDialog(false); // Thêm dòng này
+                fetchDetails(detail.id_buy_invoice);
+                setDeleteBuyDetailDialog(false); // Thêm dòng này
                 toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Xóa chi tiết thành công', life: 3000 });
             })
             .catch(error => {
@@ -321,7 +297,7 @@ const SaleInvoice = () => {
 
     const onInputChangeInvoice = (e, itemId) => {
         const val = (e.target && e.target.value) || '';
-        setSaleInvoice(prev => ({ ...prev, [itemId]: val }));
+        setBuyInvoice(prev => ({ ...prev, [itemId]: val }));
     };
 
     const onInputChangeDetail = (e, itemId) => {
@@ -330,11 +306,10 @@ const SaleInvoice = () => {
     };
 
     const invoiceColumns = [
-        { field: 'id_sale_invoice', header: 'ID' },
-        { field: 'id_customer', header: 'ID Khách hàng' },
+        { field: 'id_buy_invoice', header: 'ID' },
+        { field: 'id_supplier', header: 'ID Nhà cung cấp' },
         { field: 'desc', header: 'Mô tả' },
         { field: 'total', header: 'Tổng tiền' },
-        { field: 'pay', header: 'Thanh toán' },
         { field: 'status', header: 'Trạng thái' },
         { field: 'created_at', header: 'Ngày tạo' },
         { field: 'updated_at', header: 'Ngày cập nhật' },
@@ -351,35 +326,35 @@ const SaleInvoice = () => {
         <div>
             <Toast ref={toast} />
             <GenericTable
-                data={sale_invoices}
-                selectedItems={selectedSaleInvoices}
-                setSelectedItems={setSelectedSaleInvoices}
+                data={buy_invoices}
+                selectedItems={selectedBuyInvoices}
+                setSelectedItems={setSelectedBuyInvoices}
                 globalFilter={globalFilter}
                 setGlobalFilter={setGlobalFilter}
                 columns={invoiceColumns}
-                onEdit={editsaleInvoice}
-                onDelete={confirmDeletesaleInvoice}
+                onEdit={editBuyInvoice}
+                onDelete={confirmDeleteBuyInvoice}
                 openNew={openNewInvoice}
-                dataKey="id_sale_invoice"
-                title="Quản lý danh sách hóa đơn bán"
+                dataKey="id_buy_invoice"
+                title="Quản lý danh sách hóa đơn nhập"
             />
 
-            {selectedSaleInvoices.length == 1 && (
+            {selectedBuyInvoices.length == 1 && (
                 <div>
-                    {selectedSaleInvoices.map((invoice) => (
-                        <div key={invoice.id_sale_invoice} style={{ marginTop: '1rem' }}>
+                    {selectedBuyInvoices.map((invoice) => (
+                        <div key={invoice.id_buy_invoice} style={{ marginTop: '1rem' }}>
                             <GenericTable
-                                data={details[invoice.id_sale_invoice] || []}
-                                selectedItems={selectedSaleDetails}
-                                setSelectedItems={setSelectedSaleDetails}
+                                data={details[invoice.id_buy_invoice] || []}
+                                selectedItems={selectedBuyDetails}
+                                setSelectedItems={setSelectedBuyDetails}
                                 globalFilter={globalFilter}
                                 setGlobalFilter={setGlobalFilter}
                                 columns={detailColumns}
-                                onEdit={!notification(invoice, '') ? editsaleDetail: null}
-                                onDelete={!notification(invoice, '') ? confirmDeletesaleDetail : null}
-                                openNew={!notification(invoice, '') ? () => openNewDetail(invoice.id_sale_invoice): null}
+                                onEdit={!notification(invoice, '') ? editBuyDetail: null}
+                                onDelete={!notification(invoice, '') ? confirmDeleteBuyDetail : null}
+                                openNew={!notification(invoice, '') ? () => openNewDetail(invoice.id_buy_invoice): null}
                                 dataKey="id_product"
-                                title={`Chi tiết hóa đơn ${invoice.id_sale_invoice}`}
+                                title={`Chi tiết hóa đơn ${invoice.id_buy_invoice}`}
                                 disabled={notification(invoice, '') ? true : false}
                             />
                         </div>
@@ -387,23 +362,22 @@ const SaleInvoice = () => {
                 </div>
             )}
             <GenericForm
-                visible={sale_invoiceDialog}
-                item={sale_invoice}
+                visible={buy_invoiceDialog}
+                item={buy_invoice}
                 fields={[
-                    { name: 'id_sale_invoice', label: 'ID', disabled: true, hidden: !sale_invoice.id_sale_invoice },
-                    { name: 'id_customer', label: 'ID Khách hàng', required: true },
+                    { name: 'id_buy_invoice', label: 'ID', disabled: true, hidden: !buy_invoice.id_buy_invoice },
+                    { name: 'id_supplier', label: 'ID Nhà cung cấp', required: true },
                     { name: 'desc', label: 'Mô tả', required: true },
-                    { name: 'total', label: 'Tổng tiền', disabled: true, hidden: !sale_invoice.id_sale_invoice },
-                    { name: 'pay', label: 'Thanh toán', required: true },
+                    { name: 'total', label: 'Tổng tiền', disabled: true, hidden: !buy_invoice.id_buy_invoice },
                     { name: 'status', label: 'Trạng thái', required: true },
-                    { name: 'created_at', label: 'Ngày tạo', disabled: true, hidden: !sale_invoice.id_sale_invoice },
-                    { name: 'updated_at', label: 'Ngày chỉnh sửa', disabled: true, hidden: !sale_invoice.id_sale_invoice }
+                    { name: 'created_at', label: 'Ngày tạo', disabled: true, hidden: !buy_invoice.id_buy_invoice },
+                    { name: 'updated_at', label: 'Ngày chỉnh sửa', disabled: true, hidden: !buy_invoice.id_buy_invoice }
                 ]}
                 onChange={onInputChangeInvoice}
-                onSave={savesaleInvoice}
+                onSave={saveBuyInvoice}
                 onHide={hideDialogInvoice}
-                submittedSaleInvoice={submittedSaleInvoice}
-                title={sale_invoice.id_sale_invoice ? 'Sửa hóa đơn bán' : 'Thêm hóa đơn bán'}
+                submittedBuyInvoice={submittedBuyInvoice}
+                title={buy_invoice.id_buy_invoice ? 'Sửa hóa đơn nhập' : 'Thêm hóa đơn nhập'}
             />
             <GenericForm
                 visible={DetailDialog}
@@ -416,23 +390,23 @@ const SaleInvoice = () => {
                     { name: 'updated_at', label: 'Ngày chỉnh sửa', disabled: true, hidden: isAdd }
                 ]}
                 onChange={onInputChangeDetail}
-                onSave={savesaleDetail}
+                onSave={saveBuyDetail}
                 onHide={hideDialogDetail}
-                submittedSaleInvoice={submittedSaleDetail}
+                submittedBuyInvoice={submittedBuyDetail}
                 title={isAdd ? 'Thêm chi tiết hóa đơn' : 'Sửa chi tiết hóa đơn'}
             />
             <ConfirmDeleteDialog
-                visible={deleteSaleInvoiceDialog}
-                onHide={() => setDeleteSaleInvoiceDialog(false)}
-                onConfirm={deletesaleInvoice}
-                item={sale_invoice}
-                idField="id_sale_invoice"
+                visible={deleteBuyInvoiceDialog}
+                onHide={() => setDeleteBuyInvoiceDialog(false)}
+                onConfirm={deleteBuyInvoice}
+                item={buy_invoice}
+                idField="id_buy_invoice"
             />
 
             <ConfirmDeleteDialog
-                visible={deleteSaleDetailDialog}
-                onHide={() => setDeleteSaleDetailDialog(false)}
-                onConfirm={deletesaleDetail}
+                visible={deleteBuyDetailDialog}
+                onHide={() => setDeleteBuyDetailDialog(false)}
+                onConfirm={deleteBuyDetail}
                 item={detail}
                 idField="id_product"
             />
@@ -440,4 +414,4 @@ const SaleInvoice = () => {
     );
 };
 
-export default SaleInvoice;
+export default BuyInvoice;
