@@ -8,6 +8,7 @@ const Home = () => {
     const [error, setError] = useState(null);
 
     const fetchProducts = async () => {
+        
         setLoading(true);
         try {
             const data = await productService.getAllproducts();
@@ -20,8 +21,8 @@ const Home = () => {
     };
 
     useEffect(() => {
-        fetchProducts(); // Gọi hàm fetchProducts mỗi lần component được mount
-    }, []); // Chỉ chạy một lần khi component được mount
+        fetchProducts();
+    }, []); 
 
 
     const backImg = () => {

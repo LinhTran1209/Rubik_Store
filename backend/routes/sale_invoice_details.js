@@ -1,6 +1,7 @@
 
 var express = require('express');
 var router = express.Router();
+// const authenticateToken = require('../authMiddleware');
 const sale_invoice_detailscontroller = require("../controllers/sale_invoice_details.controller");
 
 /* Routes for sale_invoice_details */

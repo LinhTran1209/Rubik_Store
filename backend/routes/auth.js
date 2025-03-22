@@ -1,21 +1,23 @@
 var express = require('express');
 var router = express.Router();
 var authenticateToken = require('../authMiddleware');
-const deleteToken = require('../jwt');
 
-// Route lấy thông tin user hiện tại
-router.get('/me', authenticateToken, (req, res) => {
-    // console.log('Check thông tin user hiện tại');
-    console.log('User info: ', req.user);
-    res.json(req.user); 
-});
+const authController = require('../controllers/auth.controller');
+const {deleteToken} = require('../jwt');
 
-// Route đăng xuất
+
+router.post('/login', authController.login);
 router.post('/logout', (req, res) => {
-    // console.log('Đã logout');
     res.clearCookie('jwt');
     deleteToken();
     res.json({ message: 'Đăng xuất thành công' });
 });
+
+
+router.get('/me', authenticateToken, (req, res) => {
+    console.log('User info: ', req.user);
+    res.json(req.user); 
+});
+
 
 module.exports = router;

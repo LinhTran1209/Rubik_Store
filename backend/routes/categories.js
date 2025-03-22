@@ -2,10 +2,10 @@
 var express = require('express');
 var router = express.Router();
 const categoriescontroller = require("../controllers/categories.controller");
-const authenticateToken = require('../authMiddleware');
+// const authenticateToken = require('../authMiddleware');
 
 /* Routes for categories */
-router.get('/', authenticateToken, categoriescontroller.getAll);
+router.get('/', categoriescontroller.getAll);
 router.get('/:id', categoriescontroller.getById);
 router.get('/getData/:col/:querydata', categoriescontroller.getData)
     

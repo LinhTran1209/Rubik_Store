@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/sale_invoices';
+const API_URL = 'http://localhost:5000/users';
+
 
 const formatDateFields = (data) => {
     if (Array.isArray(data)) {
@@ -15,8 +16,8 @@ const formatDateFields = (data) => {
     return data;
 };
 
-const sale_invoiceService = {
-    getAllsale_invoices: async () => {
+const userService = {
+    getAllusers: async () => {
         try {
             const response = await axios.get(API_URL);
             const data = response.data || [];
@@ -26,7 +27,7 @@ const sale_invoiceService = {
             throw new Error('Error fetching data');
         }
     },
-    getsale_invoiceById: async (id) => {
+    getuserById: async (id) => {
         try {
             const response = await axios.get(`${API_URL}/${id}`);
             return formatDateFields(response.data);
@@ -35,25 +36,25 @@ const sale_invoiceService = {
             throw new Error('Error fetching record by ID');
         }
     },
-    addsale_invoice: async (sale_invoiceData) => {
+    adduser: async (userData) => {
         try {
-            const response = await axios.post(API_URL, sale_invoiceData);
+            const response = await axios.post(API_URL, userData);
             return response.data;
         } catch (error) {
             console.error('Error adding record:', error.response?.data || error.message);
             throw new Error('Error adding record');
         }
     },
-    updatesale_invoice: async (id, sale_invoiceData) => {
+    updateuser: async (id, userData) => {
         try {
-            const response = await axios.put(`${API_URL}/${id}`, sale_invoiceData);
+            const response = await axios.put(`${API_URL}/${id}`, userData);
             return response.data;
         } catch (error) {
             console.error(`Error updating record with ID ${id}:`, error.response?.data || error.message);
             throw new Error('Error updating record');
         }
     },
-    deletesale_invoice: async (id) => {
+    deleteuser: async (id) => {
         try {
             const response = await axios.delete(`${API_URL}/${id}`);
             return response.data;
@@ -64,4 +65,4 @@ const sale_invoiceService = {
     },
 };
 
-export default sale_invoiceService;
+export default userService;

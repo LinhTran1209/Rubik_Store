@@ -9,6 +9,7 @@ import Support from './Support';
 import BackTop from './BackTop';
 import Script from 'next/script';
 
+
 const LayoutWeb = ({ props, children }) => {
 
     return (

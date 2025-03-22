@@ -20,6 +20,7 @@ const GenericTable = ({
     dataKey,
     title = 'Quản lý danh sách',
     disabled = false,
+    visible = true, // Thêm prop visible
 }) => {
     const dt = useRef(null);
 
@@ -53,7 +54,7 @@ const GenericTable = ({
             <h4 className='m-0'>{title}</h4>
             <div style={{ float: 'right' }}>
                 {openNew && (
-                    <Button style={{ marginRight: '5px' }} label='' icon='pi pi-plus' severity='success' tooltip='Thêm mới' onClick={openNew} disabled ={!openNew} />
+                    <Button style={{ marginRight: '5px' }} label='' icon='pi pi-plus' severity='success' tooltip='Thêm mới' onClick={openNew} disabled={!openNew} />
                 )}
                 <Button style={{ marginRight: '5px' }} label='' icon='pi pi-trash' tooltip='Xóa đã chọn' severity='danger' onClick={onDeleteSelected} disabled={disabled || !selectedItems || !selectedItems.length} />
                 <Button style={{ marginRight: '5px' }} label='' icon='pi pi-upload' tooltip='Xuất Excel' className='p-button-help' onClick={() => dt.current.exportCSV()} />
@@ -64,6 +65,10 @@ const GenericTable = ({
             </div>
         </div>
     );
+
+    if (!visible) {
+        return null; // Nếu không visible, trả về null (không hiển thị gì)
+    }
 
     return (
         <div className={styles.card}>

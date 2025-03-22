@@ -6,6 +6,8 @@ import GenericTable from '../../../components/Admin_page/GenericTable';
 import GenericForm from '../../../components/Admin_page/GenericForm';
 import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDialog';
 
+import loginService from '../../../services/loginService';
+
 
 const Product = () => {
     const [products, setproducts] = useState([]);
@@ -18,6 +20,9 @@ const Product = () => {
     const [selectedproducts, setSelectedproducts] = useState(null);
     const [submitted, setSubmitted] = useState(false);
     const toast = useRef(null);
+
+    // Kiểm tra quyền admin
+    const [userRole, setUserRole] = useState(null);
 
     // Lấy danh sách categories
     const fetchcategories = async () => {
@@ -41,9 +46,24 @@ const Product = () => {
     };
 
     useEffect(() => {
-        show();
-        fetchcategories();
-    }, []);
+        const fetchUserRole = async () => {
+            try {
+                const user = await loginService.getCurrentUser();
+                setUserRole(user.role);
+            } catch (error) {
+                toast.current.show({ severity: 'info', summary: 'Thông báo', detail: 'Bạn cần đăng nhập để vào trang này!', life: 3000 });
+                setUserRole(null);
+            } 
+        };
+        fetchUserRole();
+    }, []); 
+    
+    useEffect(() => {
+        if (userRole === 'admin') {
+            show();         
+            fetchcategories(); 
+        }
+    }, [userRole]); 
 
     const openNew = () => {
         setproduct({ id_product: null, id_categorie: '', name: '', image_url: '', quantity: '', price: '', desc: '', status: 'hiện' });
@@ -196,6 +216,7 @@ const Product = () => {
         <div>
             <Toast ref={toast} />
             <GenericTable
+                visible={true ? userRole === 'admin' : false}
                 data={products}
                 selectedItems={selectedproducts}
                 setSelectedItems={setSelectedproducts}

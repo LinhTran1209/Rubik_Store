@@ -3,7 +3,7 @@ const db = require("../common/db");
 
 const Sale_invoices = (sale_invoices) => {
   this.id_sale_invoice = sale_invoices.id_sale_invoice;
-  this.id_customer = sale_invoices.id_customer;
+  this.id_user = sale_invoices.id_user;
   this.desc = sale_invoices.desc;
   this.total = sale_invoices.total;
   this.pay = sale_invoices.pay;
@@ -46,7 +46,7 @@ Sale_invoices.update = (sale_invoices, id, callBack) => {
 };
 
 Sale_invoices.delete = (id, callBack) => {
-  db.query(`DELETE FROM sale_invoices WHERE id_sale_invoice = ?`, [id], (err, res) => {
+  db.query(`CALL DeleteSaleInvoice(?)`, [id], (err, res) => {
     if (err) return callBack(err);
     callBack(null, `Xóa Sale_invoices có id = + id + thành công`);
   });

@@ -1,52 +1,38 @@
 const jwt = require('jsonwebtoken');
-const Employees = require('./models/employees.model');
-const Customers = require('./models/customers.model');
-const { getToken, deleteToken } = require('./jwt');
-
-function verifyUser(verified, req, res, next) {
-    const { phone, role, type } = verified;
-
-    if (type === 'employee') {
-        Employees.findByPhoneAndRole(phone, role, (err, user) => {
-            if (err) return res.status(500).json({ message: 'Internal server error', error: err });
-            if (!user) return res.status(403).json({ message: 'Không tìm thấy người dùng!' });
-            if (user.id_role !== role || user.phone !== phone) {
-                return res.status(403).json({ message: 'Thông tin của bạn đã thay đổi, vui lòng đăng nhập lại!' });
-            }
-            req.user = { phone, role, type };
-            next();
-        });
-    } else if (type === 'customer') {
-        Customers.findByPhoneAndRole(phone, role, (err, user) => {
-            if (err) return res.status(500).json({ message: 'Internal server error', error: err });
-            if (!user) return res.status(403).json({ message: 'Không tìm thấy người dùng!' });
-            if (user.id_role !== role || user.phone !== phone) {
-                return res.status(403).json({ message: 'Thông tin của bạn đã thay đổi, vui lòng đăng nhập lại!' });
-            }
-            req.user = { phone, role, type };
-            next();
-        });
-    } else {
-        return res.status(403).json({ message: 'Invalid user type' });
-    }
-}
+const Users = require('./models/users.model');
+const { getToken } =require('./jwt')
 
 function authenticateToken(req, res, next) {
-    // const token = req.cookies.jwt;
-    const token = getToken(req);
+  const token = req.cookies.jwt || getToken();
+  console.log('Token lấy ra ở Middleware ', token);
 
-    // console.log('Đây là token lấy từ /auth/me',token);
+  if (!token) return res.status(401).json({ message: 'Bạn cần đăng nhập để vào trang này!' });
 
-    if (!token) {
-        return res.status(401).json({ message: 'Bạn cần đăng nhập để vào trang này!' });
-    }
+  try {
+    // Xác minh
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
+    const { phone, role } = verified;
 
-    try {
-        const verified = jwt.verify(token, process.env.JWT_SECRET);
-        verifyUser(verified, req, res, next);
-    } catch (err) {
-        res.status(403).json({ message: 'Không có Token' });
-    }
+    // Tìm kiếm lại trong database có không?
+    Users.findByPhone(phone)
+      .then(user => {
+        if (!user) {
+          return res.status(403).json({ message: 'Không tìm thấy người dùng!' });
+        }
+        if (user.role !== role || user.phone !== phone) {
+          return res.status(403).json({ message: 'Thông tin của bạn đã thay đổi, vui lòng đăng nhập lại!' });
+        }
+
+        // Gắn thông tin user vào req
+        req.user = { phone, role };
+        next();
+      })
+      .catch(err => {
+        return res.status(500).json({ message: 'Internal server error', error: err.message });
+      });
+  } catch (err) {
+    return res.status(403).json({ message: 'Token không hợp lệ hoặc đã hết hạn' });
+  }
 }
 
 module.exports = authenticateToken;

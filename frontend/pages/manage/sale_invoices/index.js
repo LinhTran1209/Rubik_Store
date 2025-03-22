@@ -4,16 +4,18 @@ import { Toast } from 'primereact/toast';
 import sale_invoiceService from '../../../services/sale_invoiceService';
 import saleInvoiceDetailsService from '../../../services/sale_invoice_detailsService';
 import productService from '../../../services/productService';
-import customerService from '../../../services/customerService';
+import userService from '../../../services/userService';
 
 import GenericTable from '../../../components/Admin_page/GenericTable';
 import GenericForm from '../../../components/Admin_page/GenericForm';
 import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDialog';
 
+import loginService from '../../../services/loginService';
+
 
 const SaleInvoice = () => {
     const [sale_invoices, setSaleInvoices] = useState([]);
-    const [sale_invoice, setSaleInvoice] = useState({ id_sale_invoice: null, id_customer: '', desc: '', total: '', pay: '', status: '', created_at: '', updated_at: '' });
+    const [sale_invoice, setSaleInvoice] = useState({ id_sale_invoice: null, id_user: '', desc: '', total: '', pay: '', status: '', created_at: '', updated_at: '' });
     const [sale_invoiceDialog, setSaleInvoiceDialog] = useState(false);
     const [selectedSaleInvoices, setSelectedSaleInvoices] = useState([]);
     const [deleteSaleInvoiceDialog, setDeleteSaleInvoiceDialog] = useState(false);
@@ -31,15 +33,19 @@ const SaleInvoice = () => {
 
     const [isAdd, setIsAdd] = useState(true);
     const [products, setProducts] = useState([]);   
-    const [customers, setcustomers] = useState([]);
+    const [users, setusers] = useState([]);
     const toast = useRef(null);
 
-    const fetchcustomers = async () => {
+
+    // Kiểm tra quyền admin
+    const [userRole, setUserRole] = useState(null);
+
+    const fetchusers = async () => {
         try {
-            const data = await customerService.getAllcustomers();
-            setcustomers(data || []);
+            const data = await userService.getAllusers();
+            setusers(data || []);
         } catch (error) {
-            console.error('Error fetching customers:', error);
+            console.error('Error fetching users:', error);
             toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải danh sách Khách hàng', life: 3000 });
         }
     };
@@ -75,12 +81,28 @@ const SaleInvoice = () => {
             toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải dữ liệu', life: 3000 });
         }
     };
-  
+
+
     useEffect(() => {
-        show_invoices();
-        fetchcustomers();
-        fetchProducts();
+        const fetchUserRole = async () => {
+            try {
+                const user = await loginService.getCurrentUser();
+                setUserRole(user.role);
+            } catch (error) {
+                toast.current.show({ severity: 'info', summary: 'Thông báo', detail: 'Bạn cần đăng nhập để vào trang này!', life: 3000 });
+                setUserRole(null);
+            } 
+        };
+        fetchUserRole();
     }, []);
+    
+    useEffect(() => {
+        if (userRole === 'admin') {
+            show_invoices();  
+            fetchusers();   
+            fetchProducts(); 
+        }
+    }, [userRole]); 
 
     useEffect(() => {
         selectedSaleInvoices.forEach(invoice => {
@@ -101,7 +123,7 @@ const SaleInvoice = () => {
     }
 
     const openNewInvoice = () => {
-        setSaleInvoice({ id_sale_invoice: null, id_customer: '', desc: '', total: 0, pay: '', status: 'Đang xác nhận' });
+        setSaleInvoice({ id_sale_invoice: null, id_user: '', desc: '', total: 0, pay: '', status: 'Đang xác nhận' });
         setSubmittedSaleInvoice(false);
         setSaleInvoiceDialog(true);
     };
@@ -125,12 +147,12 @@ const SaleInvoice = () => {
 
     const savesaleInvoice = () => {
         setSubmittedSaleInvoice(true);
-        if (!sale_invoice.id_customer || !sale_invoice.pay || !sale_invoice.status ) {
+        if (!sale_invoice.id_user || !sale_invoice.pay || !sale_invoice.status ) {
             toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Vui lòng điền đầy đủ thông tin bắt buộc', life: 3000 });
             return;
         }
     
-        if (!customers.some(customer => customer.id_customer === parseInt(sale_invoice.id_customer))) {
+        if (!users.some(user => user.id_user === parseInt(sale_invoice.id_user))) {
             toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Khách hàng không tồn tại', life: 3000 });
             return;
         }
@@ -331,7 +353,7 @@ const SaleInvoice = () => {
 
     const invoiceColumns = [
         { field: 'id_sale_invoice', header: 'ID' },
-        { field: 'id_customer', header: 'ID Khách hàng' },
+        { field: 'id_user', header: 'ID Khách hàng' },
         { field: 'desc', header: 'Mô tả' },
         { field: 'total', header: 'Tổng tiền' },
         { field: 'pay', header: 'Thanh toán' },
@@ -351,6 +373,7 @@ const SaleInvoice = () => {
         <div>
             <Toast ref={toast} />
             <GenericTable
+                visible={true ? userRole === 'admin' : false}
                 data={sale_invoices}
                 selectedItems={selectedSaleInvoices}
                 setSelectedItems={setSelectedSaleInvoices}
@@ -391,7 +414,7 @@ const SaleInvoice = () => {
                 item={sale_invoice}
                 fields={[
                     { name: 'id_sale_invoice', label: 'ID', disabled: true, hidden: !sale_invoice.id_sale_invoice },
-                    { name: 'id_customer', label: 'ID Khách hàng', required: true },
+                    { name: 'id_user', label: 'ID Khách hàng', required: true },
                     { name: 'desc', label: 'Mô tả', required: true },
                     { name: 'total', label: 'Tổng tiền', disabled: true, hidden: !sale_invoice.id_sale_invoice },
                     { name: 'pay', label: 'Thanh toán', required: true },

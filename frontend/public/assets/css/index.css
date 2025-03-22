@@ -3,9 +3,8 @@ body {
     padding: 0;
     background-color: antiquewhite;
     font-size: 13px;
-    /* overflow-x: auto;
-    white-space: nowrap; */
-    width: 1483px;
+    width: 100%;
+    font-family: 'Google Sans', Roboto, Arial, sans-serif;
 }
 
 
@@ -293,6 +292,7 @@ body {
 /* -------------------------MIDDLE----------------------*/
 
 .middle {
+    justify-content: center;
     /* height: 2000px; */
     min-height: 850px;
     flex: 1; /* Đảm bảo phần giữa chiếm không gian còn lại */

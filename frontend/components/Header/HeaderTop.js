@@ -1,7 +1,23 @@
-import React from 'react';
-import SeachProduct from '../../components/SearchProduct'
+import React, { useEffect, useState } from 'react';
+import SeachProduct from '../../components/SearchProduct';
 
 const HeaderTop = () => {
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem('user_customer');
+        if (storedUser) {
+            setUser(JSON.parse(storedUser));
+        }
+    }, []);
+
+    const handleLogout = () => {
+        // Xóa thông tin người dùng và tải lại trang
+        localStorage.removeItem('user_customer');
+        // window.location.reload();
+        window.location.href = `/home`;
+    };
+
     return (
         <div className="header__top">
             <a className="header__top-logo" href="/home">
@@ -21,13 +37,34 @@ const HeaderTop = () => {
             </div>
 
             <div className="header__top-user">
-                <div className="header__top-a" href="#">
-                    <i className="fa-solid fa-user"></i>
-                    <span>
-                        <a className="a-register-login" href="/login">Đăng nhập</a><br />
-                        <a className="a-register-login" href="#">Đăng ký</a>
-                    </span>
-                </div>
+                {user ? (
+                    // Nếu đã đăng nhập, hiển thị số điện thoại và nút Đăng xuất
+                    <div className="header__top-a">
+                        <i className="fa-solid fa-user"></i>
+                        <span>
+                            <span style={{marginLeft:"10px"}}>{user.phone}</span><br />
+                            <a
+                                className='a-register-login'
+                                href="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleLogout();
+                                }}
+                                style={{textDecoration: 'none' }}
+                            >
+                                Đăng xuất
+                            </a>
+                        </span>
+                    </div>
+                ) : (
+                    <div className="header__top-a">
+                        <i className="fa-solid fa-user"></i>
+                        <span>
+                            <a className="a-register-login" href="/login">Đăng nhập</a><br />
+                            <a className="a-register-login" href="/register">Đăng ký</a>
+                        </span>
+                    </div>
+                )}
             </div>
 
             <div className="header__top-cart">
@@ -37,12 +74,11 @@ const HeaderTop = () => {
                     <span style={{ lineHeight: '33px' }}>Giỏ hàng</span>
                 </a>
                 <div className="detail-cart">
-                    {/* <!-- <div className="empty__detail-cart">Giỏ hàng trống</div> --> */}
+
                 </div>
             </div>
         </div>
-    )
-
-}
+    );
+};
 
 export default HeaderTop;

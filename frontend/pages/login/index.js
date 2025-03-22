@@ -1,64 +1,80 @@
-import React, { useEffect, useState, useRef } from "react";
-import roleService from '../../services/roleService';
+import React, { useRef, useState } from 'react';
 import { Toast } from 'primereact/toast';
 import loginService from '../../services/loginService';
-// import authenticateToken from '../../../backend/authMiddleware'
 
 const Login = () => {
-    const [phone, setPhone] = useState(''); 
+    const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
-    const [idRole, setIdRole] = useState('');
-    const [roles, setRoles] = useState([]);
-    const [error, setError] = useState(null);
     const toast = useRef(null);
 
-    useEffect(() => {
-        const fetchService = async () => {
-            try {
-                const data = await roleService.getAllroles();
-                setRoles(data);
-            } catch (err) {
-                setError(err.message);
-                toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải danh sách quyền', life: 3000 });
-            }
-        };
-        fetchService();
-    }, []);
-
     const handleLogin = async () => {
-        if (!phone || !password || !idRole) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Vui lòng điền đầy đủ thông tin', life: 3000 });
+        if (!phone || !password) {
+            toast.current.show({
+                severity: 'warn',
+                summary: 'Cảnh báo',
+                detail: 'Vui lòng điền đầy đủ thông tin',
+                life: 3000,
+            });
             return;
         }
 
         try {
-            const response = await loginService.login(phone, password, parseInt(idRole));
+            const response = await loginService.login(phone, password);
             const user = response.user;
 
             if (!user) {
                 throw new Error('Không nhận được thông tin user từ server');
             }
 
-            if (user.type === 'employee' && user.role === 1) {
-                toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Đăng nhập thành công', life: 3000 });
+            if (user.role === 'admin') {
+                toast.current.show({
+                    severity: 'success',
+                    summary: 'Thành công',
+                    detail: 'Đăng nhập thành công',
+                    life: 3000,
+                });
+                // localStorage.setItem('user_customer', JSON.stringify(user));
                 window.location.href = '/manage/categories';
-            } else if (user.type === 'customer') {
-                toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Đăng nhập thành công', life: 3000 });
+            } else if (user.role === 'customer') {
+                toast.current.show({
+                    severity: 'success',
+                    summary: 'Thành công',
+                    detail: 'Đăng nhập thành công',
+                    life: 3000,
+                });
+                localStorage.setItem('user', JSON.stringify(user));
                 window.location.href = `/home?phone=${user.phone}`;
             } else {
-                toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Bạn không có quyền truy cập', life: 3000 });
-                window.location.href = '/ok';
+                toast.current.show({
+                    severity: 'warn',
+                    summary: 'Cảnh báo',
+                    detail: 'Bạn không có quyền truy cập',
+                    life: 3000,
+                });
+                window.location.href = '/';
             }
         } catch (err) {
             const errorMessage = err.message || 'Đăng nhập thất bại';
-            setError(errorMessage);
-            toast.current.show({ severity: 'error', summary: 'Lỗi', detail: errorMessage, life: 3000 });
+            toast.current.show({
+                severity: 'info',
+                summary: 'Thông báo',
+                detail: errorMessage,
+                life: 3000,
+            });
         }
     };
 
     return (
-        <div className="modal">
-            <Toast ref={toast} />
+        <div className="modal"> 
+            <Toast
+                ref={toast}
+                style={{
+                    // width: '900px', // Tăng chiều rộng của Toast
+                    // height: '200px', // Tăng chiều cao của Toast
+                    // padding: '1.5rem', // Tăng padding để nội dung thoáng hơn
+                    // fontSize: '1.6rem', // Tăng cỡ chữ tổng thể
+                }}
+            />
             <div className="modal__body">
                 <div className="auth-form auth-form__login">
                     <div className="auth-form__container">
@@ -89,22 +105,6 @@ const Login = () => {
                             </div>
 
                             <div className="auth-form__group">
-                                <select
-                                    value={idRole}
-                                    onChange={(e) => setIdRole(e.target.value)}
-                                    className="auth-form__input"
-                                >
-                                    <option value="">Chọn quyền</option>
-                                    {roles.map((roleItem) => (
-                                        <option key={roleItem.id_role} value={roleItem.id_role}>
-                                            {roleItem.name}
-                                        </option>
-                                    ))}
-                                </select>
-                                <div id="error_message-role-login" className="error_message"></div>
-                            </div>
-
-                            <div className="auth-form__group">
                                 <div className="group-btn">
                                     <button className="btn btn-register" onClick={handleLogin}>
                                         ĐĂNG NHẬP
@@ -122,14 +122,18 @@ const Login = () => {
                                 <div className="auth-form__method">
                                     <div className="auth-form__icon">
                                         <button className="btn-iconFBGG">
-                                            <div><img className="icon-fbgg" src="/assets/img/fb1.png" alt="" /></div>
+                                            <div>
+                                                <img className="icon-fbgg" src="/assets/img/fb1.png" alt="Facebook" />
+                                            </div>
                                             <span className="text-icon-fbgg">Facebook</span>
                                         </button>
                                     </div>
 
                                     <div className="auth-form__icon">
                                         <button className="btn-iconFBGG">
-                                            <div><img className="icon-fbgg" src="/assets/img/gg1.png" alt="" /></div>
+                                            <div>
+                                                <img className="icon-fbgg" src="/assets/img/gg1.png" alt="Google" />
+                                            </div>
                                             <span className="text-icon-fbgg">Google</span>
                                         </button>
                                     </div>
@@ -138,8 +142,10 @@ const Login = () => {
 
                             <div className="auth-form__agree-policy">
                                 <div className="no_account">
-                                    Bạn mới biết đến Rubik Ocean?
-                                    <a href="/register" className="btn-register" style={{ color: 'red', textDecoration: 'none' }}>Đăng ký</a>
+                                    Bạn mới biết đến Rubik Ocean?{' '}
+                                    <a href="/register" className="btn-register" style={{ color: 'red', textDecoration: 'none' }}>
+                                        Đăng ký
+                                    </a>
                                 </div>
                             </div>
                         </div>

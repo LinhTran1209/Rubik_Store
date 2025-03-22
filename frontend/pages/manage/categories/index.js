@@ -5,6 +5,8 @@ import GenericTable from '../../../components/Admin_page/GenericTable';
 import GenericForm from '../../../components/Admin_page/GenericForm';
 import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDialog';
 
+import loginService from '../../../services/loginService';
+
 
 function Categorie() {
     const [categories, setcategories] = useState([]);
@@ -17,21 +19,37 @@ function Categorie() {
     const [submitted, setSubmitted] = useState(false);
     const toast = useRef(null);
 
+    // Kiểm tra quyền admin
+    const [userRole, setUserRole] = useState(null);
+
 
     const show = async () => {
         try {
             const data = await categorieService.getAllcategories();
             setcategories(data);
         } catch (error) {
-            // console.error('Lỗi khi lấy dữ liệu:', error);
-            // console.log('', error.message)
-            toast.current.show({ severity: 'error', summary: 'Lỗi', detail: error.message, life: 3000 });
+            toast.current.show({ severity: 'info', summary: 'Thông báo', detail: error.message, life: 3000 });
         }
     };
 
     useEffect(() => {
-        show();
-    }, []);
+        const fetchUserRole = async () => {
+            try {
+                const user = await loginService.getCurrentUser();
+                setUserRole(user.role);
+            } catch (error) {
+                toast.current.show({ severity: 'info', summary: 'Thông báo', detail: 'Bạn cần đăng nhập để vào trang này!', life: 3000 });
+                setUserRole(null);
+            } 
+        };
+        fetchUserRole();
+    }, []); 
+    
+    useEffect(() => {
+        if (userRole === 'admin') {
+            show(); 
+        }
+    }, [userRole]);
 
     const openNew = () => {
         setcategorie({ id_categorie: null, name: '', desc: '', status: 'hiện' });
@@ -159,6 +177,7 @@ function Categorie() {
         <div>
             <Toast ref={toast} />
             <GenericTable
+                visible={true ? userRole === 'admin' : false}
                 data={categories}
                 selectedItems={selectedcategories}
                 setSelectedItems={setSelectedcategories}
