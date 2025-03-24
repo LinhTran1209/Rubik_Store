@@ -1,9 +1,9 @@
-import React, { useRef } from 'react';
+import styles from '../../styles/generic.module.css';
 import { DataTable } from 'primereact/datatable';
+import { InputText } from 'primereact/inputtext';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
-import { InputText } from 'primereact/inputtext';
-import styles from '../../styles/generic.module.css';
+import React, { useRef } from 'react';
 
 const GenericTable = ({
     data,
@@ -95,10 +95,10 @@ const GenericTable = ({
                         sortable 
                         style={{ 
                             minWidth: index === 0 ? '11rem' : '12rem', 
-                            maxWidth: '12rem', // Giới hạn chiều rộng tối đa
-                            overflow: 'hidden', // Ẩn phần văn bản vượt quá
-                            textOverflow: 'ellipsis', // Hiển thị dấu "..."
-                            whiteSpace: 'nowrap' // Không cho phép xuống dòng
+                            maxWidth: '12rem', 
+                            overflow: 'hidden', 
+                            textOverflow: 'ellipsis', 
+                            whiteSpace: 'nowrap'
                         }} 
                     />
                 ))}

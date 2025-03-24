@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Toast } from 'primereact/toast';
-import categorieService from '../../../services/categorieService';
+import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDialog';
 import GenericTable from '../../../components/Admin_page/GenericTable';
 import GenericForm from '../../../components/Admin_page/GenericForm';
-import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDialog';
-
-import loginService from '../../../services/loginService';
-
+import categorieService from '../../../services/categorieService';
+import React, { useState, useEffect, useRef } from 'react';
+import authService from '../../../services/authService';
+import { Toast } from 'primereact/toast';
 
 function Categorie() {
     const [categories, setcategories] = useState([]);
@@ -35,7 +33,7 @@ function Categorie() {
     useEffect(() => {
         const fetchUserRole = async () => {
             try {
-                const user = await loginService.getCurrentUser();
+                const user = await authService.getCurrentUser();
                 setUserRole(user.role);
             } catch (error) {
                 toast.current.show({ severity: 'info', summary: 'Thông báo', detail: 'Bạn cần đăng nhập để vào trang này!', life: 3000 });
@@ -89,7 +87,6 @@ function Categorie() {
             categorieData.updated_at = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
             categorieData.created_at = new Date(new Date(categorieData.created_at).setDate(new Date(categorieData.created_at).getDate() + 1)).toISOString().split('T')[0];
 
-            console.log(categorieData)
             categorieService.updatecategorie(categorie.id_categorie, categorieData)
                 .then(() => {
                     show();

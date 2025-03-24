@@ -31,7 +31,7 @@ exports.login = async (req, res) => {
     console.log('Đây là token login: ', token);
 
     // Lưu token vào cookie
-    res.cookie('jwt', token, {
+    res.cookie('jwt_login', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'Lax',
@@ -40,7 +40,7 @@ exports.login = async (req, res) => {
     });
 
     // Lưu token vào biến global do lưu vào cookie được, nhưng lấy ra méo được
-    setToken(token);
+    // setToken(token);
 
     // Trả về response thành công
     return res.json({

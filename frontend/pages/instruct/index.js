@@ -1,7 +1,7 @@
 import React from "react";
 
 
-const Instruc = () => {
+const Instruct = () => {
     return (
         <div className="all__section">
             <div className="all__section-header">
@@ -157,10 +157,10 @@ const Instruc = () => {
     );
 };
 
-Instruc.getLayoutWeb = function getLayoutWeb(page) {
+Instruct.getLayoutWeb = function getLayoutWeb(page) {
     return (
         { page }
     );
 };
 
-export default Instruc;
+export default Instruct;

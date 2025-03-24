@@ -1,16 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Toast } from 'primereact/toast';
-
-import sale_invoiceService from '../../../services/sale_invoiceService';
 import saleInvoiceDetailsService from '../../../services/sale_invoice_detailsService';
-import productService from '../../../services/productService';
-import userService from '../../../services/userService';
-
+import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDialog';
+import sale_invoiceService from '../../../services/sale_invoiceService';
 import GenericTable from '../../../components/Admin_page/GenericTable';
 import GenericForm from '../../../components/Admin_page/GenericForm';
-import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDialog';
-
-import loginService from '../../../services/loginService';
+import productService from '../../../services/productService';
+import React, { useState, useEffect, useRef } from 'react';
+import userService from '../../../services/userService';
+import authService from '../../../services/authService';
+import { Toast } from 'primereact/toast';
 
 
 const SaleInvoice = () => {
@@ -86,7 +83,7 @@ const SaleInvoice = () => {
     useEffect(() => {
         const fetchUserRole = async () => {
             try {
-                const user = await loginService.getCurrentUser();
+                const user = await authService.getCurrentUser();
                 setUserRole(user.role);
             } catch (error) {
                 toast.current.show({ severity: 'info', summary: 'Thông báo', detail: 'Bạn cần đăng nhập để vào trang này!', life: 3000 });
@@ -310,8 +307,6 @@ const SaleInvoice = () => {
     };
 
     const confirmDeletesaleDetail = (detail) => {
-        // kiểm tra xem có được xóa hay không
-        console.log(sale_invoice)
         setDetail(detail);
         setDeleteSaleDetailDialog(true);
     };
@@ -333,7 +328,7 @@ const SaleInvoice = () => {
         saleInvoiceDetailsService.deleteDetail(detail.id_sale_invoice, detail.id_product)
             .then(() => {
                 fetchDetails(detail.id_sale_invoice);
-                setDeleteSaleDetailDialog(false); // Thêm dòng này
+                setDeleteSaleDetailDialog(false);
                 toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Xóa chi tiết thành công', life: 3000 });
             })
             .catch(error => {

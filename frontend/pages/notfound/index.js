@@ -10,7 +10,7 @@ const NotFoundPage = () => {
         >
             <div className="flex flex-column align-items-center justify-content-center text-center">
                 <img
-                    src="/pages/faviconRubik.ico"
+                    src="https://res.cloudinary.com/dzweargsr/image/upload/v1742653489/favicon_mctiiz.ico"
                     alt="Rubik logo"
                     className="mb-5 w-8rem flex-shrink-0"
                     style={{

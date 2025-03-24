@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
+import CustomToast from '../../components/CustomToast';
+import userService from '../../services/userService';
 import { Toast } from 'primereact/toast';
 import { useRouter } from 'next/router';
-import userService from '../../services/userService';
+import Link from 'next/link';
 
 const Register = () => {
     const toast = useRef(null);
@@ -38,68 +40,68 @@ const Register = () => {
 
         // Kiểm tra họ và tên
         if (!name) {
-            toast.current.show({severity: 'warn', summary: 'Cảnh báo', detail: 'Họ và tên không được để trống', life: 5000,});
+            toast.current.show({severity: 'warn', summary: 'Cảnh báo', detail: 'Họ và tên không được để trống', life: 3000,});
             return;
         }
         if (name.length < 2) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Họ và tên phải có ít nhất 2 ký tự',life: 5000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Họ và tên phải có ít nhất 2 ký tự',life: 3000,});
             return;
         }
 
         // Kiểm tra số điện thoại
         const phoneRegex = /^0\d{9}$/;
         if (!phone) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Số điện thoại không được để trống',life: 5000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Số điện thoại không được để trống',life: 3000,});
             return;
         }
-        if (!phoneRegex.test(phone)) {toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Số điện thoại phải là 10 số',life: 5000,
+        if (!phoneRegex.test(phone)) {toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Số điện thoại phải là 10 số',life: 3000,
             });
             return;
         }
         if (users.some(user => user.phone === phone)) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Số điện thoại đã có trong danh sách',life: 5000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Số điện thoại đã có trong danh sách',life: 3000,});
             return;
         }
 
         // Kiểm tra email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Email không được để trống',life: 5000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Email không được để trống',life: 3000,});
             return;
         }
         if (!emailRegex.test(email)) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Email không hợp lệ',life: 5000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Email không hợp lệ',life: 3000,});
             return;
         }
         if (users.some(user => user.email === email)) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Email đã có trong danh sách',life: 5000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Email đã có trong danh sách',life: 3000,});
             return;
         }
 
         // Kiểm tra mật khẩu
         if (!password) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu không được để trống',life: 5000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu không được để trống',life: 3000,});
             return;
         }
         if (password.length < 6) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu phải có ít nhất 6 ký tự',life: 5000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu phải có ít nhất 6 ký tự',life: 3000,});
             return;
         }
 
         // Kiểm tra nhập lại mật khẩu
         if (!confirmPassword) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Vui lòng nhập lại mật khẩu',life: 5000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Vui lòng nhập lại mật khẩu',life: 3000,});
             return;
         }
         if (confirmPassword !== password) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu không khớp',life: 5000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu không khớp',life: 3000,});
             return;
         }
 
         // Kiểm tra mã xác nhận
         const correctCode = '9W5G';
         if (!verificationCode) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mã xác nhận không được để trống',life: 5000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mã xác nhận không được để trống',life: 3000,});
             return;
         }
         if (verificationCode !== correctCode) {
@@ -111,11 +113,11 @@ const Register = () => {
         try {
             userService.adduser({ role: "customer", name: name, phone: phone, email: email , password: password })   
                 .then(() => {
-                    toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Thêm thành công', life: 3000 });
+                    toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Đăng ký thành công', life: 3000 });
                     window.location.href = '/home';
                 })
                 .catch(error => {
-                    toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Thêm thất bại', life: 3000 });
+                    toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Đăng ký thất bại', life: 3000 });
                 });
         } catch (err) {
             const errorMessage = err.message || 'Đăng ký thất bại';toast.current.show({severity: 'error',summary: 'Lỗi',detail: errorMessage,life: 5000,});
@@ -124,7 +126,7 @@ const Register = () => {
 
     return (
         <div className="modal">
-            <Toast ref={toast} />
+            <CustomToast ref={toast} />
             <div className="modal__body">
                 <div className="auth-form auth-form__register">
                     <div className="auth-form__container">
@@ -243,9 +245,9 @@ const Register = () => {
 
                                 <div className="have_account">
                                     Bạn đã có tài khoản?{' '}
-                                    <a href="/login" className="btn-login" style={{ color: 'red', textDecoration: 'none' }}>
+                                    <Link href="/login" className="btn-login" style={{ color: 'red', textDecoration: 'none' }}>
                                         Đăng nhập
-                                    </a>
+                                    </Link>
                                 </div>
                             </div>
                         </div>

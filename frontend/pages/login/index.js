@@ -1,6 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import CustomToast from '../../components/CustomToast';
+import loginService from '../../services/authService';
 import { Toast } from 'primereact/toast';
-import loginService from '../../services/loginService';
+import Link from 'next/link';
+
 
 const Login = () => {
     const [phone, setPhone] = useState('');
@@ -9,12 +12,7 @@ const Login = () => {
 
     const handleLogin = async () => {
         if (!phone || !password) {
-            toast.current.show({
-                severity: 'warn',
-                summary: 'Cảnh báo',
-                detail: 'Vui lòng điền đầy đủ thông tin',
-                life: 3000,
-            });
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Vui lòng điền đầy đủ thông tin', life: 3000 });
             return;
         }
 
@@ -27,53 +25,26 @@ const Login = () => {
             }
 
             if (user.role === 'admin') {
-                toast.current.show({
-                    severity: 'success',
-                    summary: 'Thành công',
-                    detail: 'Đăng nhập thành công',
-                    life: 3000,
-                });
-                // localStorage.setItem('user_customer', JSON.stringify(user));
-                window.location.href = '/manage/categories';
+                toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Đăng nhập thành công', life: 3000 });
+                window.location.href = '/manage/news';
             } else if (user.role === 'customer') {
-                toast.current.show({
-                    severity: 'success',
-                    summary: 'Thành công',
-                    detail: 'Đăng nhập thành công',
-                    life: 3000,
-                });
-                localStorage.setItem('user', JSON.stringify(user));
+                toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Đăng nhập thành công', life: 3000});
+                // localStorage.setItem('user_customer', JSON.stringify(user));
                 window.location.href = `/home?phone=${user.phone}`;
             } else {
-                toast.current.show({
-                    severity: 'warn',
-                    summary: 'Cảnh báo',
-                    detail: 'Bạn không có quyền truy cập',
-                    life: 3000,
-                });
+                toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Bạn không có quyền truy cập', life: 3000 });
                 window.location.href = '/';
             }
         } catch (err) {
             const errorMessage = err.message || 'Đăng nhập thất bại';
-            toast.current.show({
-                severity: 'info',
-                summary: 'Thông báo',
-                detail: errorMessage,
-                life: 3000,
-            });
+            toast.current.show({ severity: 'info', summary: 'Thông báo', detail: errorMessage, life: 3000 });
         }
     };
 
     return (
         <div className="modal"> 
-            <Toast
+<CustomToast
                 ref={toast}
-                style={{
-                    // width: '900px', // Tăng chiều rộng của Toast
-                    // height: '200px', // Tăng chiều cao của Toast
-                    // padding: '1.5rem', // Tăng padding để nội dung thoáng hơn
-                    // fontSize: '1.6rem', // Tăng cỡ chữ tổng thể
-                }}
             />
             <div className="modal__body">
                 <div className="auth-form auth-form__login">
@@ -143,9 +114,9 @@ const Login = () => {
                             <div className="auth-form__agree-policy">
                                 <div className="no_account">
                                     Bạn mới biết đến Rubik Ocean?{' '}
-                                    <a href="/register" className="btn-register" style={{ color: 'red', textDecoration: 'none' }}>
+                                    <Link href="/register" className="btn-register" style={{ color: 'red', textDecoration: 'none' }}>
                                         Đăng ký
-                                    </a>
+                                    </Link>
                                 </div>
                             </div>
                         </div>

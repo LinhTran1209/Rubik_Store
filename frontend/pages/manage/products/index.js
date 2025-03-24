@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Toast } from 'primereact/toast';
-import productService from '../../../services/productService';
-import categorieService from '../../../services/categorieService'
+import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDialog';
 import GenericTable from '../../../components/Admin_page/GenericTable';
 import GenericForm from '../../../components/Admin_page/GenericForm';
-import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDialog';
+import categorieService from '../../../services/categorieService'
+import productService from '../../../services/productService';
+import React, { useState, useEffect, useRef } from 'react';
+import authService from '../../../services/authService';
+import { Toast } from 'primereact/toast';
 
-import loginService from '../../../services/loginService';
 
 
 const Product = () => {
@@ -48,7 +48,7 @@ const Product = () => {
     useEffect(() => {
         const fetchUserRole = async () => {
             try {
-                const user = await loginService.getCurrentUser();
+                const user = await authService.getCurrentUser();
                 setUserRole(user.role);
             } catch (error) {
                 toast.current.show({ severity: 'info', summary: 'Thông báo', detail: 'Bạn cần đăng nhập để vào trang này!', life: 3000 });

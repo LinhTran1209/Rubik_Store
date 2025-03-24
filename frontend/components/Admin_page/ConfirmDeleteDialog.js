@@ -1,9 +1,9 @@
-import React from 'react';
-import { Dialog } from 'primereact/dialog';
-import { Button } from 'primereact/button';
 import styles from '../../styles/generic.module.css';
+import { Button } from 'primereact/button';
+import { Dialog } from 'primereact/dialog';
+import React from 'react';
 
-const ConfirmDeleteDialog = ({ visible, onHide, onConfirm, item, multiple = false, idField = 'id_employee', title = 'Xác nhận xóa' }) => {
+const ConfirmDeleteDialog = ({ visible, onHide, onConfirm, item, multiple = false, idField = 'id_user', title = 'Xác nhận xóa' }) => {
     const footer = (
         <React.Fragment>
             <Button label='Không' icon='pi pi-times' outlined onClick={onHide} />

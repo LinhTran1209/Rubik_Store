@@ -8,7 +8,7 @@ const {deleteToken} = require('../jwt');
 
 router.post('/login', authController.login);
 router.post('/logout', (req, res) => {
-    res.clearCookie('jwt');
+    res.clearCookie('jwt_login');
     deleteToken();
     res.json({ message: 'Đăng xuất thành công' });
 });

@@ -1,5 +1,7 @@
 import React, { useContext, useRef, useState, useEffect } from "react";
 import productService from '../../services/productService';
+import {formatPrice} from '../../utils/formatPrice'
+
 
 const Home = () => {
 
@@ -26,17 +28,17 @@ const Home = () => {
 
 
     const backImg = () => {
-        // Logic để quay lại hình ảnh
+       
     };
 
     const nextImg = () => {
-        // Logic để chuyển đến hình ảnh tiếp theo
+        
     };
 
 
     
     return (
-        <div  className="home">
+        <>
             <div className="middle__header">
                 <div className="middle__header-left">
                     <img src="/assets/img/adv1.jpg" alt="" className="img-adv-big" id="id-img-adv" />
@@ -99,8 +101,8 @@ const Home = () => {
                                         <img src={product.image_url} alt={product.name} className="img-item-product" />
                                         <h3>{product.name}</h3>
                                         <div className="price-item-product">
-                                            <strong>{product.price}₫</strong>
-                                            <span>{product.price}₫</span>
+                                            <strong>{formatPrice(product.price)}</strong>
+                                            <span>{formatPrice(product.price + 50000)}</span>
                                         </div>
                                     </a>
                                 </li>
@@ -128,7 +130,7 @@ const Home = () => {
             </div>
 
 
-        </div>
+        </>
 
     );
 };

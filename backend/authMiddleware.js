@@ -1,9 +1,9 @@
 const jwt = require('jsonwebtoken');
 const Users = require('./models/users.model');
-const { getToken } =require('./jwt')
+const { getToken } =require('./jwt') 
 
 function authenticateToken(req, res, next) {
-  const token = req.cookies.jwt || getToken();
+  const token = req.cookies.jwt_login;
   console.log('Token lấy ra ở Middleware ', token);
 
   if (!token) return res.status(401).json({ message: 'Bạn cần đăng nhập để vào trang này!' });

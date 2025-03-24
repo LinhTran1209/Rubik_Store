@@ -1,13 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Toast } from 'primereact/toast';
-
-import userService from '../../../services/userService';
-
+import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDialog';
 import GenericTable from '../../../components/Admin_page/GenericTable';
 import GenericForm from '../../../components/Admin_page/GenericForm';
-import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDialog';
-
-import loginService from '../../../services/loginService';
+import React, { useState, useEffect, useRef } from 'react';
+import userService from '../../../services/userService';
+import authService from '../../../services/authService';
+import { Toast } from 'primereact/toast';
 
 
 function User() {
@@ -24,8 +21,6 @@ function User() {
     // Kiểm tra quyền admin
     const [userRole, setUserRole] = useState(null); 
 
-
-
     const show = async () => {
         try {
             const data = await userService.getAllusers();
@@ -38,7 +33,7 @@ function User() {
     useEffect(() => {
         const fetchUserRole = async () => {
             try {
-                const user = await loginService.getCurrentUser();
+                const user = await authService.getCurrentUser();
                 setUserRole(user.role);
             } catch (error) {
                 toast.current.show({ severity: 'info', summary: 'Thông báo', detail: 'Bạn cần đăng nhập để vào trang này!', life: 3000 });
@@ -46,11 +41,11 @@ function User() {
             } 
         };
         fetchUserRole();
-    }, []); // Chỉ chạy một lần khi component được mount
+    }, []); 
     
     useEffect(() => {
         if (userRole === 'admin') {
-            show(); // Gọi show() khi userRole là 'admin'
+            show(); 
         }
     }, [userRole]);
 

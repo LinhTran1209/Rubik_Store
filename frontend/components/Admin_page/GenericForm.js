@@ -1,20 +1,11 @@
-import React from 'react';
-import { Dialog } from 'primereact/dialog';
-import { Button } from 'primereact/button';
+import styles from '../../styles/generic.module.css';
 import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
-import styles from '../../styles/generic.module.css';
+import { Dialog } from 'primereact/dialog';
+import { Button } from 'primereact/button';
+import React from 'react';
 
-const GenericForm = ({
-    visible,
-    item,
-    fields,
-    onChange,
-    onSave,
-    onHide,
-    submitted,
-    title = 'Mục tin',
-}) => {
+const GenericForm = ({ visible, item, fields, onChange, onSave, onHide, submitted, title = 'Mục tin'}) => {
     const dialogFooter = (
         <React.Fragment>
             <Button label='Hủy' icon='pi pi-times' outlined onClick={onHide} />

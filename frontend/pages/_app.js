@@ -10,8 +10,12 @@ import '../styles/demo/Demos.scss';
 
 
 
-import '../public/assets/css/base.css';
-import '../public/assets/css/index.css';
+import '../styles/css/base.css';
+import '../styles/css/index.css';
+import '../styles/css/introduce.css';
+import '../styles/css/news.css';
+import '../styles/css/manualRubik.css';
+import '../styles/css/modal_login_register.css';
 
 
 
