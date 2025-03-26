@@ -1,13 +1,13 @@
 import HeaderHome from './Header/HeaderHome';
 import FooterHome from './Footer/FooterHome';
+import React, { useState } from "react";
 import Support from './Support';
 import BackTop from './BackTop';
 import Head from 'next/head';
-import React from 'react';
 
 
 
-const LayoutWeb = ({ props, children }) => {
+const LayoutWeb = ({ children }) => {
 
     return (
         <React.Fragment>

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import newService from '../../services/newService';
+import Link from 'next/link';
 
 const News = () => {
     const [newsList, setNewsList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Lấy danh sách tin tức từ API
     const fetchNews = async () => {
         try {
             setLoading(true);
@@ -21,7 +21,6 @@ const News = () => {
         }
     };
 
-    // Gọi API khi component mount
     useEffect(() => {
         fetchNews();
     }, []);
@@ -30,10 +29,10 @@ const News = () => {
         <div className="all__section">
             <div className="all__section-header">
                 <span className="all__section-header-text">
-                    <a href="/home">Trang chủ</a>
+                    <Link href="/home">Trang chủ</Link>
                 </span>
                 <span>
-                    <a href="/news">Tin tức</a>
+                    <Link href="/news">Tin tức</Link>
                 </span>
             </div>
 
@@ -49,7 +48,7 @@ const News = () => {
                         {newsList.map((news) => (
                             <li key={news.id}>
                                 <div className="line-a"></div>
-                                <a href={news.href || '#'}>
+                                <Link href={news.href || '#'}>
                                     <div className="tempvideo">
                                         <img
                                             src={news.image_url || '/assets/img-news/default.jpg'}
@@ -57,13 +56,14 @@ const News = () => {
                                             className="img-video"
                                         />
                                     </div>
-                                    <div className="text-tempvideo">
+                                    <div className="text-tempvideo" style={{ position: 'relative' }}>
                                         <h3>{news.title}</h3>
                                         <span style={{ marginTop: '20px' }}>
                                             {news.desc || 'Chưa có mô tả'}
                                         </span>
+                                        <span style={{ position: 'absolute', color: '#b10000', right: '0', bottom: '0', fontSize:'12px'}}>Ngày đăng: {news.created_at}</span>
                                     </div>
-                                </a>
+                                </Link>
                             </li>
                         ))}
                     </ul>

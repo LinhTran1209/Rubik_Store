@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/sale_invoice_details';
+const API_URL = 'http://localhost:5000/product_images';
 
 
 
@@ -17,45 +17,44 @@ const formatDateFields = (data) => {
     return data;
 };
 
-const saleInvoiceDetailsService = {
-    getAllByInvoiceId: async (invoiceId) => {
+const product_imagesService = {
+    getByIdProduct: async (id_product) => {
         try {
-            console.log(invoiceId)
-            const response = await axios.get(`${API_URL}/${invoiceId}`);
+            const response = await axios.get(`${API_URL}/${id_product}`);
             const data = response.data || [];
             return formatDateFields(data);
         } catch (error) {
-            console.error(`Error fetching details for invoice ${invoiceId}:`, error.response?.data || error.message);
+            console.error(`Error fetching details for invoice ${id_product}:`, error.response?.data || error.message);
             throw new Error('Error fetching details');
         }
     },
-    addDetail: async (detailData) => {
+    add: async (Data) => {
         try {
-            const response = await axios.post(API_URL, detailData);
+            const response = await axios.post(API_URL, Data);
             return response.data;
         } catch (error) {
             console.error('Error adding detail:', error.response?.data || error.message);
             throw new Error('Error adding detail');
         }
     },
-    updateDetail: async (invoiceId, productId, detailData) => {
+    update: async (id_image, Data) => {
         try {
-            const response = await axios.put(`${API_URL}/${invoiceId}/${productId}`, detailData);
+            const response = await axios.put(`${API_URL}/${id_image}`, Data);
             return response.data;
         } catch (error) {
-            console.error(`Error updating detail for ${invoiceId}/${productId}:`, error.response?.data || error.message);
+            console.error(`Error updating detail for ${id_image}:`, error.response?.data || error.message);
             throw new Error('Error updating detail');
         }
     },
-    deleteDetail: async (invoiceId, productId) => {
+    delete: async (id_image) => {
         try {
-            const response = await axios.delete(`${API_URL}/${invoiceId}/${productId}`);
+            const response = await axios.delete(`${API_URL}/${id_image}`);
             return response.data;
         } catch (error) {
-            console.error(`Error deleting detail for ${invoiceId}/${productId}:`, error.response?.data || error.message);
+            console.error(`Error deleting detail for ${id_image}:`, error.response?.data || error.message);
             throw new Error('Error deleting detail');
         }
     },
 };
 
-export default saleInvoiceDetailsService;
+export default product_imagesService;

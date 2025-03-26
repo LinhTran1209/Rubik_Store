@@ -1,12 +1,13 @@
 import React from "react";
+import Link from 'next/link';
 
 
 const Instruct = () => {
     return (
         <div className="all__section">
             <div className="all__section-header">
-                <span className="all__section-header-text"><a href="/home">Trang chủ</a></span>
-                <span><a href="/instruct">Hướng dẫn chơi</a></span>
+                <span className="all__section-header-text"><Link href="/home">Trang chủ</Link></span>
+                <span><Link href="/instruct">Hướng dẫn chơi</Link></span>
             </div>
 
             <div className="all__section-main">

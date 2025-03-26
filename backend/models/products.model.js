@@ -1,5 +1,6 @@
 
 const db = require("../common/db");
+const createSlug = require("../utils/createSlug");
 
 const Products = (products) => {
   this.id_product = products.id_product;
@@ -10,6 +11,7 @@ const Products = (products) => {
   this.price = products.price;
   this.desc = products.desc;
   this.status = products.status;
+  this.slug = products.slug;
   this.created_at = products.created_at;
   this.updated_at = products.updated_at;
 
@@ -17,7 +19,7 @@ const Products = (products) => {
 
 // Tìm kiếm mọi col sản phẩm theo querydata và trả về object
 Products.getData = (col, querydata, callback) => {
-  const sqlString = `SELECT * FROM product WHERE ?? = ?`;
+  const sqlString = `SELECT * FROM products WHERE ?? = ?`;
   db.query(sqlString, [col, querydata], (err, result) => {
     if (err) return callback(err);
     callback(null, result);
@@ -28,7 +30,7 @@ Products.getById = (id, callback) => {
   const sqlString = "SELECT * FROM products WHERE id_product = ?";
   db.query(sqlString, [id], (err, result) => {
     if (err) return callback(err);
-    callback(null, result);
+    callback(null, result[0]);
   });
 };
 
@@ -42,6 +44,7 @@ Products.getAll = (callback) => {
 
 Products.insert = (products, callBack) => {
   const sqlString = "INSERT INTO products SET ?";
+  products.slug = createSlug(products.name);
   db.query(sqlString, products, (err, res) => {
     if (err) return callBack(err);
     callBack(null, { id: res.insertId, ...products });
@@ -50,6 +53,7 @@ Products.insert = (products, callBack) => {
 
 Products.update = (products, id, callBack) => {
   const sqlString = "UPDATE products SET ? WHERE id_product = ?";
+  products.slug = createSlug(products.name);
   db.query(sqlString, [products, id], (err, res) => {
     if (err) return callBack(err);
     callBack(null, `Cập nhật Products có id = + id + thành công`);

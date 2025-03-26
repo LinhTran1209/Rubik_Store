@@ -79,13 +79,15 @@ const GenericTable = ({
                 onSelectionChange={(e) => setSelectedItems(e.value)}
                 dataKey={dataKey}
                 paginator
-                rows={10}
+                rows={2}
                 rowsPerPageOptions={[2, 5, 10, 25]}
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 currentPageReportTemplate="Hiển thị {first} đến {last} của {totalRecords} Bản ghi"
                 globalFilter={globalFilter}
                 header={header}
             >
+                {console.log('data', data)}
+                {console.log('columns', columns)}
                 <Column selectionMode="multiple" exportable={false}></Column>
                 {columns.map((col, index) => (
                     <Column 

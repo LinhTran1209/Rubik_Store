@@ -1,7 +1,7 @@
-import React from 'react';
-import Link from 'next/link';
+import React, { useContext, useRef, useState, useEffect } from "react";
+import Link from "next/link";
 
-const HeaderNav = () => {
+const HeaderNav = ({ categories = []}) => {
     return (
         <div className="header__bottom">
             <ul id="txt-banner">
@@ -12,67 +12,167 @@ const HeaderNav = () => {
                             <i className="line-i"></i>
                             <i className="line-i"></i>
                         </div>
-                        <Link href="#" id="category">DANH MỤC SẢN PHẨM</Link>
+                        <Link href="#" id="category">
+                            DANH MỤC SẢN PHẨM
+                        </Link>
 
                         <ul id="txt-banner-category">
                             <li id="rubik-basic">
-                                <img className="icon-rubik" src="/assets/img/cube-3x3.png" alt="Rubik cơ bản" />
-                                <Link href="#" id="a-rubik-basic">Rubik cơ bản</Link>
+                                <img
+                                    className="icon-rubik"
+                                    src="/assets/img/cube-3x3.png"
+                                    alt="Rubik cơ bản"
+                                />
+                                <Link href="#" id="a-rubik-basic">
+                                    Rubik cơ bản
+                                </Link>
 
                                 <ul id="txt-banner-rubik-basic">
-                                    <li><Link href="/rubik2x2x2">Rubik 2x2x2</Link></li>
-                                    <li><Link href="/rubik3x3x3">Rubik 3x3x3</Link></li>
-                                    <li><Link href="/rubik4x4x4">Rubik 4x4x4</Link></li>
-                                    <li><Link href="/rubik5x5x5">Rubik 5x5x5</Link></li>
-                                    <li><Link href="/rubik6x6x6">Rubik 6x6x6</Link></li>
-                                    <li><Link href="/rubik7x7x7">Rubik 7x7x7</Link></li>
-                                    <li><Link href="#">Rubik 8x8x8</Link></li>
-                                    <li><Link href="#">Rubik 9x9x9</Link></li>
+                                    {categories ? (
+                                        categories.map((categorie) =>
+                                            categorie.desc ===
+                                            "Rubik cơ bản" ? (
+                                                <li key={categorie.slug}>
+                                                    <Link
+                                                        href={`/${categorie.slug}`}
+                                                    >
+                                                        {categorie.name}
+                                                    </Link>
+                                                </li>
+                                            ) : null
+                                        )
+                                    ) : (
+                                        <li>
+                                            <span>Không có danh mục</span>
+                                        </li>
+                                    )}
                                 </ul>
                             </li>
+
                             <li id="rubik-variant">
-                                <img className="icon-rubik" src="/assets/img/cube-megaminx.png" alt="Rubik biến thể" />
-                                <Link href="#" id="a-rubik-variant">Rubik biến thể</Link>
+                                <img
+                                    className="icon-rubik"
+                                    src="/assets/img/cube-megaminx.png"
+                                    alt="Rubik biến thể"
+                                />
+                                <Link href="#" id="a-rubik-variant">
+                                    Rubik biến thể
+                                </Link>
 
                                 <ul id="txt-banner-rubik-variant">
-                                    <li><Link href="#">Rubik Biến Thể 4 Mặt</Link></li>
-                                    <li><Link href="#">Rubik Biến Thể 6 Mặt</Link></li>
-                                    <li><Link href="#">Rubik Biến Thể 12 Mặt</Link></li>
-                                    <li><Link href="#">Rubik Biến Thể Khác</Link></li>
-                                    <li><Link href="#">Rubik Biến Thể Cao Cấp</Link></li>
+                                    {categories ? (
+                                        categories.map((categorie) =>
+                                            categorie.desc ===
+                                            "Rubik biến thể" ? (
+                                                <li key={categorie.slug}>
+                                                    <Link
+                                                        href={`/${categorie.slug}`}
+                                                    >
+                                                        {categorie.name}
+                                                    </Link>
+                                                </li>
+                                            ) : null
+                                        )
+                                    ) : (
+                                        <li>
+                                            <span>Không có danh mục</span>
+                                        </li>
+                                    )}
                                 </ul>
                             </li>
+
+
+
                             <li id="rubik-combo">
-                                <img className="icon-rubik" src="/assets/img/cube-3x3.png" alt="Combo Rubik" />
-                                <Link href="#" id="a-rubik-combo">Combo Rubik</Link>
+                                <img
+                                    className="icon-rubik"
+                                    src="/assets/img/cube-3x3.png"
+                                    alt="Combo Rubik"
+                                />
+                                <Link href="#" id="a-rubik-combo">
+                                    Combo Rubik
+                                </Link>
+
+                                <ul id="txt-banner-rubik-combo">
+                                    {categories ? (
+                                        categories.map((categorie) =>
+                                            categorie.desc ===
+                                            "Combo Rubik" ? (
+                                                <li key={categorie.slug}>
+                                                    <Link
+                                                        href={`/${categorie.slug}`}
+                                                    >
+                                                        {categorie.name}
+                                                    </Link>
+                                                </li>
+                                            ) : null
+                                        )
+                                    ) : (
+                                        <li>
+                                            <span>Không có danh mục</span>
+                                        </li>
+                                    )}
+                                </ul>
                             </li>
+
+
+
+
                             <li id="rubik-accessory">
-                                <img className="icon-rubik" src="/assets/img/cube-3x3.png" alt="Phụ kiện Rubik" />
-                                <Link href="#" id="a-rubik-accessory">Phụ kiện Rubik</Link>
+                                <img
+                                    className="icon-rubik"
+                                    src="/assets/img/cube-3x3.png"
+                                    alt="Phụ kiện Rubik"
+                                />
+                                <Link href="#" id="a-rubik-accessory">
+                                    Phụ kiện Rubik
+                                </Link>
 
                                 <ul id="txt-banner-rubik-accessory">
-                                    <li><Link href="#">Stickers - Đề can dán rubik</Link></li>
-                                    <li><Link href="#">Core & Ốc</Link></li>
-                                    <li><Link href="#">Silicone - Dầu bôi trơn</Link></li>
-                                    <li><Link href="#">Đồng hồ bấm giờ Rubik - Thảm kê Rubik</Link></li>
-                                    <li><Link href="#">Keychain - Móc khóa Rubik</Link></li>
-                                    <li><Link href="#">Bag - Túi đựng Rubik</Link></li>
-                                    <li><Link href="#">Stand - Đế Rubik</Link></li>
-                                    <li><Link href="#">Logo Rubik các hãng</Link></li>
+                                    {categories ? (
+                                        categories.map((categorie) =>
+                                            categorie.desc ===
+                                            "Phụ kiện Rubik" ? (
+                                                <li key={categorie.name}>
+                                                    <Link
+                                                        href={`/${categorie.slug}`}
+                                                    >
+                                                        {categorie.name}
+                                                    </Link>
+                                                </li>
+                                            ) : null
+                                        )
+                                    ) : (
+                                        <li>
+                                            <span>Không có danh mục</span>
+                                        </li>
+                                    )}
                                 </ul>
                             </li>
-                            <li id="rubik-spiner">
+                            {/* <li id="rubik-spiner">
                                 <img className="icon-rubik" src="/assets/img/cube-spiner.png" alt="Spiner - Figdet" />
                                 <Link href="#" id="a-rubik-spiner">Spiner - Figdet</Link>
-                            </li>
+                            </li> */}
                         </ul>
                     </div>
                 </li>
-                <li><Link href="/home">TRANG CHỦ</Link></li>
-                <li><Link href="/introduce">GIỚI THIỆU</Link></li>
-                <li><Link href="/news">TIN TỨC</Link></li>
-                <li><Link href="/instruct">HƯỚNG DẪN CHƠI</Link></li>
-                <li><Link href="#all-contact" id="to-contact">LIÊN HỆ</Link></li>
+                <li>
+                    <Link href="/home">TRANG CHỦ</Link>
+                </li>
+                <li>
+                    <Link href="/introduce">GIỚI THIỆU</Link>
+                </li>
+                <li>
+                    <Link href="/news">TIN TỨC</Link>
+                </li>
+                <li>
+                    <Link href="/instruct">HƯỚNG DẪN CHƠI</Link>
+                </li>
+                <li>
+                    <Link href="#all-contact" id="to-contact">
+                        LIÊN HỆ
+                    </Link>
+                </li>
             </ul>
         </div>
     );

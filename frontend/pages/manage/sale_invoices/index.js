@@ -23,8 +23,8 @@ const SaleInvoice = () => {
     const [details, setDetails] = useState({});
     const [detail, setDetail] = useState({ id_sale_invoice: null, id_product: '', quantity: '', price: '', created_at: '', updated_at: '' });
     const [DetailDialog, setDetailDialog] = useState(false);
-    const [selectedSaleDetails, setSelectedSaleDetails] = useState([]);
     const [deleteSaleDetailDialog, setDeleteSaleDetailDialog] = useState(false);
+    const [selectedSaleDetails, setSelectedSaleDetails] = useState([]);
     const [submittedSaleDetail, setSubmittedSaleDetail] = useState(false);
 
 
@@ -208,10 +208,10 @@ const SaleInvoice = () => {
 
     const savesaleDetail = () => {
         setSubmittedSaleInvoice(true);
-        if (!detail.id_product || !detail.quantity || !detail.price) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Vui lòng điền đầy đủ thông tin', life: 3000 });
-            return;
-        }
+            if (!detail.id_product || !detail.quantity || !detail.price) {
+                toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Vui lòng điền đầy đủ thông tin', life: 3000 });
+                return;
+            }
 
         if (!products.some(product => product.id_product === parseInt(detail.id_product))) {
             toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Sản phẩm không tồn tại', life: 3000 });
@@ -284,7 +284,10 @@ const SaleInvoice = () => {
 
         hideDialogDetail();
     };
-// ------------------------------------------------------------- Nhớ sửa lại
+
+
+
+// ------------------------------------------------------------- Nhớ sửa lại----------------------------------------------------
     const editsaleInvoice = (sale_invoice) => {
         // if (notification(sale_invoice, 'sửa')) return;
         console.log(sale_invoice)

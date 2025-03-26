@@ -38,7 +38,7 @@ const AppTopbar = forwardRef((props, ref) => {
 
     return (
         <div className="layout-topbar" style={{backgroundColor:'#438F23'}}>
-            <Link href="/" className="layout-topbar-logo">
+            <Link href="#" className="layout-topbar-logo">
                 <img src="/assets/img/logo.png"  alt="logo" />
             </Link>
 

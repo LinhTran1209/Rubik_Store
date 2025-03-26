@@ -1,5 +1,6 @@
 
 const sale_invoice_detailsRouter = require('./sale_invoice_details');
+const product_imagesRouter = require('./product_images');
 const sale_invoicesRouter = require('./sale_invoices');
 const categoriesRouter = require('./categories');
 const productsRouter = require('./products');
@@ -12,6 +13,7 @@ const authenticateToken = require('../authMiddleware');
 
 function route(app) {
     app.use('/sale_invoice_details', sale_invoice_detailsRouter);
+    app.use('/product_images', product_imagesRouter);
     app.use('/sale_invoices', sale_invoicesRouter);
     app.use('/categories', categoriesRouter);
     app.use('/products', productsRouter);
@@ -20,7 +22,7 @@ function route(app) {
     app.use('/news', newsRouter);
     app.use('/auth', authRoute);
 
-    app.use('/',authenticateToken, usersRouter);
+    app.use('/', usersRouter);
 }
 
 module.exports = route;

@@ -1,48 +1,65 @@
-import React, { useContext, useRef, useState, useEffect } from "react";
-import productService from '../../services/productService';
-import {formatPrice} from '../../utils/formatPrice'
-
+import React, { useState, useEffect } from "react";
+import categorieService from "../../services/categorieService";
+import productService from "../../services/productService";
+import { formatPrice } from "../../utils/formatPrice";
+import Link from "next/link";
 
 const Home = () => {
-
     const [products, setProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     const fetchProducts = async () => {
-        
-        setLoading(true);
         try {
             const data = await productService.getAllproducts();
             setProducts(data);
         } catch (err) {
             setError(err.message);
-        } finally {
-            setLoading(false);
+        }
+    };
+
+    const fetchCategories = async () => {
+        try {
+            const data = await categorieService.getAllcategories();
+            setCategories(data);
+        } catch (err) {
+            console.log(err.message);
         }
     };
 
     useEffect(() => {
-        fetchProducts();
-    }, []); 
+        Promise.all([fetchProducts(), fetchCategories()]).finally(() => setLoading(false));
+    }, []);
 
+    const groupedCategories = Object.values(
+        categories.reduce((acc, categorie) => {
+            const { desc, id_categorie } = categorie;
+            if (!acc[desc]) {
+                acc[desc] = { desc, id_categories: [] };
+            }
+            acc[desc].id_categories.push(id_categorie);
+            return acc;
+        }, {})
+    );
 
-    const backImg = () => {
-       
+    console.log(groupedCategories);
+    console.log(products);
+
+    const filterProductsByCategoryIds = (idCategories) => {
+        return products
+            .filter((product) => idCategories.includes(product.id_categorie))
+            .slice(0, 10);
     };
 
-    const nextImg = () => {
-        
-    };
+    const backImg = () => {};
+    const nextImg = () => {};
 
-
-    
     return (
         <>
             <div className="middle__header">
                 <div className="middle__header-left">
                     <img src="/assets/img/adv1.jpg" alt="" className="img-adv-big" id="id-img-adv" />
-
                     <div className="middle__header-btn">
                         <div onClick={backImg} className="middle-btn-adv" id="btn-back-adv">
                             <i className="fa-solid fa-backward"></i>
@@ -52,9 +69,9 @@ const Home = () => {
                         </div>
                     </div>
                 </div>
-
                 <div className="middle__header-right">
-                    <img src="/assets/img/adv3.jpg" alt="" className="img-adv-small" /><br />
+                    <img src="/assets/img/adv3.jpg" alt="" className="img-adv-small" />
+                    <br />
                     <img src="/assets/img/adv4.jpg" alt="" className="img-adv-small" />
                 </div>
             </div>
@@ -72,74 +89,63 @@ const Home = () => {
                 <img src="/assets/img/adv6.jpg" alt="" className="img-adv-info" />
             </div>
 
-            {/* Sản phẩm của Rubik cơ bản */}
-            <div className="container__middle-products">
-                <div className="container__middle-products-title">
-                    <div className="product-title">RUBIK CƠ BẢN</div>
-                    <div className="extra-product-title">
-                        <a href="rubik2x2x2.html">Rubik 2x2x2</a>
-                        <a href="">Rubik 3x3x3</a>
-                        <a href="">Rubik 4x4x4</a>
-                        <a href="">Rubik 5x5x5</a>
-                        <a href="">Rubik 6x6x6</a>
-                        <a href="">Rubik 7x7x7</a>
-                        <a href="">Xem tất cả</a>
+            {loading ? (
+                <div style={{textAlign: 'center'}}>Loading...</div>
+            ) : error ? (
+                <div className="error" style={{textAlign: 'center'}}>{error}</div>
+            ) : categories.length > 0 ? (
+                groupedCategories.map((groupedCategorie) => (
+                    <div className="container__middle-products" key={groupedCategorie.desc}>
+                        <div className="container__middle-products-title">
+                            <div className="product-title">{groupedCategorie.desc}</div>
+                            <div className="extra-product-title">
+                                {categories
+                                    .filter((categorie) => categorie.desc === groupedCategorie.desc)
+                                    .map((categorie) => (
+                                        <Link key={categorie.id_categorie} href={`/category/${categorie.slug}`}>
+                                            {categorie.name}
+                                        </Link>
+                                    ))}
+                                {/* <Link href={`/category/${groupedCategorie.desc}`}>Xem tất cả</Link> */}
+                            </div>
+                        </div>
+                        <div className="products">
+                            <ul className="homeproducts">
+                                {filterProductsByCategoryIds(groupedCategorie.id_categories).length > 0 ? (
+                                    filterProductsByCategoryIds(groupedCategorie.id_categories).map(
+                                        (product) => (
+                                            <li className="item-product" key={product.id_product}>
+                                                <Link href={`/detail_product/${product.slug}`}>
+                                                    <img
+                                                        src={product.image_url}
+                                                        alt={product.name}
+                                                        className="img-item-product"
+                                                    />
+                                                    <h3>{product.name}</h3>
+                                                    <div className="price-item-product">
+                                                        <strong>{formatPrice(product.price)}</strong>
+                                                        <span>{formatPrice(product.price + 50000)}</span>
+                                                    </div>
+                                                </Link>
+                                            </li>
+                                        )
+                                    )
+                                ) : (
+                                    <li style={{ display: "flex", margin: "auto" }}>Chưa có sản phẩm</li>
+                                )}
+                            </ul>
+                        </div>
                     </div>
-                </div>
-                <div className="products">
-                    <ul className="homeproducts">
-                        {/* Danh sách sản phẩm */}
-                        {loading ? (
-                            <li>Loading...</li>
-                        ) : error ? (
-                            <li className="error">{error}</li>
-                        ) : (
-                            products.slice(0, 10).map((product) => ( // Giới hạn hiển thị 10 sản phẩm
-                                <li className="item-product" key={product.id_product}>
-                                    {console.log(product)}
-                                    <a href="">
-                                        <img src={product.image_url} alt={product.name} className="img-item-product" />
-                                        <h3>{product.name}</h3>
-                                        <div className="price-item-product">
-                                            <strong>{formatPrice(product.price)}</strong>
-                                            <span>{formatPrice(product.price + 50000)}</span>
-                                        </div>
-                                    </a>
-                                </li>
-                            ))
-                        )}
-                    </ul>
-                </div>
-            </div>
-
-
-            {/* <!-- Sản phẩm của Rubik biến thể --> */}
-            <div className="container__middle-products">
-                <div className="container__middle-products-title">
-                    <div className="product-title">RUBIK BIẾN THỂ</div>
-                    <div className="extra-product-title">
-                        <a href="#">Rubik Biến Thể 4 mặt</a>
-                        <a href="#">Rubik Biến Thể 6 mặt</a>
-                        <a href="#">Rubik Biến Thể 12 mặt</a>
-                        <a href="#">Rubik Biến Thể Khác</a>
-                        <a href="#">Xem tất cả</a>
-                    </div>
-                </div>
-                
-                     
-            </div>
-
-
+                ))
+            ) : (
+                <div style={{textAlign: 'center'}}>Chưa có danh mục</div>
+            )}
         </>
-
     );
 };
 
-
 Home.getLayoutWeb = function getLayoutWeb(page) {
-    return (
-        { page }
-    );
+    return page;
 };
 
 export default Home;

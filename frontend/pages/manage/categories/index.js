@@ -64,7 +64,7 @@ function Categorie() {
         setSubmitted(true);
 
         // Kiểm tra các trường bắt buộc
-        if (!categorie.name) {
+        if (!categorie.name || !categorie.desc) {
             toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Vui lòng điền đầy đủ thông tin bắt buộc', life: 3000 });
             return;
         }
@@ -165,7 +165,7 @@ function Categorie() {
     const columns = [
         { field: 'id_categorie', header: 'ID' },
         { field: 'name', header: 'Loại sản phẩm' },
-        { field: 'desc', header: 'Mô tả ' },
+        { field: 'desc', header: 'Thuộc danh mục' },
         { field: 'created_at', header: 'Ngày tạo' },
         { field: 'updated_at', header: 'Ngày cập nhật' },
     ];
@@ -194,7 +194,7 @@ function Categorie() {
                 fields={[
                     { name: 'id_categorie', label: 'ID Loại sản phẩm', disabled: true, hidden: !categorie.id_categorie }, // Ẩn khi thêm, readonly khi sửa
                     { name: 'name', label: 'Loại sản phẩm', required: true },
-                    { name: 'desc', label: 'Mô tả', required: true },
+                    { name: 'desc', label: 'Thuộc danh mục', required: true },
                     { name: 'created_at', label: 'Ngày tạo', required: true, disabled: true, hidden: !categorie.id_categorie },
                     { name: 'updated_at', label: 'Ngày cập nhật', required: true, disabled: true, hidden: !categorie.id_categorie },
                 ]}

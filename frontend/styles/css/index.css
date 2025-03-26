@@ -224,14 +224,16 @@ body {
 
 #rubik-basic,
 #rubik-variant,
-#rubik-accessory {
+#rubik-accessory,
+#rubik-combo {
     position: relative;
 }
 
 
 #a-rubik-basic::after,
 #a-rubik-variant::after,
-#a-rubik-accessory::after {
+#a-rubik-accessory::after,
+#a-rubik-combo::after {
     content: '';
     width: 0;
     height: 0;
@@ -268,7 +270,8 @@ body {
 
 #txt-banner-rubik-basic,
 #txt-banner-rubik-variant,
-#txt-banner-rubik-accessory {
+#txt-banner-rubik-accessory,
+#txt-banner-rubik-combo {
     width: 200px;
     position: absolute;
     left: 245px;
@@ -283,7 +286,8 @@ body {
 
 #rubik-basic:hover #txt-banner-rubik-basic,
 #rubik-variant:hover #txt-banner-rubik-variant, 
-#rubik-accessory:hover #txt-banner-rubik-accessory {
+#rubik-accessory:hover #txt-banner-rubik-accessory,
+#rubik-combo:hover #txt-banner-rubik-combo {
     display: block;
     animation: animate1 ease-in 0.2s;
 
@@ -292,6 +296,7 @@ body {
 /* -------------------------MIDDLE----------------------*/
 
 .middle {
+    width: 100%;
     justify-content: center;
     /* height: 2000px; */
     min-height: 850px;

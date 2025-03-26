@@ -57,31 +57,31 @@ const AppMenu = () => {
                     ? [
                           {
                               label: "Tin tức",
-                              icon: "pi pi-fw pi-globe",
+                              icon: "pi pi-fw pi-megaphone",
                               to: "/manage/news",
                               key: "/manage/news",
                           },
                           {
                               label: "Người dùng",
-                              icon: "pi pi-fw pi-globe",
+                              icon: "pi pi-fw pi-users",
                               to: "/manage/users",
                               key: "/manage/users",
                           },
                           {
                               label: "Loại sản phẩm",
-                              icon: "pi pi-fw pi-globe",
+                              icon: "pi pi-fw pi-tags",
                               to: "/manage/categories",
                               key: "/manage/categories",
                           },
                           {
                               label: "Sản phẩm",
-                              icon: "pi pi-fw pi-globe",
+                              icon: "pi pi-fw pi-box",
                               to: "/manage/products",
                               key: "/manage/products",
                           },
                           {
                               label: "Hóa đơn bán",
-                              icon: "pi pi-fw pi-globe",
+                              icon: "pi pi-fw pi-file",
                               to: "/manage/sale_invoices",
                               key: "/manage/sale_invoices",
                           },

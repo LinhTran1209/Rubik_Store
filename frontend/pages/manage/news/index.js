@@ -6,9 +6,6 @@ import authService from '../../../services/authService';
 import newService from '../../../services/newService';
 import { Toast } from 'primereact/toast';
 
-
-
-
 const New = () => {
     const [new1s, setnews] = useState([]);
     const [new1, setnew] = useState({ id_new: null, title: '', desc: '', image_url: '', href: '', created_at: '', updated_at: '' });

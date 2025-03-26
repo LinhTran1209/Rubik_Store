@@ -1,4 +1,3 @@
--- Tạo cơ sở dữ liệu cho website bán Rubik
 CREATE DATABASE rubik_store_1;
 USE rubik_store_1;
 
@@ -25,6 +24,7 @@ CREATE TABLE Categories (
     name VARCHAR(200) NOT NULL,
     `desc` TEXT,
     status ENUM('hiện', 'ẩn') DEFAULT 'hiện',
+	slug TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -39,6 +39,16 @@ CREATE TABLE Products (
     price INT NOT NULL,
     `desc` TEXT,
     status ENUM('hiện', 'ẩn') DEFAULT 'hiện',
+    slug TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Product_images (
+    id_image INT PRIMARY KEY AUTO_INCREMENT,
+    id_product INT,
+    image_url VARCHAR(500) NOT NULL,
+    is_main BOOLEAN DEFAULT FALSE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP
 );

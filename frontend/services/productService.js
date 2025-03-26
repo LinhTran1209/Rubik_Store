@@ -2,10 +2,6 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:5000/products';
 
-const getAuthHeaders = () => {
-    const token = localStorage.getItem('token') || '';
-    return token ? { Authorization: `Bearer ${token}` } : {};
-};
 
 const formatDateFields = (data) => {
     if (Array.isArray(data)) {
@@ -21,12 +17,21 @@ const formatDateFields = (data) => {
 };
 
 const productService = {
+    // Bên back có làm hàm gọi theo cột và tìm trường dữ liệu
+    getDataproducts: async (col, querydata) => {
+        try {
+            const response = await axios.get(`${API_URL}/getData/${col}/${querydata}`);
+            const data = response.data || [];
+            return formatDateFields(data);
+        } catch (error) {
+            console.error('Error fetching data:', error.response?.data || error.message);
+            throw new Error('Error fetching data');
+        }
+    },
+
     getAllproducts: async () => {
         try {
-            const response = await axios.get(API_URL, {
-                headers: getAuthHeaders(),
-                timeout: 10000,
-            });
+            const response = await axios.get(API_URL);
             const data = response.data || [];
             return formatDateFields(data);
         } catch (error) {
@@ -36,10 +41,7 @@ const productService = {
     },
     getproductById: async (id) => {
         try {
-            const response = await axios.get(`${API_URL}/${id}`, {
-                headers: getAuthHeaders(),
-                timeout: 10000,
-            });
+            const response = await axios.get(`${API_URL}/${id}`);
             return formatDateFields(response.data);
         } catch (error) {
             console.error(`Error fetching record by ID ${id}:`, error.response?.data || error.message);
@@ -48,10 +50,7 @@ const productService = {
     },
     addproduct: async (productData) => {
         try {
-            const response = await axios.post(API_URL, productData, {
-                headers: getAuthHeaders(),
-                timeout: 10000,
-            });
+            const response = await axios.post(API_URL, productData);
             return response.data;
         } catch (error) {
             console.error('Error adding record:', error.response?.data || error.message);
@@ -60,10 +59,7 @@ const productService = {
     },
     updateproduct: async (id, productData) => {
         try {
-            const response = await axios.put(`${API_URL}/${id}`, productData, {
-                headers: getAuthHeaders(),
-                timeout: 10000,
-            });
+            const response = await axios.put(`${API_URL}/${id}`, productData);
             return response.data;
         } catch (error) {
             console.error(`Error updating record with ID ${id}:`, error.response?.data || error.message);
@@ -72,10 +68,7 @@ const productService = {
     },
     deleteproduct: async (id) => {
         try {
-            const response = await axios.delete(`${API_URL}/${id}`, {
-                headers: getAuthHeaders(),
-                timeout: 10000,
-            });
+            const response = await axios.delete(`${API_URL}/${id}`);
             return response.data;
         } catch (error) {
             console.error(`Error deleting record with ID ${id}:`, error.response?.data || error.message);

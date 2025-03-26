@@ -2,11 +2,6 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:5000/news';
 
-const getAuthHeaders = () => {
-    const token = localStorage.getItem('token') || '';
-    return token ? { Authorization: `Bearer ${token}` } : {};
-};
-
 const formatDateFields = (data) => {
     if (Array.isArray(data)) {
         data.forEach((item) => {
@@ -23,10 +18,7 @@ const formatDateFields = (data) => {
 const newService = {
     getAllnews: async () => {
         try {
-            const response = await axios.get(API_URL, {
-                headers: getAuthHeaders(),
-                timeout: 10000,
-            });
+            const response = await axios.get(API_URL);
             const data = response.data || [];
             return formatDateFields(data);
         } catch (error) {
@@ -36,10 +28,7 @@ const newService = {
     },
     getnewById: async (id) => {
         try {
-            const response = await axios.get(`${API_URL}/${id}`, {
-                headers: getAuthHeaders(),
-                timeout: 10000,
-            });
+            const response = await axios.get(`${API_URL}/${id}`);
             return formatDateFields(response.data);
         } catch (error) {
             console.error(`Error fetching record by ID ${id}:`, error.response?.data || error.message);
@@ -48,10 +37,7 @@ const newService = {
     },
     addnew: async (newData) => {
         try {
-            const response = await axios.post(API_URL, newData, {
-                headers: getAuthHeaders(),
-                timeout: 10000,
-            });
+            const response = await axios.post(API_URL, newData);
             return response.data;
         } catch (error) {
             console.error('Error adding record:', error.response?.data || error.message);
@@ -60,10 +46,7 @@ const newService = {
     },
     updatenew: async (id, newData) => {
         try {
-            const response = await axios.put(`${API_URL}/${id}`, newData, {
-                headers: getAuthHeaders(),
-                timeout: 10000,
-            });
+            const response = await axios.put(`${API_URL}/${id}`, newData);
             return response.data;
         } catch (error) {
             console.error(`Error updating record with ID ${id}:`, error.response?.data || error.message);
@@ -72,10 +55,7 @@ const newService = {
     },
     deletenew: async (id) => {
         try {
-            const response = await axios.delete(`${API_URL}/${id}`, {
-                headers: getAuthHeaders(),
-                timeout: 10000,
-            });
+            const response = await axios.delete(`${API_URL}/${id}`);
             return response.data;
         } catch (error) {
             console.error(`Error deleting record with ID ${id}:`, error.response?.data || error.message);

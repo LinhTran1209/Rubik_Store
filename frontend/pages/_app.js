@@ -16,6 +16,7 @@ import '../styles/css/introduce.css';
 import '../styles/css/news.css';
 import '../styles/css/manualRubik.css';
 import '../styles/css/modal_login_register.css';
+import '../styles/css/detail_product.css';
 
 
 

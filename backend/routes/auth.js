@@ -3,7 +3,7 @@ var router = express.Router();
 var authenticateToken = require('../authMiddleware');
 
 const authController = require('../controllers/auth.controller');
-const {deleteToken} = require('../jwt');
+const {deleteToken} = require('../utils/jwt');
 
 
 router.post('/login', authController.login);
