@@ -50,7 +50,7 @@ function User() {
     }, [userRole]);
 
     const openNew = () => {
-        setuser({ id_user: null, role: '', name: '', email: '', phone: '', address: '', status: 'hiện' });
+        setuser({ id_user: null, role: 'customer', name: '', email: '', phone: '', address: '', status: 'hiện' });
         setSubmitted(false);
         setuserDialog(true);
     };
@@ -176,6 +176,13 @@ function User() {
         setuser(prev => ({ ...prev, [itemname]: val }));
     };
 
+
+    // các option cho role
+    const roleOptions = [
+        { label: 'customer', value: 'customer' },
+        { label: 'admin', value: 'admin' },
+    ]
+
     const columns = [
         { field: 'id_user', header: 'ID' },
         { field: 'role', header: 'Quyền hạn' },
@@ -183,8 +190,8 @@ function User() {
         { field: 'email', header: 'Email' },
         { field: 'phone', header: 'Số điện thoại' },
         { field: 'address', header: 'Địa chỉ' },
-        { field: 'created_at', header: 'Ngày tạo' },
-        { field: 'updated_at', header: 'Ngày cập nhật' },
+        { field: 'created_at', header: 'Ngày tạo', format: 'date' },
+        { field: 'updated_at', header: 'Ngày cập nhật', format: 'date' },
     ];
 
     return (
@@ -210,13 +217,13 @@ function User() {
                 item={user}
                 fields={[
                     { name: 'id_user', label: 'ID', disabled: true, hidden: !user.id_user }, // Ẩn khi thêm, hiện khi sửa
-                    { name: 'role', label: 'Quyền', required: true },
+                    { name: 'role', label: 'Quyền', required: true, type: 'dropdown', options: roleOptions },
                     { name: 'name', label: 'Họ tên', required: true },
                     { name: 'email', label: 'Email', required: true },
                     { name: 'phone', label: 'Số điện thoại', required: true },
                     { name: 'address', label: 'Địa chỉ', required: true },
-                    { name: 'created_at', label: 'Ngày tạo', required: true, disabled: true, hidden: !user.id_user },
-                    { name: 'updated_at', label: 'Ngày cập nhật', required: true, disabled: true, hidden: !user.id_user },
+                    { name: 'created_at', label: 'Ngày tạo', required: true, disabled: true, hidden: !user.id_user, type: 'date' },
+                    { name: 'updated_at', label: 'Ngày cập nhật', required: true, disabled: true, hidden: !user.id_user, type: 'date' },
                 ]}
                 onChange={onInputChange}
                 onSave={saveuser}

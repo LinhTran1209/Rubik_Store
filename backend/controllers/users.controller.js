@@ -2,6 +2,18 @@
 const Users = require("../models/users.model");
 
 module.exports = {
+
+    // Lấy id sản phẩm theo tên 
+  getData: (req, res) => {
+      const querydata = req.params.querydata; 
+      const col = req.params.col; 
+      Users.getData(col, querydata, (err, result) => {
+          if (err) {
+              return res.status(500).send(err); 
+          }
+          res.send(result); 
+      });
+  },
   getAll: (req, res) => {
     // Kiểm tra quyền
     // if (req.user.type !== 'employee' || req.user.role !== 1) {

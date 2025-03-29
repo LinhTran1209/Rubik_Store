@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import categorieService from "../../services/categorieService";
 import productService from "../../services/productService";
-import { formatPrice } from "../../utils/formatPrice";
+import { formatPrice }  from "../../utils/formatPrice";
 import Link from "next/link";
 
 const Home = () => {
@@ -13,7 +13,8 @@ const Home = () => {
     const fetchProducts = async () => {
         try {
             const data = await productService.getAllproducts();
-            setProducts(data);
+            const dataRandom = [...data].sort(() => Math.random() - 0.5);
+            setProducts(dataRandom);
         } catch (err) {
             setError(err.message);
         }
@@ -43,8 +44,6 @@ const Home = () => {
         }, {})
     );
 
-    console.log(groupedCategories);
-    console.log(products);
 
     const filterProductsByCategoryIds = (idCategories) => {
         return products
@@ -52,6 +51,7 @@ const Home = () => {
             .slice(0, 10);
     };
 
+    
     const backImg = () => {};
     const nextImg = () => {};
 
@@ -102,7 +102,7 @@ const Home = () => {
                                 {categories
                                     .filter((categorie) => categorie.desc === groupedCategorie.desc)
                                     .map((categorie) => (
-                                        <Link key={categorie.id_categorie} href={`/category/${categorie.slug}`}>
+                                        <Link key={categorie.id_categorie} href={`/${categorie.slug}`}>
                                             {categorie.name}
                                         </Link>
                                     ))}
@@ -123,8 +123,8 @@ const Home = () => {
                                                     />
                                                     <h3>{product.name}</h3>
                                                     <div className="price-item-product">
-                                                        <strong>{formatPrice(product.price)}</strong>
-                                                        <span>{formatPrice(product.price + 50000)}</span>
+                                                        <strong>{formatPrice(product.price)}đ</strong>
+                                                        <span>{formatPrice(product.price * 1.2)}đ</span>
                                                     </div>
                                                 </Link>
                                             </li>

@@ -10,4 +10,7 @@ router.post('/', productImage.insert);
 router.put('/:id', productImage.update);
 router.delete('/:id', productImage.delete);
 
+router.post('/set-main-image', productImage.setMainImage);
+router.post('/delete-image', productImage.deleteImage);
+
 module.exports = router;

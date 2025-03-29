@@ -3,12 +3,27 @@ import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import React from 'react';
 
-const ConfirmDeleteDialog = ({ visible, onHide, onConfirm, item, multiple = false, idField = 'id_user', title = 'Xác nhận xóa' }) => {
+const ConfirmDeleteDialog = ({
+    visible,
+    onHide,
+    onConfirm,
+    item,
+    multiple = false,
+    idField = 'id',
+    title = 'Xác nhận xóa',
+    renderMessage,
+}) => {
     const footer = (
         <React.Fragment>
-            <Button label='Không' icon='pi pi-times' outlined onClick={onHide} />
-            <Button label='Có' icon='pi pi-check' severity='danger' onClick={onConfirm} />
+            <Button label="Không" icon="pi pi-times" outlined onClick={onHide} />
+            <Button label="Có" icon="pi pi-check" severity="danger" onClick={onConfirm} />
         </React.Fragment>
+    );
+
+    const defaultMessage = multiple ? (
+        <span>Bạn có muốn xóa các bản tin đã chọn không?</span>
+    ) : (
+        item && <span>Bạn có chắc muốn xóa bản ghi có id: <b>{item[idField]}</b>?</span>
     );
 
     return (
@@ -22,12 +37,8 @@ const ConfirmDeleteDialog = ({ visible, onHide, onConfirm, item, multiple = fals
             onHide={onHide}
         >
             <div className={styles.confirmationContent}>
-                <i className='pi pi-exclamation-triangle mr-3' style={{ fontSize: '2rem' }} />
-                {multiple ? (
-                    <span>Bạn có muốn xóa các bản tin đã chọn không?</span>
-                ) : (
-                    item && <span>Bạn có chắc muốn xóa bản ghi có id: <b>{item[idField]}</b>?</span>
-                )}
+                <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem' }} />
+                {renderMessage ? renderMessage(item) : defaultMessage}
             </div>
         </Dialog>
     );

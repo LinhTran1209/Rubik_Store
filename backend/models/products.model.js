@@ -35,7 +35,7 @@ Products.getById = (id, callback) => {
 };
 
 Products.getAll = (callback) => {
-  const sqlString = "SELECT * FROM products";
+  const sqlString = "SELECT * FROM products ORDER BY id_product DESC";
   db.query(sqlString, (err, result) => {
     if (err) return callback(err);
     callback(null, result);

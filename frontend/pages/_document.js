@@ -21,6 +21,7 @@ class MyDocument extends Document {
                     <link rel="stylesheet" href="/style/css/manualRubik.css" />
                     <link rel="stylesheet" href="/style/css/modal_login_register.css" />
                     <link rel="stylesheet" href="/style/css/detail_product.css" />
+                    <link rel="stylesheet" href="/style/css/rubik2x2x2.css" />
                     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" />
                     <link rel="stylesheet" href="/assets/fonts/fontawesome-free-6.5.2-web/css/all.min.css" />
                 

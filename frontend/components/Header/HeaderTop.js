@@ -1,27 +1,31 @@
 import React, { useEffect, useState, useRef } from 'react';
 import SearchProduct from '../../components/SearchProduct';
 import authService from '../../services/authService';
-import { Toast } from "primereact/toast";
+import cartService from '../../services/cartService';
+import userService from '../../services/userService'
+import productService from '../../services/productService'
+import CustomToast from '../CustomToast';
 import Link from 'next/link';
 
 const HeaderTop = () => {
-    const [user, setUser] = useState({ phone: "", role: "" });
+    // Lấy thông tin người dùng đã đăng nhập từ token chỉ có phone và role
+    const [userRole, setUserRole] = useState({ phone: "", role: "" });
     const [loading, setLoading] = useState(true); 
     const toast = useRef(null);
 
     useEffect(() => {
-        const fetchUser = async () => {
+        const fetchUserRole = async () => {
             try {
                 const user = await authService.getCurrentUser();
-                setUser({ phone: user.phone, role: user.role });
+                setUserRole({ phone: user.phone, role: user.role });
             } catch (error) {
                 console.error("Không lấy được người dùng gần đây:", error);
-                setUser({ phone: "", role: "" });
+                setUserRole({ phone: "", role: "" });
             } finally {
                 setLoading(false); 
             }
         };
-        fetchUser();
+        fetchUserRole();
     }, []);
 
     const handleLogout = async () => {
@@ -42,6 +46,60 @@ const HeaderTop = () => {
         }
     };
 
+    // Lấy chính xác được user từ userRole bằng số phone
+    const [user, setUser] = useState({id_user: null, role: '', name: '', email: '', phone: ''})
+    const fetchUser = async () => {
+        try {
+            const user = await userService.getData("phone", userRole.phone)
+            setUser(user[0]);
+        } catch (err) {
+            console.log(err.message)
+        }
+    }
+
+    // Lấy thông tin giỏ hàng của khách hàng (dùng cartService)
+    const [ carts, setCart] = useState({id_user: null, id_product: null, quantity: '', price: '', created_at: '', updated_at: ''})
+    const fetchCarts = async () => {
+        try {
+            const carts = await cartService.getById(user.id_user);
+            setCart(carts);
+            fetchProducts(carts);
+        } catch (err) {
+            console.log(err.message);
+            setLoading(false);
+        }
+    };
+
+    // được mount vào khi tìm thấy người dùng gần 
+    useEffect(() => {
+        if (userRole) {
+            fetchUser();
+        }
+    }, [userRole]);
+
+    useEffect(() => {
+        if (user) {
+            fetchCarts();
+        }
+    }, [user])
+
+    // truy xuất product theo cart đã lấy được
+    const [products, setProducts] = useState([]);
+    const fetchProducts = async (carts) => {
+        try {
+            const productIds = carts.map(cart => cart.id_product);
+            console.log('lấy id',productIds)
+            const productsData = await productService.getproductById(productIds); 
+            setProducts(productsData);
+        } catch (err) {
+            console.log(err.message);
+        }
+    };
+
+
+    console.log('là cart', carts)
+    console.log('product lấy ra từ cart', products)
+
 
     if (loading) {
         return <div className="header__top">Đang tải...</div>; 
@@ -49,7 +107,7 @@ const HeaderTop = () => {
 
     return (
         <div className="header__top">
-            <Toast ref={toast} />
+            <CustomToast ref={toast} />
             <Link href="/home" className="header__top-logo">
                 <img id="logo" src="/assets/img/logo.png" alt="Logo" />
             </Link>
@@ -67,16 +125,20 @@ const HeaderTop = () => {
             </div>
 
             <div className="header__top-user">
-                {user.role === "admin" ? (
+                {userRole.role === "admin" ? (
                     <div className="header__top-a">
-                        <i className="fa-solid fa-user"></i>
+                        <Link href="/account">
+                            <i className="fa-solid fa-user"></i>
+                        </Link>
                         <span style={{ marginTop: '24%' }}>Admin</span>
                     </div>
-                ) : user.role === "customer" ? (
+                ) : userRole.role === "customer" ? (
                     <div className="header__top-a">
-                        <i className="fa-solid fa-user"></i>
+                        <Link href="/account">
+                            <i className="fa-solid fa-user"></i>
+                        </Link>
                         <span>
-                            <span style={{ marginLeft: "10px" }}>{user.phone}</span><br />
+                            <span style={{ marginLeft: "10px" }}>{userRole.phone}</span><br />
                             <Link
                                 className="a-register-login"
                                 href="#"
@@ -101,13 +163,40 @@ const HeaderTop = () => {
                 )}
             </div>
 
+
+            {/* Xử lý phần giỏ hàng khi hover */}
             <div className="header__top-cart">
                 <a className="header__top-a" href="#">
                     <span id="count-in-cart">0</span>
                     <i className="fa-solid fa-cart-shopping"></i>
                     <span style={{ lineHeight: '33px' }}>Giỏ hàng</span>
                 </a>
-                <div className="detail-cart"></div>
+                <div className="detail-cart">
+
+                <h3>Giỏ hàng</h3>
+                    {/* {carts.length === 0 ? (
+                        <p>Không có sản phẩm nào trong giỏ hàng.</p>
+                    ) : (
+                        carts.map((item, index) => (
+                            <div className="cart-item" key={index}>
+                                <img src={item.image || "https://via.placeholder.com/50"} alt={item.name} />
+                                <div className="cart-item-info">
+                                    <p>{item.name}</p>
+                                    <p className="price">{item.price.toLocaleString()}đ</p>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                    <Link href="/cart">
+                        <button className="view-cart-btn">Xem giỏ hàng</button>
+                    </Link> */}
+
+
+
+
+
+
+                </div>
             </div>
         </div>
     );

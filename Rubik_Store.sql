@@ -53,10 +53,15 @@ CREATE TABLE Product_images (
     updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 1 sản phẩm có nhiều thuộc tính để bán ví dụ: màu sắc, kích thước, tính năng: (có nam châm, không nam châm)
+-- các thuộc tính này có thể tổ hợp với nhau để bán chính vì thế cần kiểm soát những thuộc tính này, cũng như giá trịalter
+
+
 -- Tạo bảng Carts
 CREATE TABLE Carts (
     id_user INT,
     id_product INT,
+    id_attribute INT,
     quantity  INT CHECK (quantity  > 0),
     price INT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -157,6 +162,98 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
+
+
+
+-- Trigger cập nhật lại ảnh sản phẩm khi thay đổi trường ảnh chính
+DELIMITER $$
+
+CREATE PROCEDURE SetProductImageMain(
+    IN p_id_image INT,
+    IN p_id_product INT,
+    IN p_image_url VARCHAR(500),
+    IN p_is_main BOOLEAN
+)
+BEGIN
+    START TRANSACTION;
+
+    -- Nếu is_main được đặt thành true
+    IF p_is_main = 1 THEN
+        -- Đặt tất cả ảnh của sản phẩm thành is_main = 0
+        UPDATE Product_images
+        SET is_main = 0
+        WHERE id_product = p_id_product;
+
+        -- Đặt ảnh được chọn thành is_main = 1
+        UPDATE Product_images
+        SET is_main = 1
+        WHERE id_image = p_id_image;
+
+        -- Cập nhật image_url trong Products thành ảnh chính
+        UPDATE Products
+        SET image_url = p_image_url
+        WHERE id_product = p_id_product;
+    -- Nếu is_main được đặt thành false
+    ELSEIF p_is_main = 0 THEN
+        -- Kiểm tra xem ảnh này trước đó có phải ảnh chính không
+        IF (SELECT is_main FROM Product_images WHERE id_image = p_id_image) = 1 THEN
+            -- Đặt ảnh thành is_main = 0
+            UPDATE Product_images
+            SET is_main = 0
+            WHERE id_image = p_id_image;
+
+            -- Đặt image_url trong Products thành NULL
+            UPDATE Products
+            SET image_url = NULL
+            WHERE id_product = p_id_product;
+        ELSE
+            -- Nếu không phải ảnh chính trước đó, chỉ cập nhật is_main
+            UPDATE Product_images
+            SET is_main = 0
+            WHERE id_image = p_id_image;
+        END IF;
+    END IF;
+    COMMIT;
+END$$
+
+DELIMITER ;
+
+
+
+DELIMITER $$
+
+CREATE PROCEDURE DeleteProductImage(
+    IN p_id_image INT,
+    IN p_id_product INT
+)
+BEGIN
+    START TRANSACTION;
+
+    -- Kiểm tra xem ảnh bị xóa có phải ảnh chính không
+    IF (SELECT is_main FROM Product_images WHERE id_image = p_id_image) = 1 THEN
+        -- Xóa bản ghi
+        DELETE FROM Product_images
+        WHERE id_image = p_id_image;
+
+        -- Đặt image_url trong Products thành NULL
+        UPDATE Products
+        SET image_url = NULL
+        WHERE id_product = p_id_product;
+    ELSE
+        -- Nếu không phải ảnh chính, chỉ xóa bản ghi
+        DELETE FROM Product_images
+        WHERE id_image = p_id_image;
+    END IF;
+
+    COMMIT;
+END$$
+
+DELIMITER ;
+
+
+
 
 SHOW TRIGGERS;
 

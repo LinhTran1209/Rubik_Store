@@ -1,9 +1,11 @@
+import product_imagesService from "../../services/product_imageService";
 import categorieService from "../../services/categorieService";
 import productService from "../../services/productService";
 import { formatPrice } from "../../utils/formatPrice";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
+
 
 
 const ProductDetail = () => {
@@ -16,6 +18,9 @@ const ProductDetail = () => {
     const [quantity, setQuantity] = useState(1);
     const [totalPrice, setTotalPrice] = useState(0);
     const [loading, setLoading] = useState(true); 
+
+    const [productImages, setProductImages] = useState([]); // sẽ lưu được sanh sacchs ảnh của sản phẩm dựa theo id_product
+    const [mainImage, setMainImage] = useState(null);
 
     const fetchProduct = async () => {
         try {
@@ -30,12 +35,29 @@ const ProductDetail = () => {
         }
     };
 
+    const fetchProductImages = async () => {
+        if (product?.id_product) {
+            try {
+                const data = await product_imagesService.getByIdProduct(product.id_product);
+                setProductImages(data);
+                console.log("ảnh", productImages);
+                const mainImg = data.find(img => img.is_main) || data[0];
+                if (mainImg) {
+                    setMainImage(mainImg.image_url);
+                }
+            } catch (err) {
+                console.error("Lỗi khi lấy ảnh sản phẩm:", err);
+            }
+        }
+    };
+
     const fetchProductSuggested = async () => {
         if (product && product.id_categorie) {
             try {
                 const data = await productService.getDataproducts("id_categorie", product.id_categorie);
-                console.log("gợi ý", data);
-                setProducts(data);
+                // console.log("gợi ý", data);
+                const dataRandom = [...data].sort(() => Math.random() - 0.5);
+                setProducts(dataRandom);
             } catch (err) {
                 console.error("Lỗi khi lấy sản phẩm gợi ý:", err); 
             }
@@ -59,9 +81,10 @@ const ProductDetail = () => {
             fetchProduct();
         }
     }, [slug]);
-
+    
     useEffect(() => {
         fetchProductSuggested();
+        fetchProductImages();
         fetchCategorie();
     }, [product]);
 
@@ -98,18 +121,40 @@ const ProductDetail = () => {
                 <div className="product-detail__main">
                     <div className="product-detail__images">
                         <div className="product-detail__main-image">
-                            <img src={product.image_url} alt={product.name} />
+                            <img src={mainImage || product.image_url} alt={product.name} />
                         </div>
-                        <div className="product-detail__thumbnails">
-                            <img src={product.image_url} alt="Thumbnail 1" />
-                            <img src={product.image_url} alt="Thumbnail 2" />
+                        <div 
+                            className="product-detail__thumbnails"
+                            style={{ 
+                                // display: 'flex', 
+                                // overflowX: 'auto', 
+                                // whiteSpace: 'nowrap', 
+                                // gap: '10px', 
+                                // padding: '10px 0' 
+                            }}>
+
+                            {productImages.map((img, index) => (
+                            <img
+                                key={index}
+                                src={img.image_url}
+                                alt={`Thumbnail ${index + 1}`}
+                                onClick={() => setMainImage(img.image_url)}
+                                style={{ 
+                                    cursor: 'pointer', 
+                                    width: '70px', 
+                                    height: '70px', 
+                                    objectFit: 'cover', 
+                                    border: mainImage === img.image_url ? '2px solid #e74c3c' : 'none'
+                                }}
+                            />
+                        ))}
                         </div>
                     </div>
 
                     {/* sản phẩm */}
                     <div className="product-detail__info">
                         <h1 className="product-detail__title">
-                            {product.name} - SP005176
+                            {product.name}
                         </h1>
                         <p className="product-detail__meta">Mã SP: {product.id_product} | Thương hiệu: GAN</p>
                         <div className="product-detail__rating">
@@ -117,8 +162,8 @@ const ProductDetail = () => {
                             <span className="rating-count"> (1 đánh giá)</span>
                         </div>
                         <div className="product-detail__price">
-                            <span className="current-price">{formatPrice(product.price)}</span>
-                            <span className="original-price">{formatPrice(product.price + 50000)}</span>
+                            <span className="current-price">{formatPrice(product.price)}đ</span>
+                            <span className="original-price">{formatPrice(product.price + 50000)}đ</span>
                         </div>
                         <div className="product-detail__promotion">
                             <p className="promotion-title"><strong>ƯU ĐÃI KHUYẾN MÃI</strong></p>
@@ -141,7 +186,7 @@ const ProductDetail = () => {
                         <div className="product-detail__total">
                             <p>
                                 <strong className="total-label">Thanh toán:</strong>
-                                <span className="total-price" style={{ color: '#e74c3c', marginLeft: '10px'}}>{formatPrice(totalPrice)}</span>
+                                <span className="total-price" style={{ color: '#e74c3c', marginLeft: '10px'}}>{formatPrice(totalPrice)}đ</span>
                             </p>
                         </div>
                         <div className="product-detail__actions">
@@ -171,7 +216,7 @@ const ProductDetail = () => {
                                         <p className="suggested-product__price">
                                             {typeof product.price === "string"
                                                 ? product.price
-                                                : formatPrice(product.price)}
+                                                : formatPrice(product.price)}đ
                                         </p>
                                     </div>
                                 </div>

@@ -55,6 +55,35 @@ const product_imagesService = {
             throw new Error('Error deleting detail');
         }
     },
+
+
+    setMainImage: async (id_image, id_product, image_url, is_main) => {
+        try {
+            const response = await axios.post(`${API_URL}/set-main-image`, {
+                id_image,
+                id_product,
+                image_url,
+                is_main,
+            });
+            return response.data;
+        } catch (error) {
+            console.error(`Error setting main image for ${id_image}:`, error.response?.data || error.message);
+            throw new Error('Error setting main image');
+        }
+    },
+
+    deleteImage: async (id_image, id_product) => {
+        try {
+            const response = await axios.post(`${API_URL}/delete-image`, {
+                id_image,
+                id_product,
+            });
+            return response.data;
+        } catch (error) {
+            console.error(`Error deleting product image for ${id_image}:`, error.response?.data || error.message);
+            throw new Error('Error deleting product image');
+        }
+    },
 };
 
 export default product_imagesService;

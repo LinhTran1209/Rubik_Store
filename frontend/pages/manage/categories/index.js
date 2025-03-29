@@ -50,7 +50,7 @@ function Categorie() {
     }, [userRole]);
 
     const openNew = () => {
-        setcategorie({ id_categorie: null, name: '', desc: '', status: 'hiện' });
+        setcategorie({ id_categorie: null, name: '', desc: 'Rubik cơ bản', status: 'hiện' });
         setSubmitted(false);
         setcategorieDialog(true);
     };
@@ -162,12 +162,20 @@ function Categorie() {
         setcategorie(prev => ({ ...prev, [itemname]: val }));
     };
 
+    // options cho desc
+    const descOptions = [
+        { label: 'Rubik cơ bản', value: 'Rubik cơ bản' },
+        { label: 'Rubik biến thể', value: 'Rubik biến thể' },
+        { label: 'Combo Rubik', value: 'Combo Rubik' },
+        { label: 'Phụ kiện Rubik', value: 'Phụ kiện Rubik' },
+    ]
+
     const columns = [
         { field: 'id_categorie', header: 'ID' },
         { field: 'name', header: 'Loại sản phẩm' },
         { field: 'desc', header: 'Thuộc danh mục' },
-        { field: 'created_at', header: 'Ngày tạo' },
-        { field: 'updated_at', header: 'Ngày cập nhật' },
+        { field: 'created_at', header: 'Ngày tạo', format: 'date' },
+        { field: 'updated_at', header: 'Ngày cập nhật', format: 'date' },
     ];
 
     return (
@@ -194,9 +202,9 @@ function Categorie() {
                 fields={[
                     { name: 'id_categorie', label: 'ID Loại sản phẩm', disabled: true, hidden: !categorie.id_categorie }, // Ẩn khi thêm, readonly khi sửa
                     { name: 'name', label: 'Loại sản phẩm', required: true },
-                    { name: 'desc', label: 'Thuộc danh mục', required: true },
-                    { name: 'created_at', label: 'Ngày tạo', required: true, disabled: true, hidden: !categorie.id_categorie },
-                    { name: 'updated_at', label: 'Ngày cập nhật', required: true, disabled: true, hidden: !categorie.id_categorie },
+                    { name: 'desc', label: 'Thuộc danh mục', required: true, type: 'dropdown', options: descOptions },
+                    { name: 'created_at', label: 'Ngày tạo', required: true, disabled: true, hidden: !categorie.id_categorie, type: 'date' },
+                    { name: 'updated_at', label: 'Ngày cập nhật', required: true, disabled: true, hidden: !categorie.id_categorie, type: 'date' },
                 ]}
                 onChange={onInputChange}
                 onSave={savecategorie}

@@ -50,4 +50,25 @@ Product_images.delete = (id, callBack) => {
   });
 };
 
+
+
+
+// produce để set ảnh chính cho sản phẩm
+Product_images.setMainImage = (id_image, id_product, image_url, is_main, callBack) => {
+  const sqlString = "CALL SetProductImageMain(?, ?, ?, ?)";
+  db.query(sqlString, [id_image, id_product, image_url, is_main], (err, res) => {
+    if (err) return callBack(err);
+    callBack(null, `Đặt ảnh chính cho id_image = ${id_image} thành công`);
+  });
+};
+
+// produce để xóa ảnh của sản phẩm
+Product_images.deleteImage = (id_image, id_product, callBack) => {
+  const sqlString = "CALL DeleteProductImage(?, ?)";
+  db.query(sqlString, [id_image, id_product], (err, res) => {
+    if (err) return callBack(err);
+    callBack(null, `Xóa ảnh có id_image = ${id_image} thành công`);
+  });
+};
+
 module.exports = Product_images;

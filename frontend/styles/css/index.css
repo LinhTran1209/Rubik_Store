@@ -623,8 +623,23 @@ body {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* Css cho phần giỏ hàng */
-/* .empty__detail-cart {
+.empty__detail-cart {
     height: 200px;
     line-height: 200px;
     text-align: center;
@@ -634,6 +649,9 @@ body {
     border-radius: 4px;
     font-size: 20px;
 }
+/* .detail-cart  {
+    display: block;
+} */
 
 .detail-cart a {
     text-decoration: none;
@@ -705,4 +723,4 @@ body {
     width: 130px;
     float: right;
     color: white;
-} */
+}

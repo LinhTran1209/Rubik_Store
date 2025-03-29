@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import newService from '../../services/newService';
 import Link from 'next/link';
+import {formatDate} from '../../utils/formatDate';
 
 const News = () => {
     const [newsList, setNewsList] = useState([]);
@@ -61,7 +62,7 @@ const News = () => {
                                         <span style={{ marginTop: '20px' }}>
                                             {news.desc || 'Chưa có mô tả'}
                                         </span>
-                                        <span style={{ position: 'absolute', color: '#b10000', right: '0', bottom: '0', fontSize:'12px'}}>Ngày đăng: {news.created_at}</span>
+                                        <span style={{ position: 'absolute', color: '#b10000', right: '0', bottom: '0', fontSize:'12px'}}>Ngày đăng: {formatDate(news.created_at)}</span>
                                     </div>
                                 </Link>
                             </li>

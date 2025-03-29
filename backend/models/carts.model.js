@@ -11,11 +11,11 @@ const Carts = (carts) => {
 
 };
 
-Carts.getById = (id_user, id_product, callback) => {
-  const sqlString = "SELECT * FROM carts WHERE id_user = ? AND id_product = ?";
-  db.query(sqlString, [id_user, id_product], (err, result) => {
+Carts.getById = (id_user, callback) => {
+  const sqlString = "SELECT * FROM carts WHERE id_user = ?";
+  db.query(sqlString, id_user, (err, result) => {
     if (err) return callback(err);
-    callback(null, result); // Trả về bản ghi đầu tiên hoặc null
+    callback(null, result); 
   });
 };
 
@@ -29,11 +29,11 @@ Carts.getAll = (callback) => {
 };
 
 
-Carts.insert = (carts, callBack) => {
+Carts.insert = (cart, callBack) => {
   const sqlString = "INSERT INTO carts SET ?";
-  db.query(sqlString, carts, (err, res) => {
+  db.query(sqlString, cart, (err, res) => {
     if (err) return callBack(err);
-    callBack(null, carts);
+    callBack(null, cart);
   });
 };
 

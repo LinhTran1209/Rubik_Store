@@ -44,6 +44,15 @@ Users.getById = (id, callback) => {
   });
 };
 
+// Tìm kiếm mọi col sản phẩm theo querydata và trả về object
+Users.getData = (col, querydata, callback) => {
+  const sqlString = `SELECT * FROM Users WHERE ?? = ?`;
+  db.query(sqlString, [col, querydata], (err, result) => {
+    if (err) return callback(err);
+    callback(null, result);
+  });
+};
+
 Users.getAll = (callback) => {
   const sqlString = "SELECT * FROM users"; 
   db.query(sqlString, (err, result) => {

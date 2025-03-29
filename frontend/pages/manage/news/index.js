@@ -155,10 +155,10 @@ const New = () => {
         { field: 'id_new', header: 'ID' },
         { field: 'title', header: 'Tiêu đề' },
         { field: 'desc', header: 'Mô tả' },
-        { field: 'image_url', header: 'Link ảnh' },
+        { field: 'image_url', header: 'Link ảnh', format: 'image'},
         { field: 'href', header: 'Link bài viết' },
-        { field: 'created_at', header: 'Ngày tạo' },
-        { field: 'updated_at', header: 'Ngày cập nhật' },
+        { field: 'created_at', header: 'Ngày tạo', format: 'date' },
+        { field: 'updated_at', header: 'Ngày cập nhật', format: 'date' },
     ];
 
     return (
@@ -188,8 +188,8 @@ const New = () => {
                     { name: 'desc', label: 'Mô tả', required: true },
                     { name: 'image_url', label: 'Link ảnh', required: true },
                     { name: 'href', label: 'Link bài viết', required: true },
-                    { name: 'created_at', label: 'Ngày tạo', required: true, disabled: true, hidden: !new1.id_new },
-                    { name: 'updated_at', label: 'Ngày cập nhật', required: true, disabled: true, hidden: !new1.id_new },
+                    { name: 'created_at', label: 'Ngày tạo', required: true, disabled: true, hidden: !new1.id_new, type: 'date' },
+                    { name: 'updated_at', label: 'Ngày cập nhật', required: true, disabled: true, hidden: !new1.id_new, type: 'date' },
                 ]}
                 onChange={onInputChange}
                 onSave={savenew}

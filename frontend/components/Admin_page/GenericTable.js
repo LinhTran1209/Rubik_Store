@@ -4,6 +4,9 @@ import { InputText } from 'primereact/inputtext';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import React, { useRef } from 'react';
+import { formatPrice } from '../../utils/formatPrice';
+import { renderImageTable } from '../../utils/renderImageTable';
+import { formatDate } from '../../utils/formatDate';
 
 const GenericTable = ({
     data,
@@ -16,58 +19,93 @@ const GenericTable = ({
     onEdit,
     onDelete,
     onDeleteSelected,
-    onAddDetail,
     dataKey,
     title = 'Quản lý danh sách',
     disabled = false,
-    visible = true, // Thêm prop visible
+    visible = true,
 }) => {
     const dt = useRef(null);
+
+    // const imageBodyTemplate = (rowData, field) => {
+    //     return rowData[field] ? (
+    //         <img src={rowData[field]} alt="Preview" style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
+    //     ) : (
+    //         'No Image'
+    //     );
+    // };
 
     const actionBodyTemplate = (rowData) => {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <Button 
-                    icon='pi pi-pencil' 
-                    rounded 
-                    outlined 
-                    className='mr-2' 
-                    onClick={() => onEdit(rowData)} 
-                    title="Sửa"  
-                    disabled={!onEdit} 
+                <Button
+                    icon="pi pi-pencil"
+                    rounded
+                    outlined
+                    className="mr-2"
+                    onClick={() => onEdit(rowData)}
+                    title="Sửa"
+                    disabled={!onEdit}
                 />
-                <Button 
-                    icon='pi pi-trash' 
-                    rounded 
-                    outlined 
-                    severity='danger' 
-                    onClick={() => onDelete(rowData)} 
-                    title="Xóa" 
-                    disabled={!onDelete} 
+                <Button
+                    icon="pi pi-trash"
+                    rounded
+                    outlined
+                    severity="danger"
+                    onClick={() => onDelete(rowData)}
+                    title="Xóa"
+                    disabled={!onDelete}
                 />
             </div>
         );
     };
 
     const header = (
-        <div className='flex flex-wrap gap-2 align-items-center justify-content-between'>
-            <h4 className='m-0'>{title}</h4>
+        <div className="flex flex-wrap gap-2 align-items-center justify-content-between">
+            <h4 className="m-0">{title}</h4>
             <div style={{ float: 'right' }}>
                 {openNew && (
-                    <Button style={{ marginRight: '5px' }} label='' icon='pi pi-plus' severity='success' tooltip='Thêm mới' onClick={openNew} disabled={!openNew} />
+                    <Button
+                        style={{ marginRight: '5px' }}
+                        label=""
+                        icon="pi pi-plus"
+                        severity="success"
+                        tooltip="Thêm mới"
+                        onClick={openNew}
+                        disabled={!openNew}
+                    />
                 )}
-                <Button style={{ marginRight: '5px' }} label='' icon='pi pi-trash' tooltip='Xóa đã chọn' severity='danger' onClick={onDeleteSelected} disabled={disabled || !selectedItems || !selectedItems.length} />
-                <Button style={{ marginRight: '5px' }} label='' icon='pi pi-upload' tooltip='Xuất Excel' className='p-button-help' onClick={() => dt.current.exportCSV()} />
-                <span className='p-input-icon-left'>
-                    <i className='pi pi-search' />
-                    <InputText type='search' value={globalFilter} onInput={(e) => setGlobalFilter(e.target.value)} placeholder='Tìm kiếm...' />
+                <Button
+                    style={{ marginRight: '5px' }}
+                    label=""
+                    icon="pi pi-trash"
+                    tooltip="Xóa đã chọn"
+                    severity="danger"
+                    onClick={onDeleteSelected}
+                    disabled={disabled || !selectedItems || !selectedItems.length}
+                />
+                <Button
+                    style={{ marginRight: '5px' }}
+                    label=""
+                    icon="pi pi-upload"
+                    tooltip="Xuất Excel"
+                    className="p-button-help"
+                    onClick={() => dt.current.exportCSV()}
+                />
+                <span className="p-input-icon-left">
+                    <i className="pi pi-search" />
+                    <InputText
+                        type="search"
+                        value={globalFilter}
+                        onInput={(e) => setGlobalFilter(e.target.value)}
+                        placeholder="Tìm kiếm..."
+                    />
                 </span>
             </div>
         </div>
     );
 
     if (!visible) {
-        return null; // Nếu không visible, trả về null (không hiển thị gì)
+        return null;
     }
 
     return (
@@ -79,31 +117,50 @@ const GenericTable = ({
                 onSelectionChange={(e) => setSelectedItems(e.value)}
                 dataKey={dataKey}
                 paginator
-                rows={2}
-                rowsPerPageOptions={[2, 5, 10, 25]}
+                rows={5}
+                rowsPerPageOptions={[2, 5, 10, 25, 100]}
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 currentPageReportTemplate="Hiển thị {first} đến {last} của {totalRecords} Bản ghi"
                 globalFilter={globalFilter}
                 header={header}
             >
-                {console.log('data', data)}
-                {console.log('columns', columns)}
                 <Column selectionMode="multiple" exportable={false}></Column>
-                {columns.map((col, index) => (
-                    <Column 
-                        key={index} 
-                        field={col.field} 
-                        header={col.header} 
-                        sortable 
-                        style={{ 
-                            minWidth: index === 0 ? '11rem' : '12rem', 
-                            maxWidth: '12rem', 
-                            overflow: 'hidden', 
-                            textOverflow: 'ellipsis', 
-                            whiteSpace: 'nowrap'
-                        }} 
-                    />
-                ))}
+                {columns.map((col, index) => {
+                    const bodyTemplate = (rowData) => {
+                        if (col.render) {
+                            return col.render(rowData);
+                        }
+                        if (col.format === 'price') {
+                            return formatPrice(rowData[col.field]);
+                        }
+                        if (col.format === 'image') {
+                            console.log('rowData', rowData);
+                            console.log('col.field', col.field);
+                            return renderImageTable({ src: rowData, field: col.field });
+                        }
+                        if (col.format === 'date') {
+                            return formatDate(rowData[col.field]);
+                        }
+                        return rowData[col.field];
+                    };
+
+                    return (
+                        <Column
+                            key={index}
+                            field={col.field}
+                            header={col.header}
+                            sortable
+                            body={bodyTemplate}
+                            style={{
+                                minWidth: index === 0 ? '11rem' : '12rem',
+                                maxWidth: '12rem',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                            }}
+                        />
+                    );
+                })}
                 <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '5rem' }} />
             </DataTable>
         </div>

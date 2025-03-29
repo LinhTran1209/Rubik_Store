@@ -42,4 +42,22 @@ module.exports = {
       res.send(result);
     });
   },
+
+
+
+  setMainImage: (req, res) => {
+    const { id_image, id_product, image_url, is_main } = req.body;
+    Product_images.setMainImage(id_image, id_product, image_url, is_main, (err, result) => {
+      if (err) return res.status(500).send(err);
+      res.send({ message: result });
+    });
+  },
+
+  deleteImage: (req, res) => {
+    const { id_image, id_product } = req.body;
+    Product_images.deleteImage(id_image, id_product, (err, result) => {
+      if (err) return res.status(500).send(err);
+      res.send({ message: result });
+    });
+  },
 };

@@ -1,106 +1,151 @@
-    /* css middle */
-    .all__section {
-        width: 1200px;
-        min-height: 1600px;
-        display: block;
-        margin: auto;
-        background-color: var(--white-color);
-        margin-top: 5px;
-        color: #333;
-        margin-bottom: 20px;
-    }
-
-.all__section-header {
+/* css middle */
+.all__section {
+    width: 1200px;
+    min-height: 1600px;
+    display: block;
+    margin: auto;
+    background-color: var(--white-color);
+    margin-top: 5px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  .all__section-header {
     width: 100%;
     height: 40px;
     display: flex;
-    float: left;
+    align-items: center;
     cursor: pointer;
-}
-
-.all__section-header span {
+  }
+  
+  .all__section-header span {
     line-height: 40px;
     text-align: center;
-}
-
-.all__section-header span:first-child {
+  }
+  
+  .all__section-header span:first-child {
     margin-left: 5px;
-}
-
-.all__section-header-text::after {
+  }
+  
+  .all__section-header-text::after {
     content: "›";
     margin: 0 5px;
-}
-
-.all__section-col-main {
-    display: block;
-}
-
-.all-section-select {
+  }
+  
+  .all__section-col-main {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .all-section-select {
     padding: 5px 5px;
-    flex-wrap: wrap;
-}
-
-.all-section-select a {
+    display: flex;
+    flex-direction: row; 
+    flex-wrap: wrap; 
+    margin-bottom: 10px;
+  }
+  
+  .all-section-select a {
     border: 1px solid #333;
     border-radius: 3px;
-    position: relative;
-    width: 24.6%;
+    width: 24.6%; 
     padding: 12px 10px;
-    margin: 5px 2px;    
+    margin: 5px 2px; 
     color: #333;
     box-sizing: border-box;
-    float: left;
     text-align: center;
     text-decoration: none;
-}
-
-.all__section-title {
+    font-size: 14px;
+  }
+  
+  .all-section-select a:hover {
+    background-color: rgb(240, 240, 250);
+  }
+  
+  .all__section-title {
     margin-left: 5px;
-    float: left;
-}
-
-.all__section-title h1{ 
-    font-size: 18px;
-}
-
-.all__setion-describe {
-    margin: 20px;
-    float: left;
-}
-
-.all__setion-describe p {
+    margin-bottom: 20px;
     display: flex;
-    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  
+  .all__section-title h1 {
+    margin-top: auto;
+    font-size: 22px;
+  }
+  
+  .all__setion-describe {
+    margin: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .all__setion-describe p {
     white-space: normal;
     font-size: 14px;
     line-height: 18px;
-}
-
-.all__products {
-    float: left;
-}
-
-
-.all__section-container-btn {
+  }
+  
+  .all__products {
+    width: 100%;
+  }
+  
+  .all__section-container-btn {
     width: 100%;
     display: flex;
-    margin-left: 500px;
+    justify-content: center;
     padding-top: 30px;
-}
-
-.all__section-btn {
+  }
+  
+  .all__section-btn {
     height: 35px;
     line-height: 35px;
     text-align: center;
-    border: 1px solid #CCC;
+    border: 1px solid #ccc;
     border-radius: 4px;
     cursor: pointer;
-}
-
-.all__section-btn a {
+  }
+  
+  .all__section-btn button {
     text-decoration: none;
     color: #288ad6;
     font-size: 14px;
     padding: 3px 10px;
-}
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+
+
+
+
+
+
+
+
+  /* CSS cho phần sắp xếp */
+  .all__section-sort {
+    margin: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .all__section-sort label {
+    font-size: 14px;
+    color: #333;
+  }
+
+  .all__section-sort select {
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    cursor: pointer;
+  }
+
+  .all__section-sort select:focus {
+    outline: none;
+    border-color: #288ad6;
+  }

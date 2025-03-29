@@ -17,6 +17,18 @@ const formatDateFields = (data) => {
 };
 
 const userService = {
+    // Bên back có làm hàm gọi theo cột và tìm trường dữ liệu
+    getData: async (col, querydata) => {
+        try {
+            const response = await axios.get(`${API_URL}/getData/${col}/${querydata}`);
+            const data = response.data || [];
+            return formatDateFields(data);
+        } catch (error) {
+            console.error('Error fetching data:', error.response?.data || error.message);
+            throw new Error('Error fetching data');
+        }
+    },
+
     getAllusers: async () => {
         try {
             const response = await axios.get(API_URL);

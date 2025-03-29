@@ -143,7 +143,27 @@ html {
 
 
 
-/* ____________________________________________Toast custom_______________________________________________ */
+/* ____________________________________________Drop cho next js_______________________________________________ */
+
+
+.p-dropdown-item {
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis; 
+    width: 400px;
+}
+
+
+.product-detail__thumbnails {
+    margin: auto;
+    display: flex;   
+    flex-wrap: nowrap;   
+    overflow-x: auto;    
+    width: 240px;
+}
+
+
+
 
 
 
