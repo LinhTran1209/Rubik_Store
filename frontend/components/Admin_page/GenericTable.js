@@ -134,8 +134,6 @@ const GenericTable = ({
                             return formatPrice(rowData[col.field]);
                         }
                         if (col.format === 'image') {
-                            console.log('rowData', rowData);
-                            console.log('col.field', col.field);
                             return renderImageTable({ src: rowData, field: col.field });
                         }
                         if (col.format === 'date') {

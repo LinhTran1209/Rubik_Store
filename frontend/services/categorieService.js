@@ -2,7 +2,6 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:5000/categories';
 
-
 const formatDateFields = (data) => {
     if (Array.isArray(data)) {
         data.forEach((item) => {
@@ -17,8 +16,6 @@ const formatDateFields = (data) => {
 };
 
 const categorieService = {
-
-
     // Bên back có làm hàm gọi theo cột và tìm trường dữ liệu
     getDatacategories: async (col, querydata) => {
         try {
@@ -26,19 +23,18 @@ const categorieService = {
             const data = response.data || [];
             return formatDateFields(data);
         } catch (error) {
-            console.error('Error fetching data:', error.response?.data || error.message);
-            throw new Error('Error fetching data');
+            // console.error('Không thể tải dữ liệu categories:', error.response?.data || error.message);
+            throw new Error('Không thể tải dữ liệu categories');
         }
     },
     getAllcategories: async () => {
         try {
             const response = await axios.get(API_URL);
-            console.log('Response:', response);
             const data = response.data || [];
             return formatDateFields(data);
         } catch (error) {
-            console.error('Error fetching data:', error.response?.data || error.message);
-            throw new Error(error.response?.data?.message || 'Error fetching data');
+            // console.error('Không thể tải dữ liệu categories:', error.response?.data || error.message);
+            throw new Error(error.response?.data?.message || 'Không thể tải dữ liệu categories');
         }
     },
     getcategorieById: async (id) => {
@@ -46,8 +42,8 @@ const categorieService = {
             const response = await axios.get(`${API_URL}/${id}`);
             return formatDateFields(response.data);
         } catch (error) {
-            console.error(`Error fetching record by ID ${id}:`, error.response?.data || error.message);
-            throw new Error('Error fetching record by ID');
+            // console.error(`Không thể tải dữ liệu categories với ID ${id}:`, error.response?.data || error.message);
+            throw new Error('Không thể tải dữ liệu categories với ID');
         }
     },
     addcategorie: async (categorieData) => {
@@ -55,8 +51,8 @@ const categorieService = {
             const response = await axios.post(API_URL, categorieData);
             return response.data;
         } catch (error) {
-            console.error('Error adding record:', error.response?.data || error.message);
-            throw new Error('Error adding record');
+            // console.error('Không thể thêm dữ liệu categories:', error.response?.data || error.message);
+            throw new Error('Không thể thêm dữ liệu categories');
         }
     },
     updatecategorie: async (id, categorieData) => {
@@ -64,8 +60,8 @@ const categorieService = {
             const response = await axios.put(`${API_URL}/${id}`, categorieData);
             return response.data;
         } catch (error) {
-            console.error(`Error updating record with ID ${id}:`, error.response?.data || error.message);
-            throw new Error('Error updating record');
+            // console.error(`Không thể sửa dữ liệu categories với ID ${id}:`, error.response?.data || error.message);
+            throw new Error('Không thể sửa dữ liệu categories');
         }
     },
     deletecategorie: async (id) => {
@@ -73,8 +69,8 @@ const categorieService = {
             const response = await axios.delete(`${API_URL}/${id}`);
             return response.data;
         } catch (error) {
-            console.error(`Error deleting record with ID ${id}:`, error.response?.data || error.message);
-            throw new Error('Error deleting record');
+            // console.error(`Không thể xóa dữ liệu categories với ID ${id}:`, error.response?.data || error.message);
+            throw new Error('Không thể xóa dữ liệu categories');
         }
     },
 };

@@ -16,8 +16,6 @@ exports.login = async (req, res) => {
 
     if (!user) return res.status(401).json({ message: "Sai số điện thoại hoặc mật khẩu" });
 
-    console.log('Đây là user: ', user);
-
     // So sánh mật khẩu
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: "Sai số điện thoại hoặc mật khẩu" });
@@ -25,10 +23,9 @@ exports.login = async (req, res) => {
     // Tạo token 
     const token = jwt.sign(
       { phone: user.phone, role: user.role },process.env.JWT_SECRET,
-      { expiresIn: '30m' }
+      { expiresIn: '5h' }
     );
 
-    console.log('Đây là token login: ', token);
 
     // Lưu token vào cookie
     res.cookie('jwt_login', token, {
@@ -36,7 +33,7 @@ exports.login = async (req, res) => {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'Lax',
       path: '/',
-      maxAge: 30 * 60 * 1000 // 30 phút
+      maxAge: 30 * 60 * 100000 // 30 phút
     });
 
     // Lưu token vào biến global do lưu vào cookie được, nhưng lấy ra méo được

@@ -7,11 +7,19 @@ const Users = (users) => {
   this.name = users.name;
   this.email = users.email;
   this.phone = users.phone;
-  this.address = users.address;
   this.password = users.password;
   this.status = users.status;
   this.created_at = users.created_at;
   this.updated_at = users.updated_at;
+};
+
+// Tìm kiếm mọi col sản phẩm theo querydata và trả về object
+Users.getData = (col, querydata, callback) => {
+  const sqlString = `SELECT * FROM Users WHERE ?? = ?`;
+  db.query(sqlString, [col, querydata], (err, result) => {
+    if (err) return callback(err);
+    callback(null, result);
+  });
 };
 
 // Hàm mã hóa mật khẩu
@@ -20,7 +28,7 @@ Users.hashPassword = async (password) => {
   try {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     return hashedPassword;
-  } catch (err) {
+  } catch (err) {   
     throw new Error('Lỗi khi mã hóa mật khẩu: ' + err.message);
   }
 };
@@ -39,15 +47,6 @@ Users.findByPhone = (phone) => {
 Users.getById = (id, callback) => {
   const sqlString = "SELECT * FROM users WHERE id_user = ?";
   db.query(sqlString, [id], (err, result) => {
-    if (err) return callback(err);
-    callback(null, result);
-  });
-};
-
-// Tìm kiếm mọi col sản phẩm theo querydata và trả về object
-Users.getData = (col, querydata, callback) => {
-  const sqlString = `SELECT * FROM Users WHERE ?? = ?`;
-  db.query(sqlString, [col, querydata], (err, result) => {
     if (err) return callback(err);
     callback(null, result);
   });

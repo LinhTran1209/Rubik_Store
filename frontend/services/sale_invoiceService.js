@@ -16,14 +16,24 @@ const formatDateFields = (data) => {
 };
 
 const sale_invoiceService = {
+    getData: async (col, querydata) => {
+        try {
+            const response = await axios.get(`${API_URL}/getData/${col}/${querydata}`);
+            const data = response.data || [];
+            return formatDateFields(data);
+        } catch (error) {
+            // console.error('Không thể tải dữ liệu Product:', error.response?.data || error.message);
+            throw new Error('Không thể tải dữ liệu Product');
+        }
+    },
     getAllsale_invoices: async () => {
         try {
             const response = await axios.get(API_URL);
             const data = response.data || [];
             return formatDateFields(data);
         } catch (error) {
-            console.error('Error fetching data:', error.response?.data || error.message);
-            throw new Error('Error fetching data');
+            // console.error('Không thể tải dữ liệu Invoice', error.response?.data || error.message);
+            throw new Error('Không thể tải dữ liệu Invoice');
         }
     },
     getsale_invoiceById: async (id) => {
@@ -31,8 +41,8 @@ const sale_invoiceService = {
             const response = await axios.get(`${API_URL}/${id}`);
             return formatDateFields(response.data);
         } catch (error) {
-            console.error(`Error fetching record by ID ${id}:`, error.response?.data || error.message);
-            throw new Error('Error fetching record by ID');
+            // console.error(`Không thể tải dữ liệu Invoice với ID ${id}:`, error.response?.data || error.message);
+            throw new Error('Không thể tải dữ liệu Invoice với ID');
         }
     },
     addsale_invoice: async (sale_invoiceData) => {
@@ -40,8 +50,8 @@ const sale_invoiceService = {
             const response = await axios.post(API_URL, sale_invoiceData);
             return response.data;
         } catch (error) {
-            console.error('Error adding record:', error.response?.data || error.message);
-            throw new Error('Error adding record');
+            // console.error('Không thể thêm dữ liệu Invoice:', error.response?.data || error.message);
+            throw new Error('Không thể thêm dữ liệu Invoice');
         }
     },
     updatesale_invoice: async (id, sale_invoiceData) => {
@@ -49,8 +59,8 @@ const sale_invoiceService = {
             const response = await axios.put(`${API_URL}/${id}`, sale_invoiceData);
             return response.data;
         } catch (error) {
-            console.error(`Error updating record with ID ${id}:`, error.response?.data || error.message);
-            throw new Error('Error updating record');
+            // console.error(`Không thể sửa dữ liệu Invoice với ID ${id}:`, error.response?.data || error.message);
+            throw new Error('Không thể sửa dữ liệu Invoice');
         }
     },
     deletesale_invoice: async (id) => {
@@ -58,8 +68,8 @@ const sale_invoiceService = {
             const response = await axios.delete(`${API_URL}/${id}`);
             return response.data;
         } catch (error) {
-            console.error(`Error deleting record with ID ${id}:`, error.response?.data || error.message);
-            throw new Error('Error deleting record');
+            // console.error(`Không thể xóa dữ liệu Invoice với ID ${id}:`, error.response?.data || error.message);
+            throw new Error('Không thể xóa dữ liệu Invoice');
         }
     },
 };

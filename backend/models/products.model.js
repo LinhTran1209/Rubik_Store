@@ -7,8 +7,6 @@ const Products = (products) => {
   this.id_categorie = products.id_categorie;
   this.name = products.name;
   this.image_url = products.image_url;
-  this.quantity = products.quantity;
-  this.price = products.price;
   this.desc = products.desc;
   this.status = products.status;
   this.slug = products.slug;

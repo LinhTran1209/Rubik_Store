@@ -1,17 +1,28 @@
 
-const Suppliers = require("../models/suppliers.model");
+const User_addresses = require("../models/user_addresses.model");
 
 module.exports = {
   getAll: (req, res) => {
-    Suppliers.getAll((err, result) => {
+    User_addresses.getAll((err, result) => {
       if (err) return res.status(500).send(err);
       res.send(result);
     });
   },
 
+  getData: (req, res) => {
+      const querydata = req.params.querydata; 
+      const col = req.params.col; 
+      User_addresses.getData(col, querydata, (err, result) => {
+          if (err) {
+              return res.status(500).send(err); 
+          }
+          res.send(result); 
+      });
+  },
+
   getById: (req, res) => {
     const id = req.params.id;
-    Suppliers.getById(id, (err, result) => {
+    User_addresses.getById(id, (err, result) => {
       if (err) return res.status(500).send(err);
       res.send(result);
     });
@@ -19,7 +30,7 @@ module.exports = {
 
   insert: (req, res) => {
     const data = req.body;
-    Suppliers.insert(data, (err, result) => {
+    User_addresses.insert(data, (err, result) => {
       if (err) return res.status(500).send(err);
       res.send(result);
     });
@@ -28,7 +39,7 @@ module.exports = {
   update: (req, res) => {
     const data = req.body;
     const id = req.params.id;
-    Suppliers.update(data, id, (err, result) => {
+    User_addresses.update(data, id, (err, result) => {
       if (err) return res.status(500).send(err);
       res.send(result);
     });
@@ -36,7 +47,7 @@ module.exports = {
 
   delete: (req, res) => {
     const id = req.params.id;
-    Suppliers.delete(id, (err, result) => {
+    User_addresses.delete(id, (err, result) => {
       if (err) return res.status(500).send(err);
       res.send(result);
     });

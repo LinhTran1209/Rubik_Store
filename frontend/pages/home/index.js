@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import product_variantsService from "../../services/product_variantService"
 import categorieService from "../../services/categorieService";
 import productService from "../../services/productService";
 import { formatPrice }  from "../../utils/formatPrice";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 
 const Home = () => {
@@ -12,8 +13,23 @@ const Home = () => {
 
     const fetchProducts = async () => {
         try {
-            const data = await productService.getAllproducts();
-            const dataRandom = [...data].sort(() => Math.random() - 0.5);
+            const productsData = await productService.getAllproducts();
+            const variantsData = await product_variantsService.getAllVariants();
+    
+            // Lọc sản phẩm có biến thể và gán giá từ biến thể
+            const productsWithVariants = productsData
+                .map((product) => {
+                    const variants = variantsData.filter((variant) => variant.id_product === product.id_product);
+                    if (variants.length > 0) {
+                        // Lấy giá thấp nhất từ các biến thể (hoặc logic khác tùy bạn)
+                        const minPrice = Math.max(...variants.map((v) => v.price));
+                        return { ...product, price: minPrice, variants };
+                    }
+                    return null; // Bỏ qua sản phẩm không có biến thể
+                })
+                .filter((product) => product !== null);
+                
+            const dataRandom = [...productsWithVariants].sort(() => Math.random() - 0.5);
             setProducts(dataRandom);
         } catch (err) {
             setError(err.message);
@@ -102,7 +118,7 @@ const Home = () => {
                                 {categories
                                     .filter((categorie) => categorie.desc === groupedCategorie.desc)
                                     .map((categorie) => (
-                                        <Link key={categorie.id_categorie} href={`/${categorie.slug}`}>
+                                        <Link key={categorie.id_categorie} href={`/category/${categorie.slug}`}>
                                             {categorie.name}
                                         </Link>
                                     ))}
@@ -131,7 +147,7 @@ const Home = () => {
                                         )
                                     )
                                 ) : (
-                                    <li style={{ display: "flex", margin: "auto" }}>Chưa có sản phẩm</li>
+                                    <li style={{ display: "flex", margin: "auto", color: "#8a6d3b", backgroundColor: "#fcf8e3" }}>Sản phẩm đang được cập nhật. Vui lòng quay lại sau!</li>
                                 )}
                             </ul>
                         </div>

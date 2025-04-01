@@ -1,0 +1,157 @@
+.all__middle {
+    background-color: white;
+    /* margin: auto 20px; */
+}
+
+
+
+.middle_main {
+    display: flex;
+    justify-content: space-between;
+    margin:  30px 50px;
+    min-height: 800px;
+}
+
+
+.left-section {
+    width: 70%;
+}
+
+.left-section h2 {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.left-section p {
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.middle_main table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.middle_main th, td {
+    padding: 20px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    max-width: 135px; 
+    white-space: nowrap;  
+    overflow: hidden;  
+    text-overflow: ellipsis; 
+    word-wrap: break-word;
+}
+
+.middle_main th {
+    background-color: #f9f9f9;
+    font-weight: normal;
+    color: #555;
+    text-align: start;
+    font-weight: bold;
+}
+
+.middle_main td {
+    text-align: start;
+    /* color: #888; */
+
+}
+
+.right-section {
+    width: 25%;
+    background-color: #fff;
+    padding: 20px;
+
+}
+
+.middle_main table tbody tr {
+    transition: all 0.15s ease;  
+}
+
+
+.middle_main table tbody tr:hover {
+    /* background-color: #f0f0f0;  */
+    cursor: pointer;
+    background-color: #f5f5f5;  /* Thay đổi màu nền khi hover */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  /* Thêm bóng đổ nhẹ cho hàng */
+    transform: translateY(-3px);
+}
+
+.middle_main table tbody tr td:hover {
+    color: #e74c3c;  /* Thay đổi màu chữ khi hover vào ô */
+}
+
+
+.right-section h3 {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.right-section ul {
+    padding: 20px;
+    list-style: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.right-section ul li {
+    padding: 10px 0;
+    display: flex;
+    align-items: center;
+    color: #333;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient:vertical;
+    overflow:auto;
+}
+
+.right-section ul li img {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+.right-section .buttons {
+    margin-top: 20px;
+}
+
+.right-section .buttons button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.right-section .buttons .address_user {
+    background-color: rgb(55, 130, 23);
+    color: #fff;
+    border-radius: 4px;
+    transition: all 0.6s ease; 
+}
+
+
+.right-section .buttons .change_password {
+    display: block;
+    background-color: #e74c3c;
+    border-radius: 4px;
+    color: #fff;
+    transition: all 0.6s ease;
+}
+
+.right-section .buttons .address_user:hover,
+.right-section .buttons .change_password:hover {
+    /* opacity: 0.8; */
+    background-color: #555;
+}
+
+
+
+
+.td_center_account {
+    text-align: center !important;
+}

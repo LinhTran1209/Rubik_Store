@@ -2,8 +2,6 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:5000/sale_invoice_details';
 
-
-
 const formatDateFields = (data) => {
     if (Array.isArray(data)) {
         data.forEach((item) => {
@@ -25,8 +23,8 @@ const saleInvoiceDetailsService = {
             const data = response.data || [];
             return formatDateFields(data);
         } catch (error) {
-            console.error(`Error fetching details for invoice ${invoiceId}:`, error.response?.data || error.message);
-            throw new Error('Error fetching details');
+            // console.error(`Không thể tải dữ liệu Invoice Detail ${invoiceId}:`, error.response?.data || error.message);
+            throw new Error('Không thể tải dữ liệu Invoice Detail');
         }
     },
     addDetail: async (detailData) => {
@@ -34,8 +32,8 @@ const saleInvoiceDetailsService = {
             const response = await axios.post(API_URL, detailData);
             return response.data;
         } catch (error) {
-            console.error('Error adding detail:', error.response?.data || error.message);
-            throw new Error('Error adding detail');
+            // console.error('Không thể thêm dữ liệu Invoice Detail:', error.response?.data || error.message);
+            throw new Error('Không thể tải dữ liệu Invoice Detail');
         }
     },
     updateDetail: async (invoiceId, productId, detailData) => {
@@ -43,8 +41,8 @@ const saleInvoiceDetailsService = {
             const response = await axios.put(`${API_URL}/${invoiceId}/${productId}`, detailData);
             return response.data;
         } catch (error) {
-            console.error(`Error updating detail for ${invoiceId}/${productId}:`, error.response?.data || error.message);
-            throw new Error('Error updating detail');
+            // console.error(`Không thể sửa dữ liệu Invoice Detail với ID: ${invoiceId}/${productId}:`, error.response?.data || error.message);
+            throw new Error('Không thể sửa dữ liệu Invoice Detail');
         }
     },
     deleteDetail: async (invoiceId, productId) => {
@@ -52,8 +50,8 @@ const saleInvoiceDetailsService = {
             const response = await axios.delete(`${API_URL}/${invoiceId}/${productId}`);
             return response.data;
         } catch (error) {
-            console.error(`Error deleting detail for ${invoiceId}/${productId}:`, error.response?.data || error.message);
-            throw new Error('Error deleting detail');
+            // console.error(`Không thể xóa dữ liệu Invoice Detail với ID: ${invoiceId}/${productId}:`, error.response?.data || error.message);
+            throw new Error('Không thể xóa dữ liệu Invoice Detail');
         }
     },
 };

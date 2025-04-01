@@ -2,8 +2,6 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:5000/product_images';
 
-
-
 const formatDateFields = (data) => {
     if (Array.isArray(data)) {
         data.forEach((item) => {
@@ -24,8 +22,8 @@ const product_imagesService = {
             const data = response.data || [];
             return formatDateFields(data);
         } catch (error) {
-            console.error(`Error fetching details for invoice ${id_product}:`, error.response?.data || error.message);
-            throw new Error('Error fetching details');
+            // console.error(`Không thể tải dữ liệu ảnh Product ${id_product}:`, error.response?.data || error.message);
+            throw new Error('Không thể tải dữ liệu ảnh Product');
         }
     },
     add: async (Data) => {
@@ -33,8 +31,8 @@ const product_imagesService = {
             const response = await axios.post(API_URL, Data);
             return response.data;
         } catch (error) {
-            console.error('Error adding detail:', error.response?.data || error.message);
-            throw new Error('Error adding detail');
+            // console.error('Không thể thêm dữ liệu ảnh Product:', error.response?.data || error.message);
+            throw new Error('Không thể thêm dữ liệu ảnh Product');
         }
     },
     update: async (id_image, Data) => {
@@ -42,8 +40,8 @@ const product_imagesService = {
             const response = await axios.put(`${API_URL}/${id_image}`, Data);
             return response.data;
         } catch (error) {
-            console.error(`Error updating detail for ${id_image}:`, error.response?.data || error.message);
-            throw new Error('Error updating detail');
+            // console.error(`Không thể sửa dữ liệu ảnh Product với ID ${id_image}:`, error.response?.data || error.message);
+            throw new Error('Không thể sửa dữ liệu ảnh Product');
         }
     },
     delete: async (id_image) => {
@@ -51,8 +49,8 @@ const product_imagesService = {
             const response = await axios.delete(`${API_URL}/${id_image}`);
             return response.data;
         } catch (error) {
-            console.error(`Error deleting detail for ${id_image}:`, error.response?.data || error.message);
-            throw new Error('Error deleting detail');
+            // console.error(`Không thể xóa dữ liệu ảnh Product với ${id_image}:`, error.response?.data || error.message);
+            throw new Error('Không thể xóa dữ liệu ảnh Product');
         }
     },
 
@@ -67,8 +65,8 @@ const product_imagesService = {
             });
             return response.data;
         } catch (error) {
-            console.error(`Error setting main image for ${id_image}:`, error.response?.data || error.message);
-            throw new Error('Error setting main image');
+            // console.error(`Không thể set ảnh chính dữ liệu ảnh Product với ID: ${id_image}:`, error.response?.data || error.message);
+            throw new Error('Không thể set ảnh chính dữ liệu ảnh Product');
         }
     },
 
@@ -80,8 +78,8 @@ const product_imagesService = {
             });
             return response.data;
         } catch (error) {
-            console.error(`Error deleting product image for ${id_image}:`, error.response?.data || error.message);
-            throw new Error('Error deleting product image');
+            // console.error(`Không thể xóa dữ liệu ảnh Product với ID: ${id_image}:`, error.response?.data || error.message);
+            throw new Error('Không thể xóa dữ liệu ảnh Product');
         }
     },
 };

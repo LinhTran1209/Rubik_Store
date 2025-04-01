@@ -34,7 +34,7 @@ const HeaderNav = ({ categories = []}) => {
                                             "Rubik cơ bản" ? (
                                                 <li key={categorie.slug}>
                                                     <Link
-                                                        href={`/${categorie.slug}`}
+                                                        href={`/category/${categorie.slug}`}
                                                     >
                                                         {categorie.name}
                                                     </Link>
@@ -66,7 +66,7 @@ const HeaderNav = ({ categories = []}) => {
                                             "Rubik biến thể" ? (
                                                 <li key={categorie.slug}>
                                                     <Link
-                                                        href={`/${categorie.slug}`}
+                                                        href={`/category/${categorie.slug}`}
                                                     >
                                                         {categorie.name}
                                                     </Link>
@@ -100,7 +100,7 @@ const HeaderNav = ({ categories = []}) => {
                                             "Combo Rubik" ? (
                                                 <li key={categorie.slug}>
                                                     <Link
-                                                        href={`/${categorie.slug}`}
+                                                        href={`/category/${categorie.slug}`}
                                                     >
                                                         {categorie.name}
                                                     </Link>
@@ -135,7 +135,7 @@ const HeaderNav = ({ categories = []}) => {
                                             "Phụ kiện Rubik" ? (
                                                 <li key={categorie.name}>
                                                     <Link
-                                                        href={`/${categorie.slug}`}
+                                                        href={`/category/${categorie.slug}`}
                                                     >
                                                         {categorie.name}
                                                     </Link>

@@ -13,7 +13,7 @@ const HeaderHome = () => {
             const data = await categorieService.getAllcategories();
             setCategories(data);
         } catch (err) {
-            console.log(err.message);
+            console.log(err.message, 'ở HeaderHome');
         } finally {
             setLoading(false);
         }

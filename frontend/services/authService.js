@@ -10,10 +10,8 @@ const authService = {
                 { phone, password },
                 { withCredentials: true } 
             );
-            console.log('Login response:', response.data);
             return response.data; // Trả về { message, user: { phone, role } }
         } catch (error) {
-            console.error('Login error:', error);
             if (error.response) {
                 throw new Error(error.response.data.message || 'Đăng nhập thất bại');
             } else if (error.request) {
@@ -34,7 +32,6 @@ const authService = {
             console.log('Logout response:', response.data);
             return response.data; // Trả về { message: 'Đăng xuất thành công' }
         } catch (error) {
-            console.error('Logout error:', error);
             if (error.response) {
                 throw new Error(error.response.data.message || 'Đăng xuất thất bại');
             }
@@ -47,10 +44,8 @@ const authService = {
             const response = await axios.get(`${API_URL}/me`, {
                 withCredentials: true, 
             });
-            console.log('Get current user response:', response.data);
             return response.data; // Trả về { phone, role }
         } catch (error) {
-            console.error('Error fetching current user:', error);
             if (error.response) {
                 throw new Error(error.response.data.message || 'Không thể lấy thông tin user');
             }

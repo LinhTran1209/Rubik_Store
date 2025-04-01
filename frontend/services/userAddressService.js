@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/users';
+const API_URL = 'http://localhost:5000/users_addresses';
 
 
 const formatDateFields = (data) => {
@@ -16,7 +16,7 @@ const formatDateFields = (data) => {
     return data;
 };
 
-const userService = {
+const userAddressService = {
     // Bên back có làm hàm gọi theo cột và tìm trường dữ liệu
     getData: async (col, querydata) => {
         try {
@@ -29,7 +29,7 @@ const userService = {
         }
     },
 
-    getAllusers: async () => {
+    getAllusersAddress: async () => {
         try {
             const response = await axios.get(API_URL);
             const data = response.data || [];
@@ -39,7 +39,7 @@ const userService = {
             throw new Error('Không thể tải dữ liệu Users');
         }
     },
-    getuserById: async (id) => {
+    getById: async (id) => {
         try {
             const response = await axios.get(`${API_URL}/${id}`);
             return formatDateFields(response.data);
@@ -48,7 +48,7 @@ const userService = {
             throw new Error('Không thể tải dữ liệu Users với ID');
         }
     },
-    adduser: async (userData) => {
+    add: async (userData) => {
         try {
             const response = await axios.post(API_URL, userData);
             return response.data;
@@ -57,7 +57,7 @@ const userService = {
             throw new Error('Không thể thêm dữ liệu Users');
         }
     },
-    updateuser: async (id, userData) => {
+    update: async (id, userData) => {
         try {
             const response = await axios.put(`${API_URL}/${id}`, userData);
             return response.data;
@@ -66,7 +66,7 @@ const userService = {
             throw new Error('Không thể sửa dữ liệu Users');
         }
     },
-    deleteuser: async (id) => {
+    delete: async (id) => {
         try {
             const response = await axios.delete(`${API_URL}/${id}`);
             return response.data;
@@ -77,4 +77,4 @@ const userService = {
     },
 };
 
-export default userService;
+export default userAddressService;

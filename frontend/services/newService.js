@@ -22,8 +22,8 @@ const newService = {
             const data = response.data || [];
             return formatDateFields(data);
         } catch (error) {
-            console.error('Error fetching data:', error.response?.data || error.message);
-            throw new Error('Error fetching data');
+            // console.error('Không thể tải dữ liệu News:', error.response?.data || error.message);
+            throw new Error('Không thể tải dữ liệu News');
         }
     },
     getnewById: async (id) => {
@@ -31,8 +31,8 @@ const newService = {
             const response = await axios.get(`${API_URL}/${id}`);
             return formatDateFields(response.data);
         } catch (error) {
-            console.error(`Error fetching record by ID ${id}:`, error.response?.data || error.message);
-            throw new Error('Error fetching record by ID');
+            // console.error(`Không thể tải dữ liệu News với ID ${id}:`, error.response?.data || error.message);
+            throw new Error('Không thể tải dữ liệu News bằng ID');
         }
     },
     addnew: async (newData) => {
@@ -40,8 +40,8 @@ const newService = {
             const response = await axios.post(API_URL, newData);
             return response.data;
         } catch (error) {
-            console.error('Error adding record:', error.response?.data || error.message);
-            throw new Error('Error adding record');
+            // console.error('Không thể thêm dữ liệu News:', error.response?.data || error.message);
+            throw new Error('Không thể thêm dữ liệu News');
         }
     },
     updatenew: async (id, newData) => {
@@ -49,8 +49,8 @@ const newService = {
             const response = await axios.put(`${API_URL}/${id}`, newData);
             return response.data;
         } catch (error) {
-            console.error(`Error updating record with ID ${id}:`, error.response?.data || error.message);
-            throw new Error('Error updating record');
+            // console.error(`Không thể sửa dữ liệu News với ID ${id}:`, error.response?.data || error.message);
+            throw new Error('Không thể thêm dữ liệu News');
         }
     },
     deletenew: async (id) => {
@@ -58,8 +58,8 @@ const newService = {
             const response = await axios.delete(`${API_URL}/${id}`);
             return response.data;
         } catch (error) {
-            console.error(`Error deleting record with ID ${id}:`, error.response?.data || error.message);
-            throw new Error('Error deleting record');
+            // console.error(`Không thể xóa dữ liệu News với ID ${id}:`, error.response?.data || error.message);
+            throw new Error('Không thể xóa dữ liệu News');
         }
     },
 };

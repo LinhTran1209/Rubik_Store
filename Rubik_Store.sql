@@ -11,12 +11,25 @@ CREATE TABLE Users (
     name VARCHAR(200) NOT NULL,
     email VARCHAR(200) NOT NULL UNIQUE,
     phone VARCHAR(10) NOT NULL UNIQUE ,
-    address TEXT,
     password TEXT,
     status ENUM('hiện', 'ẩn') DEFAULT 'hiện',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Tạo bảng User_addresses
+CREATE TABLE User_addresses (
+    id_address INT AUTO_INCREMENT PRIMARY KEY,
+    id_user INT NOT NULL,
+    name VARCHAR(200) NOT NULL,
+    address TEXT NOT NULL,
+    phone VARCHAR(10) NOT NULL,
+    is_default BOOLEAN DEFAULT FALSE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+insert into User_addresses value (1, 2, "Trần Hồng Lĩnh", "Trịnh Mỹ - Ngô Quyền - Tiên Lữ - Hưng Yên")
 
 -- Tạo bảng Categories
 CREATE TABLE Categories (
@@ -32,11 +45,9 @@ CREATE TABLE Categories (
 -- Tạo bảng Products
 CREATE TABLE Products (
     id_product INT AUTO_INCREMENT PRIMARY KEY,
-    id_categorie INT,
+    id_categorie INT NOT NULL,
     name VARCHAR(200) NOT NULL,
     image_url VARCHAR(500),
-    quantity  INT DEFAULT 0,
-    price INT NOT NULL,
     `desc` TEXT,
     status ENUM('hiện', 'ẩn') DEFAULT 'hiện',
     slug TEXT,
@@ -53,26 +64,35 @@ CREATE TABLE Product_images (
     updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- 1 sản phẩm có nhiều thuộc tính để bán ví dụ: màu sắc, kích thước, tính năng: (có nam châm, không nam châm)
--- các thuộc tính này có thể tổ hợp với nhau để bán chính vì thế cần kiểm soát những thuộc tính này, cũng như giá trịalter
+-- sản phẩm sẽ bán theo màu sắc hoặc khônng
+-- Tạo bảng sản phẩm biến thể
+
+CREATE TABLE Product_variants (
+    id_variant INT AUTO_INCREMENT PRIMARY KEY,
+    id_product INT,
+    color ENUM('stickerless', 'black', 'không có') NOT NULL,
+    quantity INT DEFAULT 0 CHECK (quantity >= 0),
+    price INT NOT NULL CHECK (price >= 0),
+	created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+);
 
 
 -- Tạo bảng Carts
 CREATE TABLE Carts (
     id_user INT,
-    id_product INT,
-    id_attribute INT,
+	id_variant INT NOT NULL,
     quantity  INT CHECK (quantity  > 0),
     price INT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id_user, id_product)
+    PRIMARY KEY (id_user, id_variant)
 );
 
 -- Tạo bảng Sale_invoices
 CREATE TABLE Sale_invoices (
     id_sale_invoice INT AUTO_INCREMENT PRIMARY KEY,
-    id_user INT,
+    id_user INT NOT NULL,
     `desc` TEXT,
     total INT,
     pay ENUM('COD', 'QR') DEFAULT 'COD',
@@ -83,13 +103,13 @@ CREATE TABLE Sale_invoices (
 
 -- Tạo bảng Sale_invoice_details
 CREATE TABLE Sale_invoice_details (
-    id_sale_invoice INT,
-    id_product INT,
+    id_sale_invoice INT NOT NULL,
+    id_variant INT NOT NULL,
     quantity  INT CHECK (quantity  > 0),
     price INT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id_sale_invoice, id_product)
+    PRIMARY KEY (id_sale_invoice, id_variant)
 );
 
 create table News (
@@ -104,14 +124,18 @@ create table News (
 
 --  XÂY DỰNG TRIGGER
 DELIMITER $$
-
 CREATE TRIGGER after_insert_sale_invoice_details
 AFTER INSERT ON Sale_invoice_details
 FOR EACH ROW
 BEGIN
-    UPDATE Products
+    DECLARE current_quantity INT;
+    SELECT quantity INTO current_quantity FROM Product_variants WHERE id_variant = NEW.id_variant;
+    IF current_quantity < NEW.quantity THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Số lượng tồn kho không đủ';
+    END IF;
+    UPDATE Product_variants
     SET quantity = quantity - NEW.quantity
-    WHERE id_product = NEW.id_product;
+    WHERE id_variant = NEW.id_variant;
 
     UPDATE Sale_invoices
     SET total = (
@@ -121,20 +145,20 @@ BEGIN
     )
     WHERE id_sale_invoice = NEW.id_sale_invoice;
 END$$
-
 DELIMITER ;
 
 
 DELIMITER $$
-
 CREATE TRIGGER after_delete_sale_invoice_details
 AFTER DELETE ON Sale_invoice_details
 FOR EACH ROW
 BEGIN
-    UPDATE Products
+    -- Cập nhật số lượng tồn kho trong Product_variants
+    UPDATE Product_variants
     SET quantity = quantity + OLD.quantity
-    WHERE id_product = OLD.id_product;
+    WHERE id_variant = OLD.id_variant;
 
+    -- Cập nhật tổng tiền trong Sale_invoices
     UPDATE Sale_invoices
     SET total = IFNULL((
         SELECT SUM(price * quantity)
@@ -143,11 +167,11 @@ BEGIN
     ), 0)
     WHERE id_sale_invoice = OLD.id_sale_invoice;
 END$$
+DELIMITER ;;
 
-DELIMITER ;
+
 
 DELIMITER $$
-
 CREATE PROCEDURE DeleteSaleInvoice(IN invoice_id INT)
 BEGIN
     START TRANSACTION;
@@ -160,7 +184,6 @@ BEGIN
 
     COMMIT;
 END$$
-
 DELIMITER ;
 
 
@@ -169,7 +192,6 @@ DELIMITER ;
 
 -- Trigger cập nhật lại ảnh sản phẩm khi thay đổi trường ảnh chính
 DELIMITER $$
-
 CREATE PROCEDURE SetProductImageMain(
     IN p_id_image INT,
     IN p_id_product INT,
@@ -178,7 +200,6 @@ CREATE PROCEDURE SetProductImageMain(
 )
 BEGIN
     START TRANSACTION;
-
     -- Nếu is_main được đặt thành true
     IF p_is_main = 1 THEN
         -- Đặt tất cả ảnh của sản phẩm thành is_main = 0
@@ -217,20 +238,17 @@ BEGIN
     END IF;
     COMMIT;
 END$$
-
 DELIMITER ;
 
 
 
 DELIMITER $$
-
 CREATE PROCEDURE DeleteProductImage(
     IN p_id_image INT,
     IN p_id_product INT
 )
 BEGIN
     START TRANSACTION;
-
     -- Kiểm tra xem ảnh bị xóa có phải ảnh chính không
     IF (SELECT is_main FROM Product_images WHERE id_image = p_id_image) = 1 THEN
         -- Xóa bản ghi
@@ -246,10 +264,8 @@ BEGIN
         DELETE FROM Product_images
         WHERE id_image = p_id_image;
     END IF;
-
     COMMIT;
 END$$
-
 DELIMITER ;
 
 
@@ -260,14 +276,14 @@ SHOW TRIGGERS;
 --  Thêm dữ liệu mẫu
 
 -- mật khẩu được mã hóa bằng bcrypt, mật khẩu là "admin"
-INSERT INTO Users (id_user, role, name, email, phone, address, password, status) VALUES 
-(1, 'admin', 'Trần Hồng Lĩnh', 'linh3789az@gmail.com', '0344665810', 'Ngô Quyền Tiên Lữ , Hưng Yên', '$2b$10$CBSoRyUkKko8U50/MGsoxeNzyI07p4dwB/N9EWzUqayWYVocaaYhS' ,'hiện');
+INSERT INTO Users (id_user, role, name, email, phone, password, status) VALUES 
+(1, 'admin', 'Trần Hồng Lĩnh', 'linh3789az@gmail.com', '0344665810', '$2b$10$CBSoRyUkKko8U50/MGsoxeNzyI07p4dwB/N9EWzUqayWYVocaaYhS' ,'hiện');
 
 
 -- Thêm 3 bản ghi cho Employees, mật khẩu 1234567
-INSERT INTO Users (id_user, role, name, email, phone, address, password, status) VALUES
-(2, 'customer', 'Trần Thị B', 'tranthib@example.com', '0987654321', '45 Lê Lợi, TP.HCM', '$2b$10$PFQTjDLNNmWKjw7oIHMhpODcgcX6xCkIQPOPrH9NO1FPG2o2R3lGW', 'hiện'),
-(3, 'customer', 'Lê Văn C', 'levanc@example.com', '0912345678', '78 Hùng Vương, Đà Nẵng', '$2b$10$PFQTjDLNNmWKjw7oIHMhpODcgcX6xCkIQPOPrH9NO1FPG2o2R3lGW', 'hiện');
+INSERT INTO Users (id_user, role, name, email, phone, password, status) VALUES
+(2, 'customer', 'Trần Thị B', 'tranthib@example.com', '0987654321', '$2b$10$PFQTjDLNNmWKjw7oIHMhpODcgcX6xCkIQPOPrH9NO1FPG2o2R3lGW', 'hiện'),
+(3, 'customer', 'Lê Văn C', 'levanc@example.com', '0912345678', '$2b$10$PFQTjDLNNmWKjw7oIHMhpODcgcX6xCkIQPOPrH9NO1FPG2o2R3lGW', 'hiện');
 
 
 -- Thêm 3 bản ghi cho Categories

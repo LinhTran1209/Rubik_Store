@@ -4,7 +4,7 @@ const { getToken } =require('./utils/jwt')
 
 function authenticateToken(req, res, next) {
   const token = req.cookies.jwt_login;
-  console.log('Token lấy ra ở Middleware ', token);
+  // console.log('Token lấy ra ở Middleware ', token);
 
   if (!token) return res.status(401).json({ message: 'Bạn cần đăng nhập để vào trang này!' });
 

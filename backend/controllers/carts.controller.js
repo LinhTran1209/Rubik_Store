@@ -28,8 +28,8 @@ module.exports = {
   update: (req, res) => {
     const data = req.body;
     const id_user = req.params.id_user;
-    const id_product = req.params.id_product;
-    Carts.update(data, id_user, id_product, (err, result) => {
+    const id_variant = req.params.id_variant;
+    Carts.update(data, id_user, id_variant, (err, result) => {
       if (err) return res.status(500).send(err);
       res.send(result);
     });
@@ -37,8 +37,8 @@ module.exports = {
 
   delete: (req, res) => {
     const id_user = req.params.id_user;
-    const id_product = req.params.id_product;
-    Carts.delete(id_user, id_product,(err, result) => {
+    const id_variant = req.params.id_variant;
+    Carts.delete(id_user, id_variant,(err, result) => {
       if (err) return res.status(500).send(err);
       res.send(result);
     });

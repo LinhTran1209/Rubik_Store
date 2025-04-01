@@ -15,7 +15,7 @@ router.post('/logout', (req, res) => {
 
 
 router.get('/me', authenticateToken, (req, res) => {
-    console.log('User info: ', req.user);
+    // console.log('User info: ', req.user);
     res.json(req.user); 
 });
 

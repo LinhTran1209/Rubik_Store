@@ -18,6 +18,7 @@ const GenericForm = ({
     submitted,
     title = 'Mục tin',
 }) => {
+
     const [formattedValues, setFormattedValues] = useState({});
 
     useEffect(() => {
@@ -95,6 +96,10 @@ const GenericForm = ({
                             appendTo="self"
 
                         />
+                        // ) : field.type === 'checkbox' ? (
+                        //     <CheckBox 
+                                
+                        //     />
                         ) : field.type === 'price' ? (
                             <InputText
                                 id={field.name}

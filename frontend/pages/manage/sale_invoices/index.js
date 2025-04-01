@@ -1,5 +1,7 @@
+import AddInvoiceDetailForm from '../../../components/Admin_page/AddInvoiceDetailForm';
 import saleInvoiceDetailsService from '../../../services/sale_invoice_detailsService';
 import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDialog';
+import product_variantsService from '../../../services/product_variantService'
 import sale_invoiceService from '../../../services/sale_invoiceService';
 import GenericTable from '../../../components/Admin_page/GenericTable';
 import GenericForm from '../../../components/Admin_page/GenericForm';
@@ -22,7 +24,7 @@ const SaleInvoice = () => {
     
     // các hook để sử lý phần chi tiết hóa đơn
     const [details, setDetails] = useState({});
-    const [detail, setDetail] = useState({ id_sale_invoice: null, id_product: '', quantity: '', price: '', created_at: '', updated_at: '' });
+    const [detail, setDetail] = useState({ id_sale_invoice: null, id_variant: '', quantity: '', price: '', created_at: '', updated_at: '' });
     const [DetailDialog, setDetailDialog] = useState(false);
     const [deleteSaleDetailDialog, setDeleteSaleDetailDialog] = useState(false);
     const [selectedSaleDetails, setSelectedSaleDetails] = useState([]);
@@ -37,12 +39,17 @@ const SaleInvoice = () => {
 
     const [userRole, setUserRole] = useState(null);
 
+
+
+    const [variants, setVariants] = useState([]);
+
+
+
     const fetchUsers = async () => {
         try {
             const data = await userService.getAllusers();
             setUsers(data || []);
         } catch (error) {
-            console.error('Error fetching users:', error);
             toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải danh sách Khách hàng', life: 3000,});
         }
     };
@@ -52,8 +59,16 @@ const SaleInvoice = () => {
             const data = await productService.getAllproducts();
             setProducts(data || []);
         } catch (error) {
-            console.error('Error fetching products:', error);
             toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải danh sách sản phẩm', life: 3000});
+        }
+    };
+
+    const fetchVariants = async () => {
+        try {
+            const data = await product_variantsService.getAllVariants(); 
+            setVariants(data || []);
+        } catch (error) {
+            toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải danh sách biến thể sản phẩm', life: 3000 });
         }
     };
 
@@ -97,6 +112,7 @@ const SaleInvoice = () => {
             show_invoices();
             fetchUsers();
             fetchProducts();
+            fetchVariants();
         }
     }, [userRole]);
 
@@ -125,7 +141,7 @@ const SaleInvoice = () => {
 
     const openNewDetail = (id_sale_invoice) => {
         setIsAdd(true);
-        setDetail({ id_sale_invoice: id_sale_invoice, id_product: '', quantity: '', price: '' });
+        setDetail({ id_sale_invoice: id_sale_invoice, id_variant: '', quantity: '', price: '', color: '' });
         setSubmittedSaleDetail(false);
         setDetailDialog(true);
     };
@@ -137,7 +153,7 @@ const SaleInvoice = () => {
 
     const hideDialogDetail = () => {
         setDetailDialog(false);
-        setDetail({ id_sale_invoice: null, id_product: '', quantity: '', price: '' });
+        setDetail({ id_sale_invoice: null, id_variant: '', quantity: '', price: '' });
     };
 
     const savesaleInvoice = () => { //Lưu hóa đơn này
@@ -188,10 +204,10 @@ const SaleInvoice = () => {
         hideDialogInvoice();
     };
 
-    const savesaleDetail = () => { //Lưu chi tiết hóa đơn
+    const savesaleDetail = async (detail, isAdd) => { //Lưu chi tiết hóa đơn
         // Kiểm tra các đầu vào bắt buộc
         setSubmittedSaleDetail(true);
-        if (!detail.id_product || !detail.quantity || !detail.price) {
+        if (!detail.id_variant  || !detail.quantity || !detail.price) {
             toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Vui lòng điền đầy đủ thông tin', life: 3000 });
             return;
         }
@@ -206,43 +222,28 @@ const SaleInvoice = () => {
             return;
         }
 
+
+        // hideDialogDetail();
+        
         const detailData = { ...detail };
         const invoiceId = detailData.id_sale_invoice;
-
         const requestedQuantity = parseInt(detailData.quantity);
-        const productId = parseInt(detailData.id_product);
+        const variantID = parseInt(detailData.id_variant);
+
+        detailData.updated_at = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
+        detailData.created_at = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
+
 
         if (!isAdd) { //Nếu không phải thêm mới thì cập nhật
-            // Kiểm tra xem có thay đổi gì không
-            if (Array.isArray(details[invoiceId]) && details[invoiceId].some((dt) => JSON.stringify(dt) === JSON.stringify(detailData))) {
-                toast.current.show({ severity: 'info', summary: 'Thông báo', detail: 'Không có thay đổi nào được thực hiện', life: 3000 });
-                return;
-            }
-
-            if (products.some((product) => product.id_product === productId && product.quantity < requestedQuantity )) {
-                toast.current.show({ severity: 'info', summary: 'Thông báo', detail: 'Số lượng sản phẩm không đủ', life: 3000});
-                return;
-            }
-
-            detailData.updated_at = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
-            detailData.created_at = new Date(new Date(detailData.created_at).setDate(new Date(detailData.created_at).getDate() + 1)).toISOString().split('T')[0];
-
-            saleInvoiceDetailsService.updateDetail(detail.id_sale_invoice, detail.id_product, detailData)
-                .then(() => {
-                    fetchDetails(detail.id_sale_invoice);
-                    toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Cập nhật thành công', life: 3000});
-                })
-                .catch((error) => {
-                    toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Cập nhật thất bại', life: 3000});
-                });
+            // không làm update nhé
         } else { //Phần thêm mới
             // Kiểm tra xem sản phẩm đã có trong chi tiết hóa đơn chưa
-            if ( Array.isArray(details[invoiceId]) && details[invoiceId].some((dt) => dt.id_product == detailData.id_product)) {
+            if ( Array.isArray(details[invoiceId]) && details[invoiceId].some((dt) => dt.id_variant == detailData.id_variant)) {
                 toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Sản phẩm đã có trong chi tiết hóa đơn', life: 3000});
                 return;
             }
 
-            if ( products.some( (product) => product.id_product === productId && product.quantity < requestedQuantity)) {
+            if ( variants.some( (product) => product.id_variant === variantID && product.quantity < requestedQuantity)) {
                 toast.current.show({ severity: 'info', summary: 'Thông báo', detail: 'Số lượng sản phẩm không đủ', life: 3000});
                 return;
             }
@@ -298,7 +299,7 @@ const SaleInvoice = () => {
     };
 
     const deletesaleDetail = () => {
-        saleInvoiceDetailsService.deleteDetail(detail.id_sale_invoice, detail.id_product)
+        saleInvoiceDetailsService.deleteDetail(detail.id_sale_invoice, detail.id_variant)
             .then(() => {
                 fetchDetails(detail.id_sale_invoice);
                 setDeleteSaleDetailDialog(false);
@@ -319,7 +320,6 @@ const SaleInvoice = () => {
         setDetail((prev) => ({ ...prev, [itemId]: val }));
     };
 
-
     // Các options cho xổ xuống trong form tra từ dữ liệu dropdown
     const userOptions = users.map((user) => ({
         label: `#${user.id_user} ${user.name}`,
@@ -333,10 +333,14 @@ const SaleInvoice = () => {
         { label: 'Hoàn thành', value: 'Hoàn thành' },
     ];
 
-    const productOptions = products.map((product) => ({
-        label: `#${product.id_product} ${product.name}`,
-        value: product.id_product,
-    }));
+    // {detail.id_variant && (
+    //     <CheckboxGroup
+    //         label="Chọn màu sắc"
+    //         value={detail.color}
+    //         options={colorOptions}
+    //         onChange={(e) => setDetail({ ...detail, color: e.value })}
+    //     />
+    // )}
 
     const paymentOptions = [
         { label: 'COD', value: 'COD' },
@@ -352,20 +356,27 @@ const SaleInvoice = () => {
                 return user ? user.name : rowData.id_user; // Chỉ hiển thị tên trong bảng
             },
         },
-        { field: 'desc', header: 'Mô tả' },
         { field: 'total', header: 'Tổng tiền', format: 'price' },
         { field: 'pay', header: 'Thanh toán' },
         { field: 'status', header: 'Trạng thái' },
+        { field: 'desc', header: 'Ghi chú' },
         { field: 'created_at', header: 'Ngày tạo', format: 'date' },
         { field: 'updated_at', header: 'Ngày cập nhật', format: 'date' },
     ];
 
     const detailColumns = [
-        { field: 'id_product', header: 'Sản phẩm',
+        { field: 'id_variant', header: 'Sản phẩm',
             render: (rowData) => {
-                const product = products.find((p) => p.id_product === rowData.id_product);
-                return product ? product.name : rowData.id_product; // Chỉ hiển thị tên trong bảng
+                const variant = variants.find((p) => p.id_variant === rowData.id_variant);
+                const product = products.find((p) => p.id_product === variant.id_product)
+                return product ? product.name : rowData.id_variant; // Chỉ hiển thị tên trong bảng
             },
+        },
+        { feild: 'color', header: 'Biến thể',
+            render: (rowData) => {
+                const variant = variants.find((p) => p.id_variant === rowData.id_variant)
+                return variant ? variant.color : 'không có'
+            }
         },
         { field: 'quantity', header: 'Số lượng' },
         { field: 'price', header: 'Đơn giá', format: 'price' },
@@ -405,7 +416,7 @@ const SaleInvoice = () => {
                                 onEdit={!notification(invoice, '') ? editsaleDetail : null}
                                 onDelete={!notification(invoice, '') ? confirmDeletesaleDetail : null}
                                 openNew={!notification(invoice, '') ? () => openNewDetail(invoice.id_sale_invoice) : null}
-                                dataKey="id_product"
+                                dataKey="id_varient"
                                 title={`Chi tiết hóa đơn ${invoice.id_sale_invoice}`}
                                 disabled={notification(invoice, '')}
                             />
@@ -419,12 +430,11 @@ const SaleInvoice = () => {
                 item={sale_invoice}
                 fields={[
                     { name: 'id_sale_invoice', label: 'ID', disabled: true, hidden: !sale_invoice.id_sale_invoice},
-                    // Hiển thị #id Tên trong dropdown
                     { name: 'id_user', label: 'Khách hàng', required: true, type: 'dropdown', options: userOptions},
-                    { name: 'desc', label: 'Mô tả', required: true },
                     { name: 'total', label: 'Tổng tiền', disabled: true, hidden: !sale_invoice.id_sale_invoice, type: 'price'},
-                    { name: 'pay', label: 'Thanh toán', required: true, type: 'dropdown', options: paymentOptions,},
                     { name: 'status', label: 'Trạng thái', required: true, type: 'dropdown', options: statusOptions },
+                    { name: 'pay', label: 'Thanh toán', required: true, type: 'dropdown', options: paymentOptions,},
+                    { name: 'desc', label: 'Ghi chú', required: true },
                     { name: 'created_at', label: 'Ngày tạo', disabled: true, hidden: !sale_invoice.id_sale_invoice, type: 'date'},
                     { name: 'updated_at', label: 'Ngày chỉnh sửa', disabled: true, hidden: !sale_invoice.id_sale_invoice, type: 'date'},
                 ]}
@@ -435,12 +445,13 @@ const SaleInvoice = () => {
                 title={sale_invoice.id_sale_invoice ? 'Sửa hóa đơn bán' : 'Thêm hóa đơn bán'}
             />
 
-            <GenericForm
+            {/* <GenericForm
                 visible={DetailDialog}
                 item={detail}
                 fields={[
                     // Hiển thị #id Tên trong dropdown
                     { name: 'id_product', label: 'Sản phẩm', required: true, disabled: !isAdd, type: 'dropdown', options: productOptions},
+                    { name: 'color', label: 'Màu sắc', type: 'dropdown', options: colorOptions, hidden: detail.id_variant === 'không có' },
                     { name: 'quantity', label: 'Số lượng', required: true },
                     { name: 'price', label: 'Đơn giá', required: true, type: 'price' },
                     { name: 'created_at', label: 'Ngày tạo', disabled: true, hidden: isAdd },
@@ -451,6 +462,18 @@ const SaleInvoice = () => {
                 onHide={hideDialogDetail}
                 submitted={submittedSaleDetail}
                 title={isAdd ? 'Thêm chi tiết hóa đơn' : 'Sửa chi tiết hóa đơn'}
+            /> */}
+
+            <AddInvoiceDetailForm
+                visible={DetailDialog} 
+                onHide={() => setDetailDialog(false)}
+                onSave={savesaleDetail}
+                detail={detail}
+                isAdd={isAdd}
+                products={products}
+                variantsData={variants}
+                invoiceId={selectedSaleInvoices ?  selectedSaleInvoices[0] : null}
+                title={isAdd ? 'Thêm chi tiết hóa đơn' : 'Chi tiết hóa đơn'}
             />
 
             <ConfirmDeleteDialog

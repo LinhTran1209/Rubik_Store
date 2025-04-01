@@ -22,8 +22,8 @@ const cartService = {
             const response = await axios.get(`${API_URL}/${id_user}`);
             return formatDateFields(response.data);
         } catch (error) {
-            console.error(`Error fetching record by ID ${id_user}:`, error.response?.data || error.message);
-            throw new Error('Error fetching record by ID');
+            // console.error(`Không thể lấy dữ liệu cart từ ID ${id_user}:`, error.response?.data || error.message);
+            throw new Error('Không thể lấy dữ liệu cart từ ID');
         }
     },
 
@@ -32,31 +32,29 @@ const cartService = {
             const response = await axios.post(API_URL, data);
             return response.data;
         } catch (error) {
-            console.error('Error adding record:', error.response?.data || error.message);
-            throw new Error('Error adding record');
+            // console.error('Không thể thêm bản ghi carts', error.response?.data || error.message);
+            throw new Error('Không thể thêm bản ghi carts');
         }
     },
 
-    update: async (id_user, id_product, data) => {
+    update: async (id_user, id_variant, data) => {
         try {
-            const response = await axios.put(`${API_URL}/${id_user}/${id_product}`, data);
+            const response = await axios.put(`${API_URL}/${id_user}/${id_variant}`, data);
             return response.data;
         } catch (error) {
-            console.error(`Error updating record with ID ${id_user, id_product}:`, error.response?.data || error.message);
-            throw new Error('Error updating record');
+            // console.error(`Không thể update được bản ghi carts bằng id: ${id_user, id_variant}:`, error.response?.data || error.message);
+            throw new Error('Không thể update được bản ghi carts');
         }
     },
-    delete: async (id_user, id_product) => {
+    delete: async (id_user, id_variant) => {
         try {
-            const response = await axios.delete(`${API_URL}/${id_user}/${id_product}`);
+            const response = await axios.delete(`${API_URL}/${id_user}/${id_variant}`);
             return response.data;
         } catch (error) {
-            console.error(`Error deleting record with ID ${id_user, id_product}:`, error.response?.data || error.message);
-            throw new Error('Error deleting record');
+            // console.error(`Không thể xóa bản ghi carts với ID ${id_user, id_variant}:`, error.response?.data || error.message);
+            throw new Error('Không thể xóa bản ghi carts');
         }
     },
-
-
 };
 
 export default cartService;

@@ -1,5 +1,5 @@
 
-const Users = require("../models/users.model");
+const Product_variants = require("../models/product_variants.model");
 
 module.exports = {
 
@@ -7,15 +7,16 @@ module.exports = {
   getData: (req, res) => {
       const querydata = req.params.querydata; 
       const col = req.params.col; 
-      Users.getData(col, querydata, (err, result) => {
+      Product_variants.getData(col, querydata, (err, result) => {
           if (err) {
               return res.status(500).send(err); 
           }
           res.send(result); 
       });
   },
+
   getAll: (req, res) => {
-    Users.getAll((err, result) => {
+    Product_variants.getAll((err, result) => {
       if (err) return res.status(500).send(err);
       res.send(result);
     });
@@ -23,7 +24,7 @@ module.exports = {
 
   getById: (req, res) => {
     const id = req.params.id;
-    Users.getById(id, (err, result) => {
+    Product_variants.getById(id, (err, result) => {
       if (err) return res.status(500).send(err);
       res.send(result);
     });
@@ -31,7 +32,7 @@ module.exports = {
 
   insert: (req, res) => {
     const data = req.body;
-    Users.insert(data, (err, result) => {
+    Product_variants.insert(data, (err, result) => {
       if (err) return res.status(500).send(err);
       res.send(result);
     });
@@ -40,7 +41,7 @@ module.exports = {
   update: (req, res) => {
     const data = req.body;
     const id = req.params.id;
-    Users.update(data, id, (err, result) => {
+    Product_variants.update(data, id, (err, result) => {
       if (err) return res.status(500).send(err);
       res.send(result);
     });
@@ -48,7 +49,7 @@ module.exports = {
 
   delete: (req, res) => {
     const id = req.params.id;
-    Users.delete(id, (err, result) => {
+    Product_variants.delete(id, (err, result) => {
       if (err) return res.status(500).send(err);
       res.send(result);
     });

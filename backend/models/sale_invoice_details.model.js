@@ -3,7 +3,7 @@ const db = require("../common/db");
 
 const Sale_invoice_details = (sale_invoice_details) => {
   this.id_sale_invoice = sale_invoice_details.id_sale_invoice;
-  this.id_product = sale_invoice_details.id_product;
+  this.id_variant = sale_invoice_details.id_variant;
   this.quantity = sale_invoice_details.quantity;
   this.price = sale_invoice_details.price;
   this.created_at = sale_invoice_details.created_at;
@@ -12,9 +12,9 @@ const Sale_invoice_details = (sale_invoice_details) => {
 };
 
 
-Sale_invoice_details.getById = (id_sale_invoice, id_product, callback) => {
-  const sqlString = "SELECT * FROM sale_invoice_details WHERE id_sale_invoice = ? AND id_product = ?";
-  db.query(sqlString, [id_sale_invoice, id_product], (err, result) => {
+Sale_invoice_details.getById = (id_sale_invoice, id_variant, callback) => {
+  const sqlString = "SELECT * FROM sale_invoice_details WHERE id_sale_invoice = ? AND id_variant = ?";
+  db.query(sqlString, [id_sale_invoice, id_variant], (err, result) => {
     if (err) return callback(err);
     callback(null, result[0] || null); // Trả về bản ghi đầu tiên hoặc null
   });
@@ -45,19 +45,19 @@ Sale_invoice_details.insert = (sale_invoice_details, callback) => {
   });
 };
 
-Sale_invoice_details.update = (sale_invoice_details, id_sale_invoice, id_product, callback) => {
-  const sqlString = "UPDATE sale_invoice_details SET ? WHERE id_sale_invoice = ? AND id_product = ?";
-  db.query(sqlString, [sale_invoice_details, id_sale_invoice, id_product], (err, res) => {
+Sale_invoice_details.update = (sale_invoice_details, id_sale_invoice, id_variant, callback) => {
+  const sqlString = "UPDATE sale_invoice_details SET ? WHERE id_sale_invoice = ? AND id_variant = ?";
+  db.query(sqlString, [sale_invoice_details, id_sale_invoice, id_variant], (err, res) => {
     if (err) return callback(err);
-    callback(null, `Cập nhật Sale_invoice_details có id_sale_invoice = ${id_sale_invoice} và id_product = ${id_product} thành công`);
+    callback(null, `Cập nhật Sale_invoice_details có id_sale_invoice = ${id_sale_invoice} và id_variant = ${id_variant} thành công`);
   });
 };
 
-Sale_invoice_details.delete = (id_sale_invoice, id_product, callback) => {
-  const sqlString = "DELETE FROM sale_invoice_details WHERE id_sale_invoice = ? AND id_product = ?";
-  db.query(sqlString, [id_sale_invoice, id_product], (err, res) => {
+Sale_invoice_details.delete = (id_sale_invoice, id_variant, callback) => {
+  const sqlString = "DELETE FROM sale_invoice_details WHERE id_sale_invoice = ? AND id_variant = ?";
+  db.query(sqlString, [id_sale_invoice, id_variant], (err, res) => {
     if (err) return callback(err);
-    callback(null, `Xóa Sale_invoice_details có id_sale_invoice = ${id_sale_invoice} và id_product = ${id_product} thành công`);
+    callback(null, `Xóa Sale_invoice_details có id_sale_invoice = ${id_sale_invoice} và id_variant = ${id_variant} thành công`);
   });
 };
 

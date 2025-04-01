@@ -2,6 +2,17 @@
 const Sale_invoices = require("../models/sale_invoices.model");
 
 module.exports = {
+
+  getData: (req, res) => {
+      const querydata = req.params.querydata; 
+      const col = req.params.col; 
+      Sale_invoices.getData(col, querydata, (err, result) => {
+          if (err) {
+              return res.status(500).send(err); 
+          }
+          res.send(result); 
+      });
+  },
   getAll: (req, res) => {
     Sale_invoices.getAll((err, result) => {
       if (err) return res.status(500).send(err);

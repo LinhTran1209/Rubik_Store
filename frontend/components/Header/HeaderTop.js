@@ -19,7 +19,6 @@ const HeaderTop = () => {
                 const user = await authService.getCurrentUser();
                 setUserRole({ phone: user.phone, role: user.role });
             } catch (error) {
-                console.error("Không lấy được người dùng gần đây:", error);
                 setUserRole({ phone: "", role: "" });
             } finally {
                 setLoading(false); 
@@ -41,7 +40,6 @@ const HeaderTop = () => {
             }
             window.location.href = "/home";
         } catch (error) {
-            console.error("Logout failed:", error);
             alert("Đăng xuất thất bại, vui lòng thử lại.");
         }
     };
@@ -53,7 +51,7 @@ const HeaderTop = () => {
             const user = await userService.getData("phone", userRole.phone)
             setUser(user[0]);
         } catch (err) {
-            console.log(err.message)
+            console.log(err.message, 'ở HeaderTop')
         }
     }
 
@@ -65,7 +63,7 @@ const HeaderTop = () => {
             setCart(carts);
             fetchProducts(carts);
         } catch (err) {
-            console.log(err.message);
+            console.log(err.message, 'ở HeaderTop');
             setLoading(false);
         }
     };
@@ -88,7 +86,6 @@ const HeaderTop = () => {
     const fetchProducts = async (carts) => {
         try {
             const productIds = carts.map(cart => cart.id_product);
-            console.log('lấy id',productIds)
             const productsData = await productService.getproductById(productIds); 
             setProducts(productsData);
         } catch (err) {
@@ -97,8 +94,8 @@ const HeaderTop = () => {
     };
 
 
-    console.log('là cart', carts)
-    console.log('product lấy ra từ cart', products)
+    // console.log('là cart', carts)
+    // console.log('product lấy ra từ cart', products)
 
 
     if (loading) {

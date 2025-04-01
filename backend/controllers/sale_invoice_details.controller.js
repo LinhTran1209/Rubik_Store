@@ -11,13 +11,13 @@ module.exports = {
 
   getById: (req, res) => {
     const id_sale_invoice = parseInt(req.params.id1); // Lấy id1 từ route
-    const id_product = parseInt(req.params.id2);     // Lấy id2 từ route
+    const id_variant = parseInt(req.params.id2);     // Lấy id2 từ route
   
     // Kiểm tra dữ liệu đầu vào
-    if (isNaN(id_sale_invoice) || isNaN(id_product)) {
+    if (isNaN(id_sale_invoice) || isNaN(id_variant)) {
       return res.status(400).send({ error: 'ID phải là số hợp lệ' });
     }
-    Sale_invoice_details.getById(id_sale_invoice, id_product, (err, result) => {
+    Sale_invoice_details.getById(id_sale_invoice, id_variant, (err, result) => {
       if (err) return res.status(500).send({ error: 'Lỗi server', details: err });
       if (!result) return res.status(404).send({ error: 'Không tìm thấy bản ghi' });
       res.send(result);
@@ -43,13 +43,13 @@ module.exports = {
   update: (req, res) => {
     const data = req.body;
     const id_sale_invoice = parseInt(req.params.id1); // Lấy id1 từ route
-    const id_product = parseInt(req.params.id2);     // Lấy id2 từ route
+    const id_variant = parseInt(req.params.id2);     // Lấy id2 từ route
   
     // Kiểm tra dữ liệu đầu vào
-    if (isNaN(id_sale_invoice) || isNaN(id_product)) {
+    if (isNaN(id_sale_invoice) || isNaN(id_variant)) {
       return res.status(400).send({ error: 'ID phải là số hợp lệ' });
     }
-    Sale_invoice_details.update(data, id_sale_invoice, id_product, (err, result) => {
+    Sale_invoice_details.update(data, id_sale_invoice, id_variant, (err, result) => {
       if (err) return res.status(500).send(err);
       res.send(result);
     });
@@ -57,14 +57,14 @@ module.exports = {
 
   delete: (req, res) => {
     const id_sale_invoice = parseInt(req.params.id1); // Lấy id1 từ route
-    const id_product = parseInt(req.params.id2);     // Lấy id2 từ route
+    const id_variant = parseInt(req.params.id2);     // Lấy id2 từ route
   
     // Kiểm tra dữ liệu đầu vào
-    if (isNaN(id_sale_invoice) || isNaN(id_product)) {
+    if (isNaN(id_sale_invoice) || isNaN(id_variant)) {
       return res.status(400).send({ error: 'ID phải là số hợp lệ' });
     }
 
-    Sale_invoice_details.delete(id_sale_invoice, id_product, (err, result) => {
+    Sale_invoice_details.delete(id_sale_invoice, id_variant, (err, result) => {
       if (err) return res.status(500).send(err);
       res.send(result);
     });

@@ -18,7 +18,7 @@ import '../styles/css/manualRubik.css';
 import '../styles/css/modal_login_register.css';
 import '../styles/css/detail_product.css';
 import '../styles/css/rubik2x2x2.css';
-
+import '../styles/css/account.css';
 
 
 //LayoutWeb này là layout cho trang web bán hàng

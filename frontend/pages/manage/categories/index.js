@@ -201,8 +201,8 @@ function Categorie() {
                 item={categorie}
                 fields={[
                     { name: 'id_categorie', label: 'ID Loại sản phẩm', disabled: true, hidden: !categorie.id_categorie }, // Ẩn khi thêm, readonly khi sửa
-                    { name: 'name', label: 'Loại sản phẩm', required: true },
                     { name: 'desc', label: 'Thuộc danh mục', required: true, type: 'dropdown', options: descOptions },
+                    { name: 'name', label: 'Loại sản phẩm', required: true },
                     { name: 'created_at', label: 'Ngày tạo', required: true, disabled: true, hidden: !categorie.id_categorie, type: 'date' },
                     { name: 'updated_at', label: 'Ngày cập nhật', required: true, disabled: true, hidden: !categorie.id_categorie, type: 'date' },
                 ]}

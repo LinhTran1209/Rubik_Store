@@ -26,7 +26,6 @@ function User() {
             const data = await userService.getAllusers();
             setusers(data);
         } catch (error) {
-            console.error('Lỗi khi lấy dữ liệu:', error);
             toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải dữ liệu', life: 3000 });
         }
     };
@@ -189,7 +188,6 @@ function User() {
         { field: 'name', header: 'Họ tên' },
         { field: 'email', header: 'Email' },
         { field: 'phone', header: 'Số điện thoại' },
-        { field: 'address', header: 'Địa chỉ' },
         { field: 'created_at', header: 'Ngày tạo', format: 'date' },
         { field: 'updated_at', header: 'Ngày cập nhật', format: 'date' },
     ];
@@ -221,7 +219,6 @@ function User() {
                     { name: 'name', label: 'Họ tên', required: true },
                     { name: 'email', label: 'Email', required: true },
                     { name: 'phone', label: 'Số điện thoại', required: true },
-                    { name: 'address', label: 'Địa chỉ', required: true },
                     { name: 'created_at', label: 'Ngày tạo', required: true, disabled: true, hidden: !user.id_user, type: 'date' },
                     { name: 'updated_at', label: 'Ngày cập nhật', required: true, disabled: true, hidden: !user.id_user, type: 'date' },
                 ]}

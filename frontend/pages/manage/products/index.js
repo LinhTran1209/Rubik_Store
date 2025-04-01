@@ -1,5 +1,6 @@
 import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDialog';
 import product_imagesService from '../../../services/product_imageService';
+import product_variantsService from '../../../services/product_variantService';
 import GenericTable from '../../../components/Admin_page/GenericTable';
 import GenericForm from '../../../components/Admin_page/GenericForm';
 import categorieService from '../../../services/categorieService';
@@ -9,9 +10,9 @@ import authService from '../../../services/authService';
 import { Toast } from 'primereact/toast';
 
 const Product = () => {
-    // State cho sản phẩm, các trạng thái dialog và xóa
+    // State cho sản phẩm
     const [products, setProducts] = useState([]);
-    const [product, setProduct] = useState({ id_product: null, id_categorie: '', name: '', image_url: '', quantity: '', price: '', desc: '', slug: '', created_at: '', updated_at: '' });
+    const [product, setProduct] = useState({ id_product: null, id_categorie: '', name: '', image_url: '', desc: '', slug: '', created_at: '', updated_at: '' });
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
@@ -19,7 +20,7 @@ const Product = () => {
     const [submitted, setSubmitted] = useState(false);
     const [globalFilterProduct, setGlobalFilterProduct] = useState('');
 
-    // State cho ảnh sản phẩm, các trạng thái dialog và xóa
+    // State cho ảnh sản phẩm
     const [productImages, setProductImages] = useState({});
     const [productImage, setProductImage] = useState({ id_image: null, id_product: null, image_url: '', is_main: '', created_at: '', updated_at: '' });
     const [productImageDialog, setProductImageDialog] = useState(false);
@@ -27,7 +28,15 @@ const Product = () => {
     const [selectedProductImages, setSelectedProductImages] = useState([]);
     const [submittedProductImage, setSubmittedProductImage] = useState(false);
     const [globalFilterImage, setGlobalFilterImage] = useState('');
-    
+
+    // State cho biến thể sản phẩm 
+    const [productVariants, setProductVariants] = useState({});
+    const [productVariant, setProductVariant] = useState({ id_variant: null, id_product: null, color: '', quantity: '', price: '', created_at: '', updated_at: '' });
+    const [productVariantDialog, setProductVariantDialog] = useState(false);
+    const [deleteProductVariantDialog, setDeleteProductVariantDialog] = useState(false);
+    const [selectedProductVariants, setSelectedProductVariants] = useState([]);
+    const [submittedProductVariant, setSubmittedProductVariant] = useState(false);
+    const [globalFilterVariant, setGlobalFilterVariant] = useState('');
 
     // Trạng thái chung
     const [categories, setCategories] = useState([]);
@@ -35,42 +44,49 @@ const Product = () => {
     const [userRole, setUserRole] = useState(null);
     const toast = useRef(null);
 
-    // lấy loại sản phẩm
+    // Fetch categories
     const fetchCategories = async () => {
         try {
             const data = await categorieService.getAllcategories();
             setCategories(data || []);
         } catch (error) {
-            console.error('Error fetching categories:', error);
             toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải danh sách loại sản phẩm', life: 3000 });
         }
     };
 
-    // lấy danh sách ảnh sản phẩm theo product chọn
+    // Fetch product images
     const fetchProductImages = async (id_product) => {
         try {
             const data = await product_imagesService.getByIdProduct(id_product);
             setProductImages((prev) => ({ ...prev, [id_product]: Array.isArray(data) ? data : [] }));
         } catch (error) {
-            console.error('Error fetching product images:', error);
             setProductImages((prev) => ({ ...prev, [id_product]: [] }));
             toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải danh sách hình ảnh', life: 3000 });
         }
     };
 
+    // Fetch product variants 
+    const fetchProductVariants = async (id_product) => {
+        try {
+            const data = await product_variantsService.getData("id_product", id_product);
+            setProductVariants((prev) => ({ ...prev, [id_product]: Array.isArray(data) ? data : [] }));
+        } catch (error) {
+            setProductVariants((prev) => ({ ...prev, [id_product]: [] }));
+            toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải danh sách biến thể', life: 3000 });
+        }
+    };
 
     const showProducts = async () => {
         try {
             const data = await productService.getAllproducts();
             setProducts(data || []);
         } catch (error) {
-            console.error('Lỗi khi lấy dữ liệu:', error);
             setProducts([]);
             toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải dữ liệu', life: 3000 });
         }
     };
 
-    // Kiểm tra quyền admin tìm kiếm từ cookie lấy token
+    // Check admin role
     useEffect(() => {
         const fetchUserRole = async () => {
             try {
@@ -84,7 +100,7 @@ const Product = () => {
         fetchUserRole();
     }, []);
 
-    // mount khi vào lần đầu
+    // Mount lần đầu
     useEffect(() => {
         if (userRole === 'admin') {
             showProducts();
@@ -92,18 +108,21 @@ const Product = () => {
         }
     }, [userRole]);
 
-    // Thay đổi khi product được chọn feach ra những ảnh sản phẩm đúng theo product
+    // Fetch images và variants khi chọn sản phẩm
     useEffect(() => {
         selectedProducts.forEach((product) => {
             if (!productImages[product.id_product]) {
                 fetchProductImages(product.id_product);
             }
+            if (!productVariants[product.id_product]) {
+                fetchProductVariants(product.id_product);
+            }
         });
     }, [selectedProducts]);
 
-    // Tạo mới sản phẩm
+    // Product handlers 
     const openNewProduct = () => {
-        setProduct({ id_product: null, id_categorie: '', name: '', image_url: '', quantity: 10, price: '', desc: 'ok', slug: '', status: 'hiện' });
+        setProduct({ id_product: null, id_categorie: '', name: '', image_url: '', desc: 'ok', slug: '', status: 'hiện' });
         setSubmitted(false);
         setProductDialog(true);
     };
@@ -113,40 +132,24 @@ const Product = () => {
         setProductDialog(false);
     };
 
-    const saveProduct = () => { // Lưu sản phẩm
+    const saveProduct = () => {
         setSubmitted(true);
-        // Kiểm tra các trường bắt buộc
-        if (!product.id_categorie || !product.name || !product.quantity || !product.price) {
+        if (!product.id_categorie || !product.name) {
             toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Vui lòng điền đầy đủ thông tin bắt buộc', life: 3000 });
             return;
         }
-
-        if (isNaN(product.quantity) || Number(product.quantity) < 0) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Số lượng phải là số không âm', life: 3000 });
-            return;
-        }
-
-        if (isNaN(product.price) || Number(product.price) <= 0) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Giá phải là số dương', life: 3000 });
-            return;
-        }
-
         const productData = { ...product };
-        if (product.id_product) { // Cập nhật sản phẩm nếu có id_product
-            // kiểm tra xem ccos thay đổi không
+        if (product.id_product) {
             if (products.some((p) => JSON.stringify(p) === JSON.stringify(productData))) {
                 toast.current.show({ severity: 'info', summary: 'Thông báo', detail: 'Không có thay đổi nào được thực hiện', life: 3000 });
                 return;
             }
-            // kiểm tra xem tên sản phẩm đã tồn tại chưa trừ chính nó
             if (products.some((p) => p.name === productData.name && p.id_product !== productData.id_product)) {
                 toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Tên sản phẩm đã tồn tại', life: 3000 });
                 return;
             }
-
             productData.updated_at = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
             productData.created_at = new Date(new Date(productData.created_at).setDate(new Date(productData.created_at).getDate() + 1)).toISOString().split('T')[0];
-
             productService.updateproduct(product.id_product, productData)
                 .then(() => {
                     showProducts();
@@ -155,13 +158,11 @@ const Product = () => {
                 .catch(() => {
                     toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Cập nhật thất bại', life: 3000 });
                 });
-        } else { // Thêm sản phẩm mới
-            // kiểm tra xem tên sản phẩm đã tồn tại chưa
+        } else {
             if (products.some((p) => p.name === productData.name)) {
                 toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Tên sản phẩm đã tồn tại', life: 3000 });
                 return;
             }
-
             productService.addproduct(productData)
                 .then(() => {
                     showProducts();
@@ -213,7 +214,7 @@ const Product = () => {
             });
     };
 
-    // Hàm xử lý ảnh sản phẩm
+    // Product Image handlers 
     const openNewProductImage = (id_product) => {
         setIsAdd(true);
         setProductImage({ id_image: null, id_product: id_product, image_url: '', is_main: '' });
@@ -232,28 +233,21 @@ const Product = () => {
             toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Vui lòng điền đầy đủ thông tin', life: 3000 });
             return;
         }
-
         const productImageData = { ...productImage, is_main: productImage.is_main === 'Yes' };
         const idProduct = productImageData.id_product;
-
-
         if (!isAdd) {
             if (Array.isArray(productImages[idProduct]) && productImages[idProduct].some((img) => JSON.stringify(img) === JSON.stringify(productImageData))) {
                 toast.current.show({ severity: 'info', summary: 'Thông báo', detail: 'Không có thay đổi nào được thực hiện', life: 3000 });
                 return;
             }
-
             productImageData.updated_at = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
             productImageData.created_at = new Date(new Date(productImageData.created_at).setDate(new Date(productImageData.created_at).getDate() + 1)).toISOString().split('T')[0];
-
-            // console.log(productImageData);
             product_imagesService.setMainImage(productImageData.id_image, idProduct, productImageData.image_url, productImageData.is_main)
                 .then(() => {
                     fetchProductImages(idProduct);
                     toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Cập nhật ảnh thành công', life: 3000 });
                 })
                 .catch((error) => {
-                    console.error('Error updating product image:', error);
                     toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Cập nhật thất bại', life: 3000 });
                 });
         } else {
@@ -261,10 +255,9 @@ const Product = () => {
                 toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Ảnh này đã tồn tại', life: 3000 });
                 return;
             }
-
             product_imagesService.add(productImageData)
                 .then((response) => {
-                    const newImageId = response.id || response.id_image; // Lấy id từ response
+                    const newImageId = response.id || response.id_image;
                     if (productImageData.is_main) {
                         product_imagesService.setMainImage(newImageId, idProduct, productImageData.image_url, true)
                             .then(() => {
@@ -272,7 +265,6 @@ const Product = () => {
                                 toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Thêm và đặt ảnh chính thành công', life: 3000 });
                             })
                             .catch((error) => {
-                                console.error('Error setting main image:', error);
                                 toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Đặt ảnh chính thất bại', life: 3000 });
                             });
                     } else {
@@ -281,7 +273,6 @@ const Product = () => {
                     }
                 })
                 .catch((error) => {
-                    console.error('Error adding product image:', error);
                     toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Thêm thất bại', life: 3000 });
                 });
         }
@@ -311,7 +302,129 @@ const Product = () => {
             });
     };
 
-    // Xử lý input
+    // Product Variant handlers 
+    const openNewProductVariant = (id_product) => {
+        setIsAdd(true);
+        setProductVariant({ id_variant: null, id_product: id_product, color: '', quantity: '', price: ''});
+        setSubmittedProductVariant(false);
+        setProductVariantDialog(true);
+    };
+
+    const hideDialogProductVariant = () => {
+        setSubmittedProductVariant(false);
+        setProductVariantDialog(false);
+    };
+
+    const saveProductVariant = () => {
+        setSubmittedProductVariant(true);
+        if (!productVariant.color || !productVariant.quantity || !productVariant.price) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Vui lòng điền đầy đủ thông tin', life: 3000 });
+            return;
+        }
+        if (isNaN(productVariant.quantity) || Number(productVariant.quantity) < 0) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Số lượng phải là số không âm', life: 3000 });
+            return;
+        }
+        if (isNaN(productVariant.price) || Number(productVariant.price) <= 0) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Giá phải là số dương', life: 3000 });
+            return;
+        }
+    
+        const productVariantData = { ...productVariant };
+        const idProduct = productVariantData.id_product;
+        const existingVariants = productVariants[idProduct] || [];
+    
+        // Kiểm tra logic màu sắc
+        const hasStickerlessOrBlack = existingVariants.some((variant) => 
+            variant.color === 'stickerless' || variant.color === 'black'
+        );
+        const hasNoColor = existingVariants.some((variant) => variant.color === 'không có');
+    
+        if (isAdd) {
+            // Thêm mới
+            if (productVariantData.color === 'không có' && hasStickerlessOrBlack) {
+                toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Không thể thêm màu khác nữa!', life: 3000 });
+                return;
+            }
+            if ((productVariantData.color === 'stickerless' || productVariantData.color === 'black') && hasNoColor) {
+                toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Không thể thêm màu khác nữa!', life: 3000 });
+                return;
+            }
+            if (existingVariants.some((variant) => variant.color === productVariantData.color)) {
+                toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Màu này đã tồn tại cho sản phẩm', life: 3000 });
+                return;
+            }
+        } else {
+            // Cập nhật
+            const originalVariant = existingVariants.find((v) => v.id_variant === productVariantData.id_variant);
+            if (originalVariant.color !== productVariantData.color) { // Nếu thay đổi màu
+                if (productVariantData.color === 'không có' && hasStickerlessOrBlack) {
+                    toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Không thể sửa màu khác nữa!', life: 3000 });
+                    return;
+                }
+                if ((productVariantData.color === 'stickerless' || productVariantData.color === 'black') && hasNoColor) {
+                    toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Không thể sửa màu khác nữa!', life: 3000 });
+                    return;
+                }
+                if (existingVariants.some((variant) => variant.color === productVariantData.color && variant.id_variant !== productVariantData.id_variant)) {
+                    toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Màu này đã tồn tại cho sản phẩm', life: 3000 });
+                    return;
+                }
+            }
+            if (JSON.stringify(originalVariant) === JSON.stringify(productVariantData)) {
+                toast.current.show({ severity: 'info', summary: 'Thông báo', detail: 'Không có thay đổi nào được thực hiện', life: 3000 });
+                return;
+            }
+        }
+    
+        if (!isAdd) {
+            productVariantData.updated_at = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
+            productVariantData.created_at = new Date(new Date(productVariantData.created_at).setDate(new Date(productVariantData.created_at).getDate() + 1)).toISOString().split('T')[0];
+            product_variantsService.update(productVariantData.id_variant, productVariantData)
+                .then(() => {
+                    fetchProductVariants(idProduct);
+                    toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Cập nhật biến thể thành công', life: 3000 });
+                })
+                .catch(() => {
+                    toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Cập nhật thất bại', life: 3000 });
+                });
+        } else {
+            product_variantsService.add(productVariantData)
+                .then(() => {
+                    fetchProductVariants(idProduct);
+                    toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Thêm biến thể thành công', life: 3000 });
+                })
+                .catch(() => {
+                    toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Thêm thất bại', life: 3000 });
+                });
+        }
+        hideDialogProductVariant();
+    };
+
+    const editProductVariant = (variant) => {
+        setIsAdd(false);
+        setProductVariant({ ...variant });
+        setProductVariantDialog(true);
+    };
+
+    const confirmDeleteProductVariant = (variant) => {
+        setProductVariant(variant);
+        setDeleteProductVariantDialog(true);
+    };
+
+    const deleteProductVariant = () => {
+        product_variantsService.delete(productVariant.id_variant)
+            .then(() => {
+                fetchProductVariants(productVariant.id_product);
+                setDeleteProductVariantDialog(false);
+                toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Xóa biến thể thành công', life: 3000 });
+            })
+            .catch(() => {
+                toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Xóa thất bại', life: 3000 });
+            });
+    };
+
+    // Input handlers
     const onInputChangeProduct = (e, itemName) => {
         const val = (e.target && e.target.value) || '';
         setProduct((prev) => ({ ...prev, [itemName]: val }));
@@ -322,7 +435,12 @@ const Product = () => {
         setProductImage((prev) => ({ ...prev, [itemName]: val }));
     };
 
-    // Cấu hình bảng và form
+    const onInputChangeProductVariant = (e, itemName) => {
+        const val = (e.target && e.target.value) || '';
+        setProductVariant((prev) => ({ ...prev, [itemName]: val }));
+    };
+
+    // Table and form config
     const productColumns = [
         { field: 'id_product', header: 'ID' },
         {
@@ -335,17 +453,22 @@ const Product = () => {
         },
         { field: 'name', header: 'Tên sản phẩm' },
         { field: 'image_url', header: 'Ảnh chính', format: 'image' },
-        { field: 'quantity', header: 'Số lượng' },
-        { field: 'price', header: 'Giá', format: 'price' },
         { field: 'desc', header: 'Mô tả' },
         { field: 'created_at', header: 'Ngày tạo', format: 'date' },
         { field: 'updated_at', header: 'Ngày cập nhật', format: 'date' },
     ];
 
     const productImageColumns = [
-        // { field: 'id_image', header: 'ID' },
         { field: 'image_url', header: 'Link ảnh', format: 'image' },
         { field: 'is_main', header: 'Ảnh chính', render: (rowData) => (rowData.is_main ? 'Yes' : 'No') },
+        { field: 'created_at', header: 'Ngày tạo', format: 'date' },
+        { field: 'updated_at', header: 'Ngày cập nhật', format: 'date' },
+    ];
+
+    const productVariantColumns = [
+        { field: 'color', header: 'Màu sắc' },
+        { field: 'quantity', header: 'Số lượng' },
+        { field: 'price', header: 'Giá', format: 'price' },
         { field: 'created_at', header: 'Ngày tạo', format: 'date' },
         { field: 'updated_at', header: 'Ngày cập nhật', format: 'date' },
     ];
@@ -358,6 +481,12 @@ const Product = () => {
     const isMainOptions = [
         { label: "Yes", value: "Yes" },
         { label: "No", value: "No" },
+    ];
+
+    const colorOptions = [
+        { label: 'Stickerless', value: 'stickerless' },
+        { label: 'Black', value: 'black' },
+        { label: 'Không có', value: 'không có' },
     ];
 
     return (
@@ -384,6 +513,20 @@ const Product = () => {
                     {selectedProducts.map((prod) => (
                         <div key={prod.id_product} style={{ marginTop: '1rem' }}>
                             <GenericTable
+                                data={productVariants[prod.id_product] || []}
+                                selectedItems={selectedProductVariants}
+                                setSelectedItems={setSelectedProductVariants}
+                                globalFilter={globalFilterVariant}
+                                setGlobalFilter={setGlobalFilterVariant}
+                                columns={productVariantColumns}
+                                onEdit={editProductVariant}
+                                onDelete={confirmDeleteProductVariant}
+                                openNew={() => openNewProductVariant(prod.id_product)}
+                                dataKey="id_variant"
+                                title={`Biến thể của sản phẩm ${prod.id_product}`}
+                            />
+
+                            <GenericTable
                                 data={productImages[prod.id_product] || []}
                                 selectedItems={selectedProductImages}
                                 setSelectedItems={setSelectedProductImages}
@@ -408,9 +551,7 @@ const Product = () => {
                     { name: 'id_product', label: 'ID', disabled: true, hidden: !product.id_product },
                     { name: 'id_categorie', label: 'Loại sản phẩm', required: true, type: 'dropdown', options: categoryOptions },
                     { name: 'name', label: 'Tên sản phẩm', required: true },
-                    // { name: 'image_url', label: 'Link ảnh', required: true, type: 'image' },
-                    { name: 'quantity', label: 'Số lượng', required: true },
-                    { name: 'price', label: 'Giá', required: true, type: 'price' },
+                    { name: 'image_url', label: 'Link ảnh', required: true, type: 'image' },
                     { name: 'desc', label: 'Mô tả', required: true },
                     { name: 'created_at', label: 'Ngày tạo', disabled: true, hidden: !product.id_product, type: 'date' },
                     { name: 'updated_at', label: 'Ngày cập nhật', disabled: true, hidden: !product.id_product, type: 'date' },
@@ -426,10 +567,8 @@ const Product = () => {
                 visible={productImageDialog}
                 item={productImage}
                 fields={[
-                    // { name: 'id_image', label: 'ID', disabled: true, hidden: !productImage.id_image },
-                    // { name: 'id_product', label: 'ID Sản phẩm', disabled: true, hidden: !isAdd },
-                    { name: 'image_url', label: 'Link ảnh', required: true },
                     { name: 'is_main', label: 'Ảnh chính', required: true, type: 'dropdown', options: isMainOptions },
+                    { name: 'image_url', label: 'Link ảnh', required: true },
                     { name: 'created_at', label: 'Ngày tạo', disabled: true, hidden: isAdd, type: 'date' },
                     { name: 'updated_at', label: 'Ngày cập nhật', disabled: true, hidden: isAdd, type: 'date' },
                 ]}
@@ -438,6 +577,23 @@ const Product = () => {
                 onHide={hideDialogProductImage}
                 submitted={submittedProductImage}
                 title={isAdd ? 'Thêm ảnh sản phẩm' : 'Sửa ảnh sản phẩm'}
+            />
+
+            <GenericForm
+                visible={productVariantDialog}
+                item={productVariant}
+                fields={[
+                    { name: 'color', label: 'Màu sắc', required: true, type: 'dropdown', options: colorOptions },
+                    { name: 'quantity', label: 'Số lượng', required: true, type: 'price' },
+                    { name: 'price', label: 'Giá', required: true, type: 'price' },
+                    { name: 'created_at', label: 'Ngày tạo', disabled: true, hidden: isAdd, type: 'date' },
+                    { name: 'updated_at', label: 'Ngày cập nhật', disabled: true, hidden: isAdd, type: 'date' },
+                ]}
+                onChange={onInputChangeProductVariant}
+                onSave={saveProductVariant}
+                onHide={hideDialogProductVariant}
+                submitted={submittedProductVariant}
+                title={isAdd ? 'Thêm biến thể sản phẩm' : 'Sửa biến thể sản phẩm'}
             />
 
             <ConfirmDeleteDialog
@@ -465,6 +621,15 @@ const Product = () => {
                 item={productImage}
                 idField="id_image"
                 renderMessage={(item) => <span>Bạn có chắc muốn xóa ảnh <b>{item.image_url}</b>?</span>}
+            />
+
+            <ConfirmDeleteDialog
+                visible={deleteProductVariantDialog}
+                onHide={() => setDeleteProductVariantDialog(false)}
+                onConfirm={deleteProductVariant}
+                item={productVariant}
+                idField="id_variant"
+                renderMessage={(item) => <span>Bạn có chắc muốn xóa biến thể <b>{item.color}</b>?</span>}
             />
         </div>
     );

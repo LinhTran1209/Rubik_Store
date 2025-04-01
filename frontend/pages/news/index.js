@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import newService from '../../services/newService';
 import Link from 'next/link';
-import {formatDate} from '../../utils/formatDate';
+import { formatDate } from '../../utils/formatDate';
 
 const News = () => {
     const [newsList, setNewsList] = useState([]);
@@ -16,7 +16,7 @@ const News = () => {
             setError(null);
         } catch (err) {
             setError('Không thể tải danh sách tin tức');
-            console.error(err);
+            console.log(err.message, 'ở news web');
         } finally {
             setLoading(false);
         }
@@ -45,29 +45,33 @@ const News = () => {
                 ) : error ? (
                     <div className="error-message">{error}</div>
                 ) : (
-                    <ul className="newslist">
-                        {newsList.map((news) => (
-                            <li key={news.id}>
-                                <div className="line-a"></div>
-                                <Link href={news.href || '#'}>
-                                    <div className="tempvideo">
-                                        <img
-                                            src={news.image_url || '/assets/img-news/default.jpg'}
-                                            alt={news.title}
-                                            className="img-video"
-                                        />
-                                    </div>
-                                    <div className="text-tempvideo" style={{ position: 'relative' }}>
-                                        <h3>{news.title}</h3>
-                                        <span style={{ marginTop: '20px' }}>
-                                            {news.desc || 'Chưa có mô tả'}
-                                        </span>
-                                        <span style={{ position: 'absolute', color: '#b10000', right: '0', bottom: '0', fontSize:'12px'}}>Ngày đăng: {formatDate(news.created_at)}</span>
-                                    </div>
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
+                    Array.isArray(newsList) && newsList.length > 0 && (
+                        <ul className="newslist">
+                            {newsList.map((news) => (
+                                <li key={news.id}>
+                                    <div className="line-a"></div>
+                                    <Link href={news.href || '#'}>
+                                        <div className="tempvideo">
+                                            <img
+                                                src={news.image_url || '/assets/img-news/default.jpg'}
+                                                alt={news.title}
+                                                className="img-video"
+                                            />
+                                        </div>
+                                        <div className="text-tempvideo" style={{ position: 'relative' }}>
+                                            <h3>{news.title}</h3>
+                                            <span style={{ marginTop: '20px' }}>
+                                                {news.desc || 'Chưa có mô tả'}
+                                            </span>
+                                            <span style={{ position: 'absolute', color: '#b10000', right: '0', bottom: '0', fontSize: '12px' }}>
+                                                Ngày đăng: {formatDate(news.created_at)}
+                                            </span>
+                                        </div>
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    )
                 )}
             </div>
         </div>

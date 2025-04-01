@@ -1,6 +1,7 @@
-import categorieService from "../services/categorieService";
-import productService from "../services/productService";
-import { formatPrice } from  "../utils/formatPrice";
+import product_variantsService from "../../services/product_variantService"; 
+import categorieService from "../../services/categorieService";
+import productService from "../../services/productService";
+import { formatPrice } from  "../../utils/formatPrice";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
@@ -44,12 +45,23 @@ const ProductCategoreis = () => {
     const fetchProducts = async () => {
         try {
             const productsData = await productService.getDataproducts("id_categorie", categorie.id_categorie);
-            setProducts(productsData);
-            setTotalProducts(productsData.length);
+            const productsWithVariants = await Promise.all(
+                productsData.map(async (product) => {
+                    const variants = await product_variantsService.getData("id_product", product.id_product);
+                    if (variants.length > 0) {
+                        const minPrice = Math.min(...variants.map((v) => v.price));
+                        return { ...product, price: minPrice, variants };
+                    }
+                    return null;
+                })
+            );
+            const filteredProducts = productsWithVariants.filter((p) => p !== null);
+            setProducts(filteredProducts);
+            setTotalProducts(filteredProducts.length);
         } catch (err) {
             console.log(err.message);
         }
-      };
+    };
 
     // được mount khi slug_categories thay đổi
     useEffect(() => {
@@ -73,9 +85,9 @@ const ProductCategoreis = () => {
         setSortOrder(order);
         const sortedProducts = [...products];
         if (order === "asc") {
-        sortedProducts.sort((a, b) => a.price - b.price); // Giá từ thấp đến cao
+            sortedProducts.sort((a, b) => a.price - b.price); // Giá từ thấp đến cao
         } else if (order === "desc") {
-        sortedProducts.sort((a, b) => b.price - a.price); // Giá từ cao đến thấp
+            sortedProducts.sort((a, b) => b.price - a.price); // Giá từ cao đến thấp
         }
         setProducts(sortedProducts);
     };
@@ -96,13 +108,13 @@ const ProductCategoreis = () => {
             <div className="all__section-header">
                 <span className="all__section-header-text"><Link href="/home">Trang chủ</Link></span>
                 <span className="all__section-header-text"><Link href={`/home`}>{categorie.desc}</Link></span>
-                <span className="all__section-header-text"><Link href={`/${categorie.slug}`}>{categorie.name}</Link></span>
+                <span className="all__section-header-text"><Link href={`/category/${categorie.slug}`}>{categorie.name}</Link></span>
             </div>
     
             <div className="all__section-col-main">
                 <div className="all-section-select">
                     {categories.map((category) => (
-                    <Link key={category.slug} href={`/${category.slug}`}>
+                    <Link key={category.slug} href={`/category/${category.slug}`}>
                         {category.name}
                     </Link>
                     ))}
