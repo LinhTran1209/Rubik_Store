@@ -21,7 +21,7 @@ News.getById = (id, callback) => {
 };
 
 News.getAll = (callback) => {
-  const sqlString = "SELECT * FROM News";
+  const sqlString = "SELECT * FROM News ORDER BY id_new DESC";
   db.query(sqlString, (err, result) => {
     if (err) return callback(err);
     callback(null, result);

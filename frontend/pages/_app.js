@@ -7,9 +7,6 @@ import 'primeicons/primeicons.css';
 import '../styles/layout/layout.scss';
 import '../styles/demo/Demos.scss';
 
-
-
-
 import '../styles/css/base.css';
 import '../styles/css/index.css';
 import '../styles/css/introduce.css';
@@ -19,6 +16,7 @@ import '../styles/css/modal_login_register.css';
 import '../styles/css/detail_product.css';
 import '../styles/css/rubik2x2x2.css';
 import '../styles/css/account.css';
+import '../styles/css/user_address.css';
 
 
 //LayoutWeb này là layout cho trang web bán hàng

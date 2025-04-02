@@ -84,13 +84,15 @@ const Account = () => {
     }, [user]);
 
     const handleRowClick = (invoiceId) => {
-        // window.location.href = `/orders/${invoiceId}`;
         router.push(`/order/${invoiceId}`);
     };
 
     const handleChangePassword = () => {
-        // window.location.href = `/orders/${invoiceId}`;
-        router.push(`/changepassword`);
+        router.push(`/account/changepassword`);
+    };
+
+    const handleAddress = () => {
+        router.push(`/account/addresses`);
     };
 
     return (
@@ -142,8 +144,8 @@ const Account = () => {
                                             <td>{formatPrice(invoice.total)}</td>
                                             <td>
                                                 {invoice.pay}
-                                            </td>{" "}
-                                            <td>{invoice.shipping_address}</td>{" "}
+                                            </td>
+                                            <td>{userAddress.find((addr) => addr.id_address === invoice.id_address)?.address || "Không có địa chỉ"}</td>
                                             <td>{invoice.desc}</td>
                                             <td>{invoice.status}</td>
                                         </tr>
@@ -176,44 +178,43 @@ const Account = () => {
                                 src="https://bizweb.dktcdn.net/100/316/286/themes/757383/assets/user.svg?1738317141988"
                                 alt="icon"
                             />{" "}
-                            Tên tài khoản: {user.name}
+                            <strong>Tên tài khoản:</strong> {user.name}
                         </li>
                         <li>
                             <img
                                 src="https://bizweb.dktcdn.net/100/316/286/themes/757383/assets/home.svg?1738317141988"
                                 alt="icon"
                             />{" "}
-                            Địa chỉ:
+                            <strong>Địa chỉ:</strong> {userAddress.length}
                         </li>
                         <li>
                             <img
                                 src="https://bizweb.dktcdn.net/100/316/286/themes/757383/assets/telephone.svg?1738317141988"
                                 alt="icon"
                             />{" "}
-                            Điện thoại: {user.phone}
+                            <strong>Điện thoại:</strong> {user.phone}
                         </li>
                         <li>
                             <img
                                 src="https://res.cloudinary.com/dzweargsr/image/upload/v1743411123/icon_email_ddhq4g.ico"
                                 alt="icon"
                             />{" "}
-                            Email: {user.email}
+                            <strong>Email:</strong> {user.email}
                         </li>
                         <li>
                             <img
                                 src="https://bizweb.dktcdn.net/100/316/286/themes/757383/assets/map-marker.svg?1738317141988"
                                 alt="icon"
                             />{" "}
-                            Địa chỉ mặc định:{" "}
+                            <strong>Địa chỉ mặc định:</strong>{" "}
                             {userAddress.length > 0
-                                ? userAddress[0].address
-                                : null}
+                                ? userAddress.find((address) => address.is_default == 1).address
+                                : null
+                            }
                         </li>
                     </ul>
                     <div className="buttons">
-                        <button className="address_user">
-                            ĐỊA CHỈ ({userAddress.length})
-                        </button>
+                        <button className="address_user" onClick={() => handleAddress()}>ĐỊA CHỈ ({userAddress.length})</button>
                         <button className="change_password" onClick={() => handleChangePassword()}>ĐỔI MẬT KHẨU</button>
                     </div>
                 </div>

@@ -2,6 +2,7 @@ import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDia
 import GenericTable from '../../../components/Admin_page/GenericTable';
 import GenericForm from '../../../components/Admin_page/GenericForm';
 import categorieService from '../../../services/categorieService';
+import productService from '../../../services/productService';
 import React, { useState, useEffect, useRef } from 'react';
 import authService from '../../../services/authService';
 import { Toast } from 'primereact/toast';
@@ -128,7 +129,13 @@ function Categorie() {
         setDeletecategorieDialog(true);
     };
 
-    const deletecategorie = () => {
+    const deletecategorie = async  () => {
+        const checkdata = await productService.getDataproducts('id_categorie', categorie.id_categorie)
+        if (checkdata.length > 0) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Bản ghi này không thể xóa do có dữ liệu phụ thuộc vào.', life: 3000 });
+            return;
+        }
+
         categorieService.deletecategorie(categorie.id_categorie)
             .then(() => {
                 show();

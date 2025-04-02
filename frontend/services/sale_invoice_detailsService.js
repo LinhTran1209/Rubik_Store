@@ -16,6 +16,16 @@ const formatDateFields = (data) => {
 };
 
 const saleInvoiceDetailsService = {
+
+    getData: async (col, querydata) => {
+        try {
+            const response = await axios.get(`${API_URL}/getData/${col}/${querydata}`);
+            const data = response.data || [];
+            return formatDateFields(data);
+        } catch (error) {
+            throw new Error('Không thể tải dữ liệu Invoice Detail');
+        }
+    },
     getAllByInvoiceId: async (invoiceId) => {
         try {
             console.log(invoiceId)

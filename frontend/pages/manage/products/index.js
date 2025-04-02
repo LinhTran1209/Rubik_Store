@@ -1,3 +1,4 @@
+import saleInvoiceDetailsService from '../../../services/sale_invoice_detailsService';
 import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDialog';
 import product_imagesService from '../../../services/product_imageService';
 import product_variantsService from '../../../services/product_variantService';
@@ -186,6 +187,11 @@ const Product = () => {
     };
 
     const deleteProduct = () => {
+        const checkData = product_variantsService.getData("id_product", product.id_product)
+        if (checkData) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Bản ghi này không thể xóa do có dữ liệu phụ thuộc vào.', life: 3000 });
+            return;
+        }
         productService.deleteproduct(product.id_product)
             .then(() => {
                 showProducts();
@@ -412,7 +418,12 @@ const Product = () => {
         setDeleteProductVariantDialog(true);
     };
 
-    const deleteProductVariant = () => {
+    const deleteProductVariant = async () => {
+        const checkData = await saleInvoiceDetailsService.getData("id_variant", productVariant.id_variant)
+        if (checkData.length > 0) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Bản ghi này không thể xóa do có dữ liệu phụ thuộc vào.', life: 3000 });
+            return;
+        }
         product_variantsService.delete(productVariant.id_variant)
             .then(() => {
                 fetchProductVariants(productVariant.id_product);

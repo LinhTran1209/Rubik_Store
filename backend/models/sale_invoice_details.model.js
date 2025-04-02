@@ -10,7 +10,13 @@ const Sale_invoice_details = (sale_invoice_details) => {
   this.updated_at = sale_invoice_details.updated_at;
 
 };
-
+Sale_invoice_details.getData = (col, querydata, callback) => {
+  const sqlString = `SELECT * FROM sale_invoice_details WHERE ?? = ?`;
+  db.query(sqlString, [col, querydata], (err, result) => {
+    if (err) return callback(err);
+    callback(null, result);
+  });
+};
 
 Sale_invoice_details.getById = (id_sale_invoice, id_variant, callback) => {
   const sqlString = "SELECT * FROM sale_invoice_details WHERE id_sale_invoice = ? AND id_variant = ?";

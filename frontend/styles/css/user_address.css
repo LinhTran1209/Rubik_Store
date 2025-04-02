@@ -1,0 +1,163 @@
+.middle__address {
+    background-color: white;
+    height: auto;
+}
+
+.middle__address_main {
+    margin: 30px 100px;
+    /* min-height: 700px; */
+    height: 1200px;
+}
+
+.middle__address_title {
+    display: flex;
+    justify-content: space-between;
+}
+
+.add__address {
+    margin-top: 20px;
+}
+
+.btn-add_address {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #fff;
+    background-color: rgb(55, 130, 23);
+    transition: all 0.3s ease;
+}
+
+.btn-add_address:hover {
+    background-color: #555;
+}
+
+.row__address_main {
+    float: left;
+    width: 100%;
+}
+
+.row__address {
+    margin-top: 50px;
+    display: flex;
+    position: relative;
+}
+
+.row__address::before {
+    content: '';
+    position: absolute; 
+    top: -25px;
+    left: 0; 
+    width: 100%;
+    height: 1px; 
+    background-color: #ddd;
+    z-index: 5; 
+}
+  
+.row__address__left {
+    flex: 1;
+}
+
+.row__address__left p {
+    margin-bottom: 15px;
+}
+
+.action__row__address__left {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.btn-edit__address,
+.btn-delete__address,
+.btn-update__address,
+.btn-cancel__edit {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #fff;
+    background-color: rgb(55, 130, 23);
+    transition: all 0.3s ease;
+}
+
+.btn-edit__address:hover,
+.btn-delete__address:hover,
+.btn-update__address:hover,
+.btn-cancel__edit:hover {
+    background-color: #555;
+}
+
+
+
+.row__address__right {
+    flex: 1;
+    display: block;
+}
+
+.form__edit__address {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 15px;
+}
+
+.form__edit__address label {
+    font-weight: bold;
+}
+
+.action__row__address__right {
+    gap: 10px;
+    display: flex;
+    flex-direction: row;
+    margin-top: 15px;
+}
+
+.form__edit__address .input-edit__address {
+    /* width: 80%; */
+    border: 2px solid #e6e6e6;
+    border-radius: 3px;
+    padding: 15px;
+    outline: none;
+
+}
+
+
+
+
+
+
+
+/* Hiệu ứng đóng mở form */
+.slide-form {
+    overflow: hidden;
+    animation: slideUp 0.3s ease-in-out forwards; /* Mặc định là đóng */
+}
+
+.slide-form.open {
+    animation: slideDown 0.3s ease-in-out forwards; /* Khi mở */
+}
+
+@keyframes slideDown {
+    from {
+        height: 0;
+        opacity: 0;
+    }
+    to {
+        height: 350px; /* Điều chỉnh dựa trên chiều cao thực tế của form */
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        height: 350px;
+        opacity: 1;
+    }
+    to {
+        height: 0;
+        opacity: 0;
+    }
+}

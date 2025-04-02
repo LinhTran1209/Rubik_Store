@@ -20,7 +20,7 @@ Carts.getById = (id_user, callback) => {
 
 
 Carts.getAll = (callback) => {
-  const sqlString = "SELECT * FROM carts";
+  const sqlString = "SELECT * FROM carts ORDER BY created_at DESC";
   db.query(sqlString, (err, result) => {
     if (err) return callback(err);
     callback(null, result);

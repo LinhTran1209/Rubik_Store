@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import CustomToast from "../../components/CustomToast";
-import userService from '../../services/userService';
-import authService from "../../services/authService";
+import CustomToast from "../../../components/CustomToast";
+import userService from '../../../services/userService';
+import authService from "../../../services/authService";
 import Link from 'next/link';
 import bcrypt from 'bcryptjs';
 
@@ -144,9 +144,14 @@ const ChangePassword = () => {
                                 </div>
                             </div>
 
-                            <div className="back-to-account" style={{marginTop: "20px", fontSize: "16px", textAlign: "end"}}>
-                                <Link href="/account" className="back-link">
-                                    <span className="arrow-icon">←</span> Quay lại trang tài khoản
+                            <div className="back-to-account" style={{marginTop: "20px", fontWeight: 'bold', textAlign: "end"}}>
+                                <Link href="/account" className="back-link" >
+                                    <span className="arrow-icon" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                        <svg viewBox="0 0 512.076 512.076"  style={{width:"15px"}}>
+                                            <path style={{fill: "rgb(55, 130, 23)"}} d="M178.5,140.25v-102L0,216.75l178.5,178.5V290.7c127.5,0,216.75,40.8,280.5,130.05C433.5,293.25,357,165.75,178.5,140.25z"></path>
+                                        </svg>  
+                                        Quay lại trang tài khoản
+                                    </span> 
                                 </Link>
                             </div>
 

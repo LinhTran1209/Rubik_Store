@@ -29,7 +29,7 @@ Sale_invoices.getById = (id, callback) => {
 };
 
 Sale_invoices.getAll = (callback) => {
-  const sqlString = "SELECT * FROM sale_invoices";
+  const sqlString = "SELECT * FROM sale_invoices ORDER BY id_sale_invoice DESC";
   db.query(sqlString, (err, result) => {
     if (err) return callback(err);
     callback(null, result);

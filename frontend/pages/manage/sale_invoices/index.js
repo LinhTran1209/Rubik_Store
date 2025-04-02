@@ -4,6 +4,7 @@ import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDia
 import product_variantsService from '../../../services/product_variantService'
 import sale_invoiceService from '../../../services/sale_invoiceService';
 import GenericTable from '../../../components/Admin_page/GenericTable';
+import userAddressService from '../../../services/userAddressService';
 import GenericForm from '../../../components/Admin_page/GenericForm';
 import productService from '../../../services/productService';
 import React, { useState, useEffect, useRef } from 'react';
@@ -14,7 +15,7 @@ import { Toast } from 'primereact/toast';
 const SaleInvoice = () => {
     // các hook để sử lý phần hóa đơn
     const [sale_invoices, setSaleInvoices] = useState([]);
-    const [sale_invoice, setSaleInvoice] = useState({id_sale_invoice: null, id_user: '', desc: '', total: '', pay: '', status: '', created_at: '', updated_at: ''});
+    const [sale_invoice, setSaleInvoice] = useState({id_sale_invoice: null, id_user: '', id_address: '', desc: '', total: '', pay: '', status: '', created_at: '', updated_at: ''});
     const [sale_invoiceDialog, setSaleInvoiceDialog] = useState(false);
     const [selectedSaleInvoices, setSelectedSaleInvoices] = useState([]);
     const [deleteSaleInvoiceDialog, setDeleteSaleInvoiceDialog] = useState(false);
@@ -42,6 +43,8 @@ const SaleInvoice = () => {
 
 
     const [variants, setVariants] = useState([]);
+    const [userAddress, setUserAddress] = useState([])
+    const [addressOptions, setAddressOptions] = useState([]);
 
 
 
@@ -53,6 +56,15 @@ const SaleInvoice = () => {
             toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải danh sách Khách hàng', life: 3000,});
         }
     };
+
+    const fetchUser_Addresses = async () => {
+        try {
+            const data = await userAddressService.getAllusersAddress();
+            setUserAddress(data)
+        } catch (error) {
+            toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải danh sách địa chỉ', life: 3000,});
+        }
+    }
 
     const fetchProducts = async () => {
         try {
@@ -111,6 +123,7 @@ const SaleInvoice = () => {
         if (userRole === 'admin') {
             show_invoices();
             fetchUsers();
+            fetchUser_Addresses();
             fetchProducts();
             fetchVariants();
         }
@@ -134,7 +147,8 @@ const SaleInvoice = () => {
     };
 
     const openNewInvoice = () => {
-        setSaleInvoice({ id_sale_invoice: null, id_user: '', desc: '', total: 0, pay: 'COD', status: 'Đang xác nhận'});
+        setSaleInvoice({ id_sale_invoice: null, id_user: '', id_address: '', desc: '', total: 0, pay: 'COD', status: 'Đang xác nhận'});
+        setAddressOptions([]);
         setSubmittedSaleInvoice(false);
         setSaleInvoiceDialog(true);
     };
@@ -159,7 +173,7 @@ const SaleInvoice = () => {
     const savesaleInvoice = () => { //Lưu hóa đơn này
         // Kiểm tra các đầu vào bắt buộc
         setSubmittedSaleInvoice(true);
-        if (!sale_invoice.id_user || !sale_invoice.pay || !sale_invoice.status) {
+        if (!sale_invoice.id_user || !sale_invoice.pay || !sale_invoice.status || !sale_invoice.id_address) {
             toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Vui lòng điền đầy đủ thông tin bắt buộc', life: 3000});
             return;
         }
@@ -266,6 +280,11 @@ const SaleInvoice = () => {
     const editsaleInvoice = (sale_invoice) => {
         // if (notification(sale_invoice, 'sửa')) return;
         setSaleInvoice({ ...sale_invoice });
+        const userAddresses = userAddress.filter((addr) => addr.id_user === sale_invoice.id_user);
+        setAddressOptions(userAddresses.map((addr) => ({
+            label: `#${addr.phone} ${addr.address}`, // Giả sử trường address chứa tên địa chỉ
+            value: addr.id_address // Giả sử id_address là khóa chính của địa chỉ
+        })));
         setSaleInvoiceDialog(true);
     };
 
@@ -312,7 +331,17 @@ const SaleInvoice = () => {
 
     const onInputChangeInvoice = (e, itemId) => {
         const val = (e.target && e.target.value) || '';
-        setSaleInvoice((prev) => ({ ...prev, [itemId]: val }));
+        if (itemId === 'id_user') {
+            // Khi thay đổi id_user, cập nhật danh sách địa chỉ tương ứng
+            const userAddresses = userAddress.filter((addr) => addr.id_user === val);
+            setAddressOptions(userAddresses.map((addr) => ({
+                label: `#${addr.phone} ${addr.address}`,
+                value: addr.id_address
+            })));
+            setSaleInvoice((prev) => ({ ...prev, id_user: val, id_address: '' })); // Reset id_address khi đổi user
+        } else {
+            setSaleInvoice((prev) => ({ ...prev, [itemId]: val }));
+        }
     };
 
     const onInputChangeDetail = (e, itemId) => {
@@ -325,6 +354,8 @@ const SaleInvoice = () => {
         label: `#${user.id_user} ${user.name}`,
         value: user.id_user,
     }));
+
+    // const addresOptions = 
 
     const statusOptions = [
         { label: 'Đang xác nhận', value: 'Đang xác nhận' },
@@ -355,6 +386,12 @@ const SaleInvoice = () => {
                 const user = users.find((u) => u.id_user === rowData.id_user);
                 return user ? user.name : rowData.id_user; // Chỉ hiển thị tên trong bảng
             },
+        },
+        { field: 'id_address', header: 'Địa chỉ',
+            render: (rowData) => {
+                const address = userAddress.find((addr) => addr.id_address === rowData.id_address);
+                return address ? address.address : rowData.id_address; // Hiển thị tên địa chỉ
+            }
         },
         { field: 'total', header: 'Tổng tiền', format: 'price' },
         { field: 'pay', header: 'Thanh toán' },
@@ -431,6 +468,7 @@ const SaleInvoice = () => {
                 fields={[
                     { name: 'id_sale_invoice', label: 'ID', disabled: true, hidden: !sale_invoice.id_sale_invoice},
                     { name: 'id_user', label: 'Khách hàng', required: true, type: 'dropdown', options: userOptions},
+                    { name: 'id_address', label: 'Địa chỉ', required: true, type: 'dropdown', options: addressOptions},
                     { name: 'total', label: 'Tổng tiền', disabled: true, hidden: !sale_invoice.id_sale_invoice, type: 'price'},
                     { name: 'status', label: 'Trạng thái', required: true, type: 'dropdown', options: statusOptions },
                     { name: 'pay', label: 'Thanh toán', required: true, type: 'dropdown', options: paymentOptions,},
@@ -445,24 +483,6 @@ const SaleInvoice = () => {
                 title={sale_invoice.id_sale_invoice ? 'Sửa hóa đơn bán' : 'Thêm hóa đơn bán'}
             />
 
-            {/* <GenericForm
-                visible={DetailDialog}
-                item={detail}
-                fields={[
-                    // Hiển thị #id Tên trong dropdown
-                    { name: 'id_product', label: 'Sản phẩm', required: true, disabled: !isAdd, type: 'dropdown', options: productOptions},
-                    { name: 'color', label: 'Màu sắc', type: 'dropdown', options: colorOptions, hidden: detail.id_variant === 'không có' },
-                    { name: 'quantity', label: 'Số lượng', required: true },
-                    { name: 'price', label: 'Đơn giá', required: true, type: 'price' },
-                    { name: 'created_at', label: 'Ngày tạo', disabled: true, hidden: isAdd },
-                    { name: 'updated_at', label: 'Ngày chỉnh sửa', disabled: true, hidden: isAdd },
-                ]}
-                onChange={onInputChangeDetail}
-                onSave={savesaleDetail}
-                onHide={hideDialogDetail}
-                submitted={submittedSaleDetail}
-                title={isAdd ? 'Thêm chi tiết hóa đơn' : 'Sửa chi tiết hóa đơn'}
-            /> */}
 
             <AddInvoiceDetailForm
                 visible={DetailDialog} 

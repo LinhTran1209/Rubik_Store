@@ -53,7 +53,7 @@ Users.getById = (id, callback) => {
 };
 
 Users.getAll = (callback) => {
-  const sqlString = "SELECT * FROM users"; 
+  const sqlString = "SELECT * FROM users ORDER BY id_user DESC"; 
   db.query(sqlString, (err, result) => {
     if (err) return callback(err);
     callback(null, result);

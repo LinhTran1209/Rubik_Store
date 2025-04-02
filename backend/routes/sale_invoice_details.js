@@ -11,5 +11,6 @@ router.get('/:id1/:id2', sale_invoice_details_controller.getById);
 router.post('/', sale_invoice_details_controller.insert);
 router.put('/:id1/:id2', sale_invoice_details_controller.update);
 router.delete('/:id1/:id2', sale_invoice_details_controller.delete);
+router.get('/getData/:col/:querydata', sale_invoice_details_controller.getData)
 
 module.exports = router;

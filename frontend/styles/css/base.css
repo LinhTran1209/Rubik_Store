@@ -136,6 +136,18 @@ html {
 } 
 
 
+/* cho toast của nextjs xuống dòng */
+/* CSS cho Toast */
+.p-toast .p-toast-message {
+    width: auto; 
+}
+
+.p-toast .p-toast-detail {
+    white-space: normal !important; /* Cho phép xuống dòng */
+    word-wrap: break-word; /* Đảm bảo chữ không tràn ra ngoài */
+    word-break: break-word; /* Đảm bảo chữ không bị cắt hoặc tràn */
+}
+
 
 
 
