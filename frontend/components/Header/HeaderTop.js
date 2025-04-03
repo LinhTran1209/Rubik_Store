@@ -1,106 +1,73 @@
 import React, { useEffect, useState, useRef } from 'react';
+import Link from 'next/link'; 
+
+import product_variantsService from '../../services/product_variantService'
+import productService from '../../services/productService';
+
 import SearchProduct from '../../components/SearchProduct';
-import authService from '../../services/authService';
-import cartService from '../../services/cartService';
-import userService from '../../services/userService'
-import productService from '../../services/productService'
+import { formatPrice } from '../../utils/formatPrice';
+import { useCart } from "../CartContext";
+import { useUser } from "../UserContext";
 import CustomToast from '../CustomToast';
-import Link from 'next/link';
 
 const HeaderTop = () => {
-    // Lấy thông tin người dùng đã đăng nhập từ token chỉ có phone và role
-    const [userRole, setUserRole] = useState({ phone: "", role: "" });
-    const [loading, setLoading] = useState(true); 
+    const { user, loading, logout } = useUser();
+    const { carts, setUserId } = useCart();
     const toast = useRef(null);
 
-    useEffect(() => {
-        const fetchUserRole = async () => {
-            try {
-                const user = await authService.getCurrentUser();
-                setUserRole({ phone: user.phone, role: user.role });
-            } catch (error) {
-                setUserRole({ phone: "", role: "" });
-            } finally {
-                setLoading(false); 
-            }
-        };
-        fetchUserRole();
-    }, []);
+    const [ productVariants, setProductVariants ] = useState([{ id_variant: "", id_product: "", color: "", price: "", quantity: "" }]);
+    const [ products, setProducts ] = useState([]);
 
-    const handleLogout = async () => {
+    const fetchProducts = async () => {
         try {
-            await authService.logout();
-            if (toast.current) {
-                toast.current.show({
-                    severity: "success",
-                    summary: "Thành công",
-                    detail: "Đăng xuất thành công",
-                    life: 30000,
-                });
-            }
-            window.location.href = "/home";
-        } catch (error) {
-            alert("Đăng xuất thất bại, vui lòng thử lại.");
-        }
-    };
-
-    // Lấy chính xác được user từ userRole bằng số phone
-    const [user, setUser] = useState({id_user: null, role: '', name: '', email: '', phone: ''})
-    const fetchUser = async () => {
-        try {
-            const user = await userService.getData("phone", userRole.phone)
-            setUser(user[0]);
-        } catch (err) {
-            console.log(err.message, 'ở HeaderTop')
-        }
-    }
-
-    // Lấy thông tin giỏ hàng của khách hàng (dùng cartService)
-    const [ carts, setCart] = useState({id_user: null, id_product: null, quantity: '', price: '', created_at: '', updated_at: ''})
-    const fetchCarts = async () => {
-        try {
-            const carts = await cartService.getById(user.id_user);
-            setCart(carts);
-            fetchProducts(carts);
-        } catch (err) {
-            console.log(err.message, 'ở HeaderTop');
-            setLoading(false);
-        }
-    };
-
-    // được mount vào khi tìm thấy người dùng gần 
-    useEffect(() => {
-        if (userRole) {
-            fetchUser();
-        }
-    }, [userRole]);
-
-    useEffect(() => {
-        if (user) {
-            fetchCarts();
-        }
-    }, [user])
-
-    // truy xuất product theo cart đã lấy được
-    const [products, setProducts] = useState([]);
-    const fetchProducts = async (carts) => {
-        try {
-            const productIds = carts.map(cart => cart.id_product);
-            const productsData = await productService.getproductById(productIds); 
+            const productsData = await productService.getAllproducts(); 
             setProducts(productsData);
         } catch (err) {
             console.log(err.message);
         }
     };
 
+    const fetchProduct_Variants = async () => {
+        try {
+            const id_variants = carts.map((c) => c.id_variant).filter(Boolean);
+            if (id_variants.length > 0) {
+                const variantPromises = id_variants.map((id) => product_variantsService.getByIdVariant(id));
+                const variants = await Promise.all(variantPromises);
+                setProductVariants(variants.filter(Boolean)); // Lọc bỏ các giá trị undefined/null
+            }
+        } catch (err) {
+            console.log(err.message, "ở order khách hàng");
+            setProductVariants([]);
+        }
+    };
 
-    // console.log('là cart', carts)
-    // console.log('product lấy ra từ cart', products)
+    const handleLogout = async () => {
+        try {
+            await logout();
+            toast.current.show({ severity: "success", summary: "Thành công", detail: "Đăng xuất thành công", life: 3000});
+            setUserId(null);
+            window.location.href = "/home";
+        } catch (error) {
+            alert("Đăng xuất thất bại, vui lòng thử lại.");
+        }
+    };
 
+    useEffect(() => {
+        if (user.id_user !== "") {
+            setUserId(user.id_user);
+        } else {
+            setUserId(null);
+        }
+    }, [user]);
 
-    if (loading) {
-        return <div className="header__top">Đang tải...</div>; 
-    }
+    useEffect(() => {
+        if (carts.length > 0) {
+            fetchProduct_Variants();
+            fetchProducts();
+        }
+    }, [carts]);
+
+    if (loading) return <div className="header__top">Đang tải...</div>; 
 
     return (
         <div className="header__top">
@@ -122,20 +89,20 @@ const HeaderTop = () => {
             </div>
 
             <div className="header__top-user">
-                {userRole.role === "admin" ? (
+                {user.role === "admin" ? (
                     <div className="header__top-a">
                         <Link href="/account">
                             <i className="fa-solid fa-user"></i>
                         </Link>
                         <span style={{ marginTop: '24%' }}>Admin</span>
                     </div>
-                ) : userRole.role === "customer" ? (
+                ) : user.role === "customer" ? (
                     <div className="header__top-a">
                         <Link href="/account">
                             <i className="fa-solid fa-user"></i>
                         </Link>
                         <span>
-                            <span style={{ marginLeft: "10px" }}>{userRole.phone}</span><br />
+                            <span style={{ marginLeft: "10px" }}>{user.name}</span><br />
                             <Link
                                 className="a-register-login"
                                 href="#"
@@ -161,38 +128,58 @@ const HeaderTop = () => {
             </div>
 
 
-            {/* Xử lý phần giỏ hàng khi hover */}
+            {/* Giỏ hàng khi hover */}
             <div className="header__top-cart">
                 <a className="header__top-a" href="#">
-                    <span id="count-in-cart">0</span>
+                    <span id="count-in-cart">{carts.length}</span>
                     <i className="fa-solid fa-cart-shopping"></i>
                     <span style={{ lineHeight: '33px' }}>Giỏ hàng</span>
                 </a>
                 <div className="detail-cart">
+                    { carts.length > 0 ? 
+                        (
+                            <>
+                                <div className="product__news">Sản phẩm mới thêm</div>
 
-                <h3>Giỏ hàng</h3>
-                    {/* {carts.length === 0 ? (
-                        <p>Không có sản phẩm nào trong giỏ hàng.</p>
-                    ) : (
-                        carts.map((item, index) => (
-                            <div className="cart-item" key={index}>
-                                <img src={item.image || "https://via.placeholder.com/50"} alt={item.name} />
-                                <div className="cart-item-info">
-                                    <p>{item.name}</p>
-                                    <p className="price">{item.price.toLocaleString()}đ</p>
+                                {carts.map((cart, index) => {
+                                    const variant = productVariants.find((v) => v.id_variant === cart.id_variant) || {};
+                                    const product = products.find((p) => p.id_product === variant.id_product) || {};
+                                    return (      
+                                        <div className='cart-products' key={index}>
+                                            <Link href={`/detail_product/${product.slug}`}>
+                                                <div className="cart-product">
+                                                    <img src={product.image_url} alt={product.name}/>
+                                                    <div className="cart-product__info">
+                                                        <p className="cart-product__name">{product.name}</p>
+                                                        <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
+                                                            <p style={{margin: "auto 0"}}>Màu sắc: {variant.color}</p>
+                                                            <p className="cart-product__price">{formatPrice(variant.price)}đ</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </Link>
+                                        </div>
+                                    );
+
+                                })}
+                                <div className="class__cart-check">
+                                    <a id="a__cart-check" href="cart.html">Xem giỏ hàng</a>
                                 </div>
-                            </div>
-                        ))
-                    )}
-                    <Link href="/cart">
-                        <button className="view-cart-btn">Xem giỏ hàng</button>
-                    </Link> */}
-
-
-
-
-
-
+                                <div style={{marginBottom: "20px"}}></div>
+                            </>
+                        ) :
+                        (
+                            user.phone !== "" ?
+                            (
+                                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", color: "#8a6d3b", backgroundColor: "#fcf8e3", height: "50px" }}>Giỏ hàng của bạn đang trống!</div>
+                            ):
+                            (
+                                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", color: "#8a6d3b", backgroundColor: "#fcf8e3", height: "50px" }}>Vui lòng đăng nhập để xem giỏ hàng của bạn!</div>
+                            )
+                            
+                        )
+                
+                    }
                 </div>
             </div>
         </div>

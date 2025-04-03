@@ -1,55 +1,27 @@
-import sale_invoiceService from "../../services/sale_invoiceService";
-import userAddressService from "../../services/userAddressService";
 import React, { useState, useEffect, useRef } from "react";
-import CustomToast from "../../components/CustomToast";
-import { formatPrice } from "../../utils/formatPrice";
-import userService from "../../services/userService";
-import authService from "../../services/authService";
-import { formatDate } from "../../utils/formatDate";
 import { useRouter } from 'next/router';
 import Link from "next/link";
 
+import sale_invoiceService from "../../services/sale_invoiceService";
+import userAddressService from "../../services/userAddressService";
+import { useUser } from "../../components/UserContext";
+
+import CustomToast from "../../components/CustomToast";
+import { formatPrice } from "../../utils/formatPrice";
+import { formatDate } from "../../utils/formatDate";
+
 const Account = () => {
-    // Lấy thông tin người dùng đã đăng nhập từ token chỉ có phone và role
-    const [user, setUser] = useState({id_user: null, role: "", name: "", email: "", phone: ""});
-    const [userRole, setUserRole] = useState({ phone: "", role: "" });
-    const [sale_invoices, setSale_Invoices] = useState([]);
-    const [userAddress, setUserAddress] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const toast = useRef(null);
+    const { user, loading } = useUser();
     const router = useRouter();
+    const toast = useRef(null);
 
-    useEffect(() => {
-        const fetchUserRole = async () => {
-            try {
-                const user = await authService.getCurrentUser();
-                setUserRole({ phone: user.phone, role: user.role });
-            } catch (error) {
-                setUserRole({ phone: "", role: "" });
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchUserRole();
-    }, []);
-
-    // Lấy chính xác được user từ userRole bằng số phone
-    const fetchUser = async () => {
-        try {
-            const user = await userService.getData("phone", userRole.phone);
-            setUser(user[0]);
-        } catch (err) {
-            console.log(err.message, "ở account");
-        }
-    };
+    const [ sale_invoices, setSale_Invoices ] = useState([]);
+    const [ userAddress, setUserAddress ] = useState([]);
 
     // Lấy danh sách các địa chỉ của người dùng
     const fetchUser_Addresses = async () => {
         try {
-            const user_addresses = await userAddressService.getData(
-                "id_user",
-                user.id_user
-            );
+            const user_addresses = await userAddressService.getData("id_user", user.id_user);
             setUserAddress(user_addresses);
         } catch (err) {
             console.log(err.message, "ở account");
@@ -59,22 +31,12 @@ const Account = () => {
     // Lấy các hóa đơn của người dùng đăng nhập
     const fetchSale_invoices = async () => {
         try {
-            const sale_invoices = await sale_invoiceService.getData(
-                "id_user",
-                user.id_user
-            );
+            const sale_invoices = await sale_invoiceService.getData("id_user", user.id_user);
             setSale_Invoices(sale_invoices);
         } catch (err) {
             console.log(err.message, "ở account");
         }
     };
-
-    // được mount vào khi tìm thấy người dùng gần
-    useEffect(() => {
-        if (userRole.phone) {
-            fetchUser();
-        }
-    }, [userRole]);
 
     useEffect(() => {
         if (user) {
@@ -84,7 +46,7 @@ const Account = () => {
     }, [user]);
 
     const handleRowClick = (invoiceId) => {
-        router.push(`/order/${invoiceId}`);
+        router.push(`/account/orders/${invoiceId}`);
     };
 
     const handleChangePassword = () => {
@@ -94,6 +56,8 @@ const Account = () => {
     const handleAddress = () => {
         router.push(`/account/addresses`);
     };
+
+    if (loading) return <div className="header__top">Đang tải...</div>; 
 
     return (
         <div className="all__middle">
@@ -108,7 +72,7 @@ const Account = () => {
             </div>
 
             <div className="middle_main">
-                {/* Phần bên trái hóa đơn đã mua */}
+                {/* Bến trái: hóa đơn mua */}
                 <div className="left-section">
                     <h2>THÔNG TIN TÀI KHOẢN</h2>
                     <p>Xin chào, {user.name} !</p>
@@ -126,7 +90,7 @@ const Account = () => {
                         </thead>
 
                         <tbody>
-                            {user.id_user !== null ? (
+                            {user.id_user !== "" ? (
                                 sale_invoices.length === 0 ? (
                                     <tr>
                                         <td colSpan={7} className="td_center_account">
@@ -155,10 +119,7 @@ const Account = () => {
                                 <tr>
                                     <td colSpan={7} className="td_center_account">
                                         Vui lòng{" "}
-                                        <Link
-                                            href="/login"
-                                            style={{ color: "red" }}
-                                        >
+                                        <Link href="/login" style={{ color: "red" }}>
                                             đăng nhập
                                         </Link>{" "}
                                         để xem hóa đơn!
@@ -169,46 +130,31 @@ const Account = () => {
                     </table>
                 </div>
 
-                {/* <!-- Phần bên phải thông tin khách hàng--> */}
+                {/* <!-- Bên phải: thông tin khách hàng--> */}
                 <div className="right-section">
                     <h3>TÀI KHOẢN CỦA BẠN</h3>
                     <ul>
                         <li>
-                            <img
-                                src="https://bizweb.dktcdn.net/100/316/286/themes/757383/assets/user.svg?1738317141988"
-                                alt="icon"
-                            />{" "}
+                            <img src="https://bizweb.dktcdn.net/100/316/286/themes/757383/assets/user.svg?1738317141988" alt="icon"/>{" "}
                             <strong>Tên tài khoản:</strong> {user.name}
                         </li>
                         <li>
-                            <img
-                                src="https://bizweb.dktcdn.net/100/316/286/themes/757383/assets/home.svg?1738317141988"
-                                alt="icon"
-                            />{" "}
+                            <img src="https://bizweb.dktcdn.net/100/316/286/themes/757383/assets/home.svg?1738317141988" alt="icon"/>{" "}
                             <strong>Địa chỉ:</strong> {userAddress.length}
                         </li>
                         <li>
-                            <img
-                                src="https://bizweb.dktcdn.net/100/316/286/themes/757383/assets/telephone.svg?1738317141988"
-                                alt="icon"
-                            />{" "}
+                            <img src="https://bizweb.dktcdn.net/100/316/286/themes/757383/assets/telephone.svg?1738317141988" alt="icon"/>{" "}
                             <strong>Điện thoại:</strong> {user.phone}
                         </li>
                         <li>
-                            <img
-                                src="https://res.cloudinary.com/dzweargsr/image/upload/v1743411123/icon_email_ddhq4g.ico"
-                                alt="icon"
-                            />{" "}
+                            <img src="https://res.cloudinary.com/dzweargsr/image/upload/v1743411123/icon_email_ddhq4g.ico" alt="icon"/>{" "}
                             <strong>Email:</strong> {user.email}
                         </li>
                         <li>
-                            <img
-                                src="https://bizweb.dktcdn.net/100/316/286/themes/757383/assets/map-marker.svg?1738317141988"
-                                alt="icon"
-                            />{" "}
+                            <img src="https://bizweb.dktcdn.net/100/316/286/themes/757383/assets/map-marker.svg?1738317141988" alt="icon"/>{" "}
                             <strong>Địa chỉ mặc định:</strong>{" "}
-                            {userAddress.length > 0
-                                ? userAddress.find((address) => address.is_default == 1).address
+                            {userAddress.length > 0 && userAddress.find((address) => address.is_default === 1)
+                                ? userAddress.find((address) => address.is_default === 1).address
                                 : null
                             }
                         </li>

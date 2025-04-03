@@ -1,8 +1,8 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
+import Link from 'next/link';
+
 import CustomToast from '../../components/CustomToast';
 import loginService from '../../services/authService';
-import { Toast } from 'primereact/toast';
-import Link from 'next/link';
 
 
 const Login = () => {
@@ -30,7 +30,7 @@ const Login = () => {
             } else if (user.role === 'customer') {
                 toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Đăng nhập thành công', life: 3000});
                 // localStorage.setItem('user_customer', JSON.stringify(user));
-                window.location.href = `/home?phone=${user.phone}`;
+                window.location.href = `/home`;
             } else {
                 toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Bạn không có quyền truy cập', life: 3000 });
                 window.location.href = '/';

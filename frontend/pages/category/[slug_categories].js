@@ -1,23 +1,24 @@
-import product_variantsService from "../../services/product_variantService"; 
-import categorieService from "../../services/categorieService";
-import productService from "../../services/productService";
-import { formatPrice } from  "../../utils/formatPrice";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
+
+import product_variantsService from "../../services/product_variantService"; 
+import categorieService from "../../services/categorieService";
+import productService from "../../services/productService";
+
+import { formatPrice } from  "../../utils/formatPrice";
 
 
 const ProductCategoreis = () => {
     const router = useRouter();
     const { slug_categories } = router.query; // lấy từ routing động
 
-    // tránh trường hợp khi component mount xong mà chưa có dữ liệu (categorie)
     const [loading, setLoading] = useState(true); 
-
 
     // Tìm kiếm id_categories từ slug_categories
     const [categorie, setCategorie] = useState(null);
     const [categories, setCategories] = useState([]);
+    const [products, setProducts] = useState([]);
 
     const fetchCategorie = async () => {
         try {
@@ -41,7 +42,6 @@ const ProductCategoreis = () => {
     };
 
     // Lấy sản phẩm theo id_categorie
-    const [products, setProducts] = useState([]);
     const fetchProducts = async () => {
         try {
             const productsData = await productService.getDataproducts("id_categorie", categorie.id_categorie);
@@ -102,6 +102,13 @@ const ProductCategoreis = () => {
 
 
     if (loading) return <div>Đang tải...</div>;
+    if (!categories.length > 0) {
+        return (
+            <div style={{ display: "flex", justifyContent: "center", marginTop: "100px", color: "#8a6d3b" }}>
+                Loại sản phẩm bạn chọn không có sẵn. Vui lòng kiểm tra lại lựa chọn của bạn hoặc thử một đường dẫn khác!
+            </div>
+        );
+    }
 
     return (
         <div className="all__section">

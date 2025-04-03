@@ -1,9 +1,11 @@
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+
 import product_variantsService from "../../services/product_variantService"
 import categorieService from "../../services/categorieService";
 import productService from "../../services/productService";
+
 import { formatPrice }  from "../../utils/formatPrice";
-import React, { useState, useEffect } from "react";
-import Link from "next/link";
 
 const Home = () => {
     const [products, setProducts] = useState([]);

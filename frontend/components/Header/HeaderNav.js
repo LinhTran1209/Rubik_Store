@@ -1,7 +1,7 @@
-import React, { useContext, useRef, useState, useEffect } from "react";
 import Link from "next/link";
+import React from "react";
 
-const HeaderNav = ({ categories = []}) => {
+const HeaderNav = ({ categories = [] }) => {
     return (
         <div className="header__bottom">
             <ul id="txt-banner">
@@ -81,8 +81,6 @@ const HeaderNav = ({ categories = []}) => {
                                 </ul>
                             </li>
 
-
-
                             <li id="rubik-combo">
                                 <img
                                     className="icon-rubik"
@@ -96,8 +94,7 @@ const HeaderNav = ({ categories = []}) => {
                                 <ul id="txt-banner-rubik-combo">
                                     {categories ? (
                                         categories.map((categorie) =>
-                                            categorie.desc ===
-                                            "Combo Rubik" ? (
+                                            categorie.desc === "Combo Rubik" ? (
                                                 <li key={categorie.slug}>
                                                     <Link
                                                         href={`/category/${categorie.slug}`}
@@ -115,13 +112,10 @@ const HeaderNav = ({ categories = []}) => {
                                 </ul>
                             </li>
 
-
-
-
                             <li id="rubik-accessory">
                                 <img
                                     className="icon-rubik"
-                                    src="/assets/img/cube-3x3.png"
+                                    src="https://res.cloudinary.com/dzweargsr/image/upload/v1742648308/cube-spiner_dgohvk.png"
                                     alt="Phụ kiện Rubik"
                                 />
                                 <Link href="#" id="a-rubik-accessory">
@@ -148,11 +142,7 @@ const HeaderNav = ({ categories = []}) => {
                                         </li>
                                     )}
                                 </ul>
-                            </li>
-                            {/* <li id="rubik-spiner">
-                                <img className="icon-rubik" src="/assets/img/cube-spiner.png" alt="Spiner - Figdet" />
-                                <Link href="#" id="a-rubik-spiner">Spiner - Figdet</Link>
-                            </li> */}
+                            </li> 
                         </ul>
                     </div>
                 </li>
@@ -169,9 +159,7 @@ const HeaderNav = ({ categories = []}) => {
                     <Link href="/instruct">HƯỚNG DẪN CHƠI</Link>
                 </li>
                 <li>
-                    <Link href="#all-contact" id="to-contact">
-                        LIÊN HỆ
-                    </Link>
+                    <Link href="#all-contact" id="to-contact">LIÊN HỆ</Link>
                 </li>
             </ul>
         </div>

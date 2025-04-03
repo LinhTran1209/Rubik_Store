@@ -11,7 +11,7 @@ const Carts = (carts) => {
 };
 
 Carts.getById = (id_user, callback) => {
-  const sqlString = "SELECT * FROM carts WHERE id_user = ?";
+  const sqlString = "SELECT * FROM carts WHERE id_user = ? ORDER BY created_at DESC";
   db.query(sqlString, id_user, (err, result) => {
     if (err) return callback(err);
     callback(null, result); 

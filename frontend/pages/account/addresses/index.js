@@ -1,52 +1,22 @@
-import userAddressService from "../../../services/userAddressService";
 import React, { useState, useEffect, useRef } from "react";
-import CustomToast from "../../../components/CustomToast";
-import authService from "../../../services/authService";
-import userService from "../../../services/userService";
-import Link from "next/link";
-import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
+import { Dialog } from 'primereact/dialog';
+import Link from "next/link";
+
+import userAddressService from "../../../services/userAddressService";
+
+import CustomToast from "../../../components/CustomToast";
+import { useUser } from "../../../components/UserContext";
 
 const Address = () => {
+    const { user, loading } = useUser();
     const toast = useRef(null);
 
-    const [user, setUser] = useState({ id_user: null, role: "", name: "", email: "", phone: "" });
-    const [userRole, setUserRole] = useState({ phone: "", role: "" });
+    const [newAddress, setNewAddress] = useState({ id_address: "", id_user: "", name: "", address: "", phone: "", is_default: false, created_at: "", updated_at: "" });
     const [userAddress, setUserAddress] = useState([]);
     const [isEditMode, setIsEditMode] = useState(false);
     const [isAddMode, setIsAddMode] = useState(false); // Thêm state cho chế độ thêm địa chỉ
-    const [newAddress, setNewAddress] = useState({
-        id_address: null,
-        id_user: null,
-        name: "",
-        address: "",
-        phone: "",
-        is_default: false,
-        created_at: "",
-        updated_at: "",
-    });
     const [selectedAddress, setSelectedAddress] = useState(null);
-
-    useEffect(() => {
-        const fetchUserRole = async () => {
-            try {
-                const user = await authService.getCurrentUser();
-                setUserRole({ phone: user.phone, role: user.role });
-            } catch (error) {
-                console.log(error.message, "ở address khách hàng");
-            }
-        };
-        fetchUserRole();
-    }, []);
-
-    const fetchUser = async () => {
-        try {
-            const user = await userService.getData("phone", userRole.phone);
-            setUser(user[0]);
-        } catch (err) {
-            console.log(err.message, "ở account");
-        }
-    };
 
     const fetchUser_Addresses = async () => {
         try {
@@ -58,20 +28,14 @@ const Address = () => {
     };
 
     useEffect(() => {
-        if (userRole.phone) {
-            fetchUser();
-        }
-    }, [userRole]);
-
-    useEffect(() => {
-        if (user) {
+        if (user.id_user !== "") {
             fetchUser_Addresses();
         }
     }, [user]);
 
     const handleEditClick = (address) => {
         setIsEditMode(true);
-        setIsAddMode(false); // Đảm bảo tắt chế độ thêm khi chỉnh sửa
+        setIsAddMode(false); 
         setSelectedAddress(address);
         setNewAddress({
             id_address: address.id_address,
@@ -85,11 +49,11 @@ const Address = () => {
 
     const handleAddClick = () => {
         setIsAddMode(true);
-        setIsEditMode(false); // Đảm bảo tắt chế độ chỉnh sửa khi thêm
+        setIsEditMode(false);
         setSelectedAddress(null);
         setNewAddress({
             id_address: null,
-            id_user: user.id_user, // Gán id_user từ user hiện tại
+            id_user: user.id_user,
             name: "",
             address: "",
             phone: "",
@@ -102,8 +66,8 @@ const Address = () => {
         setIsAddMode(false);
         setSelectedAddress(null);
         setNewAddress({
-            id_address: null,
-            id_user: null,
+            id_address: "",
+            id_user: "",
             name: "",
             address: "",
             phone: "",
@@ -165,6 +129,8 @@ const Address = () => {
         }
     };
 
+    if (loading) return <div className="header__top">Đang tải...</div>; 
+
     return (
         <div className="middle__address">
             <CustomToast ref={toast} />
@@ -191,108 +157,19 @@ const Address = () => {
                     </Link>
                 </div>
 
-                <div className="add__address">
-                    <button className="btn-add_address" onClick={handleAddClick}>
-                        + THÊM ĐỊA CHỈ
-                    </button>
+                { user.id_user === "" && !loading ?
+                    (
+                        <div style={{  margin: "auto", color: "#8a6d3b", textAlign: "center" }}>Bạn cần <Link style={{color:"red"}} href={`/login`}>đăng nhập</Link> để đổi vào trang này!</div>
+                    ) :
+                    (
+                        <>
+                            <div className="add__address">
+                                <button className="btn-add_address" onClick={handleAddClick}>
+                                    + THÊM ĐỊA CHỈ
+                                </button>
 
-                    {isAddMode && (
-                        <div className={`row__address__right slide-form ${isAddMode ? 'open' : ''}`}>
-                            <form onSubmit={handleSubmit} >
-                                <div className="form__edit__address">
-                                    <label htmlFor="name">Họ và tên*</label>
-                                    <input
-                                        className="input-edit__address"
-                                        type="text"
-                                        id="name"
-                                        name="name"
-                                        value={newAddress.name}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-
-                                <div className="form__edit__address">
-                                    <label htmlFor="phone">Số điện thoại*</label>
-                                    <input
-                                        className="input-edit__address"
-                                        type="text"
-                                        id="phone"
-                                        name="phone"
-                                        value={newAddress.phone}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-
-                                <div className="form__edit__address">
-                                    <label htmlFor="address">Địa chỉ*</label>
-                                    <input
-                                        className="input-edit__address"
-                                        type="text"
-                                        id="address"
-                                        name="address"
-                                        value={newAddress.address}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-
-                                {/* <div className="form__edit__address check__edit__address">
-                                    <label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                        <input
-                                            type="checkbox"
-                                            id="default-address"
-                                            name="is_default"
-                                            checked={newAddress.is_default}
-                                            onChange={(e) => setNewAddress({ ...newAddress, is_default: e.target.checked })}
-                                        />
-                                        Đặt là địa chỉ mặc định
-                                    </label>
-                                </div> */}
-
-                                <div className="action__row__address__right">
-                                    <button type="submit" className="btn-update__address">
-                                        THÊM ĐỊA CHỈ
-                                    </button>
-                                    <button type="button" className="btn-cancel__edit" onClick={handleCancelEdit}>
-                                        Hủy
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    )}
-                </div>
-
-                <div className="row__address_main">
-                    {userAddress.length > 0 ? (
-                        userAddress.map((address) => (
-                            <div className="row__address" key={address.id_address}>
-                                <div className="row__address__left">
-                                    <p><strong>Họ và tên: </strong>{address.name}</p>
-                                    <p><strong>Số điện thoại:</strong>{" " + address.phone}</p>
-                                    <p><strong>Quốc tịch:</strong> Việt Nam</p>
-                                    <p><strong>Địa chỉ:</strong>{" " + address.address}</p>
-                                    {address.is_default === 1 ? (
-                                        <p style={{color: 'red'}}><strong>Địa chỉ mặc định</strong></p>
-                                    ) : (null)
-                                    }
-
-                                    <div className="action__row__address__left">
-                                        <button className="btn-edit__address" onClick={() => handleEditClick(address)}>
-                                            CHỈNH SỬA ĐỊA CHỈ
-                                        </button>
-                                        { address.is_default === 1 ?
-                                            (null) :
-                                            <button
-                                                className="btn-delete__address"
-                                                onClick={() => handleDeleteClick(address.id_address)}
-                                            >
-                                                XÓA
-                                            </button>
-                                        }
-                                    </div>
-                                </div>
-
-                                {isEditMode && selectedAddress?.id_address === address.id_address && (
-                                    <div className={`row__address__right slide-form ${isEditMode ? 'open' : ''}`}>
+                                {isAddMode && (
+                                    <div className={`row__address__right slide-form ${isAddMode ? 'open' : ''}`}>
                                         <form onSubmit={handleSubmit} >
                                             <div className="form__edit__address">
                                                 <label htmlFor="name">Họ và tên*</label>
@@ -330,26 +207,11 @@ const Address = () => {
                                                 />
                                             </div>
 
-                                            <div className="form__edit__address check__edit__address">
-                                                <label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                                    <input
-                                                        type="checkbox"
-                                                        id="default-address"
-                                                        name="is_default"
-                                                        checked={newAddress.is_default}
-                                                        onChange={(e) =>
-                                                            setNewAddress({ ...newAddress, is_default: e.target.checked })
-                                                        }
-                                                    />
-                                                    Đặt là địa chỉ mặc định
-                                                </label>
-                                            </div>
 
                                             <div className="action__row__address__right">
                                                 <button type="submit" className="btn-update__address">
-                                                    CẬP NHẬT ĐỊA CHỈ
+                                                    THÊM ĐỊA CHỈ
                                                 </button>
-                                                
                                                 <button type="button" className="btn-cancel__edit" onClick={handleCancelEdit}>
                                                     Hủy
                                                 </button>
@@ -358,11 +220,113 @@ const Address = () => {
                                     </div>
                                 )}
                             </div>
-                        ))
-                    ) : (
-                        <p>Chưa có địa chỉ nào được thêm.</p>
-                    )}
-                </div>
+
+                            <div className="row__address_main">
+                                {userAddress.length > 0 ? (
+                                    userAddress.map((address) => (
+                                        <div className="row__address" key={address.id_address}>
+                                            <div className="row__address__left">
+                                                <p><strong>Họ và tên: </strong>{address.name}</p>
+                                                <p><strong>Số điện thoại:</strong>{" " + address.phone}</p>
+                                                <p><strong>Quốc tịch:</strong> Việt Nam</p>
+                                                <p><strong>Địa chỉ:</strong>{" " + address.address}</p>
+                                                {address.is_default === 1 ? (
+                                                    <p style={{color: 'red'}}><strong>Địa chỉ mặc định</strong></p>
+                                                ) : (null)
+                                                }
+
+                                                <div className="action__row__address__left">
+                                                    <button className="btn-edit__address" onClick={() => handleEditClick(address)}>
+                                                        CHỈNH SỬA ĐỊA CHỈ
+                                                    </button>
+                                                    { address.is_default === 1 ?
+                                                        (null) :
+                                                        <button
+                                                            className="btn-delete__address"
+                                                            onClick={() => handleDeleteClick(address.id_address)}
+                                                        >
+                                                            XÓA
+                                                        </button>
+                                                    }
+                                                </div>
+                                            </div>
+
+                                            {isEditMode && selectedAddress?.id_address === address.id_address && (
+                                                <div className={`row__address__right slide-form ${isEditMode ? 'open' : ''}`}>
+                                                    <form onSubmit={handleSubmit} >
+                                                        <div className="form__edit__address">
+                                                            <label htmlFor="name">Họ và tên*</label>
+                                                            <input
+                                                                className="input-edit__address"
+                                                                type="text"
+                                                                id="name"
+                                                                name="name"
+                                                                value={newAddress.name}
+                                                                onChange={handleInputChange}
+                                                            />
+                                                        </div>
+
+                                                        <div className="form__edit__address">
+                                                            <label htmlFor="phone">Số điện thoại*</label>
+                                                            <input
+                                                                className="input-edit__address"
+                                                                type="text"
+                                                                id="phone"
+                                                                name="phone"
+                                                                value={newAddress.phone}
+                                                                onChange={handleInputChange}
+                                                            />
+                                                        </div>
+
+                                                        <div className="form__edit__address">
+                                                            <label htmlFor="address">Địa chỉ*</label>
+                                                            <input
+                                                                className="input-edit__address"
+                                                                type="text"
+                                                                id="address"
+                                                                name="address"
+                                                                value={newAddress.address}
+                                                                onChange={handleInputChange}
+                                                            />
+                                                        </div>
+
+                                                        <div className="form__edit__address check__edit__address">
+                                                            <label style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    id="default-address"
+                                                                    name="is_default"
+                                                                    checked={newAddress.is_default}
+                                                                    onChange={(e) =>
+                                                                        setNewAddress({ ...newAddress, is_default: e.target.checked })
+                                                                    }
+                                                                />
+                                                                Đặt là địa chỉ mặc định
+                                                            </label>
+                                                        </div>
+
+                                                        <div className="action__row__address__right">
+                                                            <button type="submit" className="btn-update__address">
+                                                                CẬP NHẬT ĐỊA CHỈ
+                                                            </button>
+                                                            
+                                                            <button type="button" className="btn-cancel__edit" onClick={handleCancelEdit}>
+                                                                Hủy
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p style={{  margin: "auto", color: "#8a6d3b", textAlign: "center" }}>Chưa có địa chỉ nào được thêm.</p>
+                                )}
+                            </div>
+                        </>
+                    )
+                }
+
             </div>
         </div>
     );

@@ -1,12 +1,16 @@
-import product_variantsService from "../../services/product_variantService";
+import React, { useState, useEffect } from "react";
+
 import styles from '../../styles/generic.module.css';
 import { InputNumber } from "primereact/inputnumber";
-import React, { useState, useEffect } from "react";
+import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
-import { InputText } from "primereact/inputtext";
+
+
+import product_variantsService from "../../services/product_variantService";
 import { formatDate } from "../../utils/formatDate"
+
 
 const AddInvoiceDetailForm = ({
     visible,
@@ -103,7 +107,6 @@ const AddInvoiceDetailForm = ({
         }).format(value);
     };
 
-    console.log(detail)
 
 
     const dialogFooter = (
@@ -131,7 +134,6 @@ const AddInvoiceDetailForm = ({
             onHide={onHide}
         >
             <div>
-
                 <div>
                     <label htmlFor=""  className={styles.fontBold} style={{ width: '100%', display: 'block' }}>Sản phẩm</label>
                     <Dropdown
@@ -170,7 +172,6 @@ const AddInvoiceDetailForm = ({
                         style={{ width: '100%'}}
                         disabled={detail.id_variant ? true : false}
                     >
-                    
                     </InputNumber>
                 </div>
 
@@ -210,8 +211,6 @@ const AddInvoiceDetailForm = ({
 
                     ) : null
                 }
-
-
             </div>
         </Dialog>
 

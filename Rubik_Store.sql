@@ -3,6 +3,7 @@ USE rubik_store_1;
 
 -- Tài khoản vào trang quản trị phone: 0344665810, pass: admin
 -- Tài khoản người dùng: phone: 0987654321 , pass: 1234567
+-- Tài khoản người dùng: 0912345678 , pass: 1234567
 
 -- Tạo bảng users
 CREATE TABLE Users (
@@ -89,6 +90,15 @@ CREATE TABLE Carts (
     updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id_user, id_variant)
 );
+
+INSERT INTO Carts (id_user, id_variant, quantity, price) VALUES 
+(2, 6, 1, 650000);
+(2, 1, 2, 290000);
+
+
+DELETE FROM Carts 
+WHERE id_user = 2 AND id_variant = 6;
+
 
 -- Tạo bảng Sale_invoices
 CREATE TABLE Sale_invoices (

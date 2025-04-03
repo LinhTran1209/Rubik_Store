@@ -1,7 +1,8 @@
-import styles from '../../styles/generic.module.css';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import React from 'react';
+
+import styles from '../../styles/generic.module.css';
 
 const ConfirmDeleteDialog = ({
     visible,

@@ -1,11 +1,15 @@
-import styles from '../../styles/generic.module.css';
+import React, { useState, useEffect } from 'react';
+
 import { InputText } from 'primereact/inputtext';
 import { Dropdown } from 'primereact/dropdown';
 import { classNames } from 'primereact/utils';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
-import React, { useState, useEffect } from 'react';
+
+
 import { formatDate } from '../../utils/formatDate';
+
+import styles from '../../styles/generic.module.css';
 
 
 const GenericForm = ({
@@ -96,10 +100,6 @@ const GenericForm = ({
                             appendTo="self"
 
                         />
-                        // ) : field.type === 'checkbox' ? (
-                        //     <CheckBox 
-                                
-                        //     />
                         ) : field.type === 'price' ? (
                             <InputText
                                 id={field.name}
@@ -115,7 +115,6 @@ const GenericForm = ({
                             <InputText
                                 id={field.name}
                                 value={formatDate(value)}
-                                // onChange={(e) => onChange(e, field.name)}
                                 required={field.required}
                                 disabled={field.disabled}
                                 autoFocus={field.autoFocus}

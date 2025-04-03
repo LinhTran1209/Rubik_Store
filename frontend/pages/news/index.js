@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import newService from '../../services/newService';
 import Link from 'next/link';
+
+import newService from '../../services/newService';
+
 import { formatDate } from '../../utils/formatDate';
 
 const News = () => {
@@ -48,7 +50,7 @@ const News = () => {
                     Array.isArray(newsList) && newsList.length > 0 && (
                         <ul className="newslist">
                             {newsList.map((news) => (
-                                <li key={news.id}>
+                                <li key={news.id_new}>
                                     <div className="line-a"></div>
                                     <Link href={news.href || '#'}>
                                         <div className="tempvideo">

@@ -1,47 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
+import bcrypt from 'bcryptjs';
+import Link from 'next/link';
+
 import CustomToast from "../../../components/CustomToast";
+import { useUser } from "../../../components/UserContext";
 import userService from '../../../services/userService';
 import authService from "../../../services/authService";
-import Link from 'next/link';
-import bcrypt from 'bcryptjs';
 
 const ChangePassword = () => {
+    const { user, loading } = useUser();
     const toast = useRef(null);
-    // Lưu trữ giá trị điền vào
 
-    const [user, setUser] = useState({id_user: null, role: "", name: "", email: "", phone: "", created_at: "", updated_at: ""});
-    const [userRole, setUserRole] = useState({ phone: "", role: "" });
-    const [confirmPasswordNew, setConfirmPasswordNew] = useState('');
-    const [passwordNew, setPasswordNew] = useState('');
-    const [password, setPassword] = useState('');
+    const [ confirmPasswordNew, setConfirmPasswordNew ] = useState('');
+    const [ passwordNew, setPasswordNew ] = useState('');
+    const [ password, setPassword ] = useState('');
 
-    useEffect(() => {
-        const fetchUserRole = async () => {
-            try {
-                const user = await authService.getCurrentUser();
-                setUserRole({ phone: user.phone, role: user.role });
-            } catch (error) {
-                setUserRole({ phone: "", role: "" });
-            }
-        };
-        fetchUserRole();
-    }, []);
-
-    // Lấy chính xác được user từ userRole bằng số phone
-    const fetchUser = async () => {
-        try {
-            const user = await userService.getData("phone", userRole.phone);
-            setUser(user[0]);
-        } catch (err) {
-            console.log(err.message, "ở account");
-        }
-    };
-
-    useEffect(() => {
-        if (userRole.phone) {
-            fetchUser();
-        }
-    }, [userRole]);
 
     const checkInputChange = async () => {
 
@@ -52,11 +25,9 @@ const ChangePassword = () => {
         }
         const matchPassword = await bcrypt.compare(password, user.password);
         if (!matchPassword) {
-            console.log(user.password)
             toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu cũ không chính xác!',life: 3000,});
             return;
         }
-
 
         if (passwordNew.length < 6 || confirmPasswordNew.length < 6) {
             toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu mới phải có ít nhất 6 ký tự!',life: 3000,});
@@ -74,24 +45,27 @@ const ChangePassword = () => {
             userData.password = passwordNew
             userData.updated_at = new Date(new Date().setDate(new Date().getDate() + 1)).toISOString().split('T')[0];
             userData.created_at = new Date(new Date(userData.created_at).setDate(new Date(userData.created_at).getDate() + 1)).toISOString().split('T')[0];
-            userService.updateuser(user.id_user, userData)   
+            console.log(userData)
+            userService.updateuser(userData.id_user, userData)   
                 .then(() => {
                     toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Thay đổi mật khẩu thành công!', life: 3000 });
                     authService.logout();
                     window.location.href = "/home";
                 })
                 .catch(error => {
-                    toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Đăng ký thất bại', life: 3000 });
+                    toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Thay đổi mật khẩu thất bại', life: 3000 });
                 });
         } catch (err) {
-            const errorMessage = err.message || 'Đăng ký thất bại';toast.current.show({severity: 'error',summary: 'Lỗi',detail: errorMessage,life: 5000,});
+            const errorMessage = err.message || 'Thay đổi mật khẩu thất bại';toast.current.show({severity: 'error',summary: 'Lỗi',detail: errorMessage,life: 5000,});
         }
     };
+
+    if (loading) return <div className="header__top">Đang tải...</div>; 
 
     return (
         <div className="modal">
             <CustomToast ref={toast} />
-            { (userRole.phone === '') ?
+            { (user.id_user === '' && !loading) ?
                 (
                     <div style={{  margin: "auto", color: "#8a6d3b", textAlign: "center" }}>Bạn cần <Link style={{color:"red"}} href={`/login`}>đăng nhập</Link> để đổi mật khẩu!</div>
                 ) : 
@@ -154,16 +128,11 @@ const ChangePassword = () => {
                                     </span> 
                                 </Link>
                             </div>
-
-
-
-
                         </div>
                     </div>
                 </div>
             </div>
                 )
-
             }
         </div>
     );

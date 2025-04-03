@@ -1,0 +1,97 @@
+.middle__order {
+    background-color: white;
+    height: 1000px;
+}
+
+.middle__order_main {
+    margin: 30px 100px;
+    /* min-height: 700px; */
+    height: 800px;
+}
+
+.middle__order_main .order__create_at {
+    margin-top: 30px
+}
+
+.middle__order_main .row__info_sale_invoice {
+    margin-top: 20px;
+    display: flex;
+    /* flex: 3; */
+}
+
+.middle__order_main .info_address {
+    display: block;
+    flex: 1;
+}
+
+.middle__order_main .info_address .info_address_p {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient:vertical;
+    overflow:auto;
+    width: 600px;
+    align-items: center;
+    display: flex;
+    margin-bottom: 15px;
+}
+
+.middle__order_main .info_status_sale_voice {
+    display: block;
+    flex: 1;
+}
+
+
+.middle__order_main .content_order {
+    margin-top: 20px;
+    width: 100%;
+}
+
+.middle__order_main .content_order table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+
+.middle__order_main .content_order th, td {
+    padding: 20px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    max-width: 135px; 
+    white-space: nowrap;  
+    overflow: hidden;  
+    text-overflow: ellipsis; 
+    word-wrap: break-word;
+}
+
+.middle__order_main .content_order th {
+    background-color: #f9f9f9;
+    font-weight: normal;
+    color: #555;
+    text-align: start;
+    font-weight: bold;
+}
+
+.middle__order_main .content_order tr {
+    transition: all 0.5s ease;  
+}
+
+.middle__order_main .content_order .td_account_order:hover {
+    cursor: pointer;
+    background-color: #f5f5f5;
+}
+
+.middle__order_main .content_order table tbody .td_account_order td:hover {
+    color: #e74c3c;  
+}
+
+
+
+
+
+
+
+.middle__order_main .order_details {
+    /* border: 1px solid #ddd; */
+}

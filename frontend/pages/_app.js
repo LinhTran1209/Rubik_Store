@@ -16,22 +16,29 @@ import '../styles/css/modal_login_register.css';
 import '../styles/css/detail_product.css';
 import '../styles/css/rubik2x2x2.css';
 import '../styles/css/account.css';
+import '../styles/css/cart.css';
 import '../styles/css/user_address.css';
+import '../styles/css/order.css';
+
+import { CartProvider } from "../components/CartContext";
+import { UserProvider } from "../components/UserContext";
 
 
 //LayoutWeb này là layout cho trang web bán hàng
 import LayoutWeb from '../components/LayoutWeb';
-
-
 
 export default function MyApp({ Component, pageProps }) {
 
 
     if (Component.getLayoutWeb) {
         return (
-            <LayoutWeb>
-                <Component {...pageProps} />
-            </LayoutWeb>
+            <UserProvider>
+                <CartProvider>
+                    <LayoutWeb>
+                        <Component {...pageProps} />
+                    </LayoutWeb>
+                </CartProvider>
+            </UserProvider>
         )
     }
 

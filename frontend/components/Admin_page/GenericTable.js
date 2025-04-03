@@ -1,12 +1,14 @@
-import styles from '../../styles/generic.module.css';
+import React, { useRef } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { InputText } from 'primereact/inputtext';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
-import React, { useRef } from 'react';
-import { formatPrice } from '../../utils/formatPrice';
+
 import { renderImageTable } from '../../utils/renderImageTable';
+import { formatPrice } from '../../utils/formatPrice';
 import { formatDate } from '../../utils/formatDate';
+
+import styles from '../../styles/generic.module.css';
 
 const GenericTable = ({
     data,
@@ -24,16 +26,8 @@ const GenericTable = ({
     disabled = false,
     visible = true,
 }) => {
+
     const dt = useRef(null);
-
-    // const imageBodyTemplate = (rowData, field) => {
-    //     return rowData[field] ? (
-    //         <img src={rowData[field]} alt="Preview" style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
-    //     ) : (
-    //         'No Image'
-    //     );
-    // };
-
     const actionBodyTemplate = (rowData) => {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import CustomToast from '../../components/CustomToast';
-import userService from '../../services/userService';
-import { Toast } from 'primereact/toast';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 
+import userService from '../../services/userService';
+
+import CustomToast from '../../components/CustomToast';
+
 const Register = () => {
     const toast = useRef(null);
-    const router = useRouter();
-    // Lưu trữ giá trị điền vào
+    const [users, setUsers] = useState([]);
+    
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
@@ -17,12 +18,11 @@ const Register = () => {
     const [verificationCode, setVerificationCode] = useState('');
 
     // lấy thông tin tất cả người dùng để só sánh
-    const [users, setusers] = useState([]);
 
     const getAllusers = async () => {
         try {
             const data = await userService.getAllusers();
-            setusers(data);
+            setUsers(data);
         } catch (error) {
             console.error('Lỗi khi lấy dữ liệu:', error);
             toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải dữ liệu', life: 3000 });
@@ -31,14 +31,11 @@ const Register = () => {
 
     useEffect(() => {
         getAllusers();
-    }, []); // lấy dữ liệu khi component được mount (render)
+    }, []); 
 
 
 
     const checkInputRegister = async () => {
-
-
-        // Kiểm tra họ và tên
         if (!name) {
             toast.current.show({severity: 'warn', summary: 'Cảnh báo', detail: 'Họ và tên không được để trống', life: 3000,});
             return;

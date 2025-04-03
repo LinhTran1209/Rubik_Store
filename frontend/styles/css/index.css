@@ -100,10 +100,10 @@ body {
     top: 0;
 }
 
-.detail-cart {
+/* .detail-cart {
     width: 370px;
     min-height: 200px;
-    max-height: 350px;
+    max-height: 245px;
     right: 0;
     top: 100%;
     background-color: var(--white-color);
@@ -114,16 +114,11 @@ body {
     z-index: 10;
     border: 1px solid #ccc;
     overflow-y: auto;
-}
-/* Hiển thị chi tiết giỏ hàng */
-/* #span-login:hover,
-#span-register:hover {
-    color: rgba(255, 255, 255, 0.7);
 } */
 
-/* .header__top-cart:hover .detail-cart{
-    display: block;
-} */
+
+/* ---------------------------------------------CART-------------------------------------------------------- */
+
 
 
 
@@ -300,7 +295,7 @@ body {
     justify-content: center;
     /* height: 2000px; */
     min-height: 850px;
-    flex: 1; /* Đảm bảo phần giữa chiếm không gian còn lại */
+    flex: 1; 
     padding-bottom: 20px;
 }
 
@@ -622,105 +617,3 @@ body {
     text-decoration: none;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Css cho phần giỏ hàng */
-.empty__detail-cart {
-    height: 200px;
-    line-height: 200px;
-    text-align: center;
-    background: #f2dede;
-    color: #b94a48;
-    border-color: #eed3d7;
-    border-radius: 4px;
-    font-size: 20px;
-}
-/* .detail-cart  {
-    display: block;
-} */
-
-.detail-cart a {
-    text-decoration: none;
-    color: #333;
-}
-
-.group__detail-cart {
-    display: flex;
-    margin: 10px;
-}
-
-.group__detail-cart-img img {
-    width: 60px;
-    height: 60px;
-}
-
-.group__detail-cart-name-color {
-    margin-left: 10px;
-    position: relative;
-}
-
-.group__detail-cart-name span{
-    width: 180px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    white-space: normal;
-}
-
-.group__detail-cart-color span{
-    opacity: 0.7;
-    position: absolute;
-    bottom: 0;
-}
-
-.group__detail-cart-price {
-    margin-left: 20px;
-}
-
-.group__detail-cart-price span {
-    color: #e10c00;
-    line-height: 60px;
-    text-align: center;
-}
-
-
-.product__news {
-    margin: 10px;
-    font-size: 16px;
-    opacity: 0.5;
-}
-
-.detail-cart a :hover {
-    background-color: rgb(248, 248, 248);
-}
-
-.class__cart-check {
-    margin: 10px;
-    padding-bottom: 40px;
-}
-
-#a__cart-check {
-    background-color: #438F23;
-    border-radius: 2px;
-    height: 35px;
-    line-height: 35px;
-    text-align: center;
-    width: 130px;
-    float: right;
-    color: white;
-}

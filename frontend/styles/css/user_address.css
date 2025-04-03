@@ -61,6 +61,13 @@
 
 .row__address__left p {
     margin-bottom: 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    white-space: normal;
+    width: 600px;
+
 }
 
 .action__row__address__left {

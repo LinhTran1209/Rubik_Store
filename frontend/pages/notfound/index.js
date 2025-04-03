@@ -1,6 +1,6 @@
 import React from "react";
-import AppConfig from "../../layout/AppConfig";
 import Link from "next/link";
+import AppConfig from "../../layout/AppConfig";
 
 const NotFoundPage = () => {
     return (

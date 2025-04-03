@@ -1,31 +1,38 @@
+import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
+
 import product_variantsService from "../../services/product_variantService";
 import product_imagesService from "../../services/product_imageService";
 import categorieService from "../../services/categorieService";
 import productService from "../../services/productService";
+import { useCart } from "../../components/CartContext";
+import { useUser } from "../../components/UserContext";
+
+import CustomToast from "../../components/CustomToast";
 import { formatPrice } from "../../utils/formatPrice";
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/router";
-import Link from "next/link";
+
 
 const ProductDetail = () => {
     const router = useRouter();
-    const { slug } = router.query; // lấy từ routing động
-    const [product, setProduct] = useState(null); // sẽ tra từ productService từ slug
-    const [products, setProducts] = useState([]); // các sản phẩm gợi ý theo id_categories
-    const [categorie, setCategorie] = useState([]); // lấy tên danh mục cho all__section-header
-    const [error, setError] = useState(null);
+    const toast = useRef(null);
+    const { slug } = router.query;
+    const { user, loading } = useUser();
+    const { carts, addToCart, updateToCart } = useCart();
+
+    const [product, setProduct] = useState(null); 
+    const [products, setProducts] = useState([]);
+    const [variants, setVariants] = useState([]); 
+    const [categorie, setCategorie] = useState([]);
+
     const [quantity, setQuantity] = useState(1);
     const [totalPrice, setTotalPrice] = useState(0);
-    const [loading, setLoading] = useState(true);
-    const [variants, setVariants] = useState([]); // các biến thể từ sản phẩm
-    const [selectedVariant, setSelectedVariant] = useState(null); // biến thể nếu được chọn để xem giá
-
-    const [productImages, setProductImages] = useState([]); // sẽ lưu được sanh sacchs ảnh của sản phẩm dựa theo id_product
     const [mainImage, setMainImage] = useState(null);
+    const [productImages, setProductImages] = useState([]); 
+    const [selectedVariant, setSelectedVariant] = useState(null); 
 
     const fetchProduct = async () => {
         try {
-            setLoading(true);
             const data = await productService.getDataproducts("slug", slug);
             if (data.length > 0) {
                 setProduct(data[0]);
@@ -33,26 +40,21 @@ const ProductDetail = () => {
             } else {
                 setProduct(null);
             }
-            setLoading(false);
         } catch (err) {
-            setError(err.message);
-            setLoading(false);
+            console.log(err.message, "ở detail produt")
         }
     };
 
     const fetchVariants = async (id_product) => {
         try {
-            const data = await product_variantsService.getData(
-                "id_product",
-                id_product
-            );
+            const data = await product_variantsService.getData("id_product", id_product);
             setVariants(data);
             if (data.length > 0) {
-                setSelectedVariant(data[0]); // Chọn biến thể đầu tiên mặc định
-                setTotalPrice(data[0].price * quantity); // Cập nhật tổng giá ban đầu
+                setSelectedVariant(data[0]); 
+                setTotalPrice(data[0].price * quantity); 
             }
         } catch (err) {
-            console.log(err.message, "ở fetch variants");
+            console.log(err.message, "ở detail produt");
         }
     };
 
@@ -68,7 +70,7 @@ const ProductDetail = () => {
                     setMainImage(mainImg.image_url);
                 }
             } catch (err) {
-                console.log(err.message, "ở detail product [slug]");
+                console.log(err.message, "ở detail product");
             }
         }
     };
@@ -121,6 +123,40 @@ const ProductDetail = () => {
         }
     };
 
+    // Hàm xử lý thêm vào giỏ hàng
+    const handleAddToCart = async () => {
+        if (user.id_user === "") {
+            // Nếu chưa đăng nhập
+            toast.current.show({ severity: "warn", summary: "Cảnh báo", detail: "Vui lòng đăng nhập để mua hàng!",life: 3000});
+            return;
+        }
+
+        try {
+
+            if (quantity > selectedVariant.quantity) {
+                toast.current.show({ severity: "warn", summary: "Cảnh báo", detail: "Số lượng bạn yêu cầu không đủ. Vui lòng thay đổi số lượng!"})
+                return;
+            }
+            // Tạo cart để thêm
+            const cartItem = { id_user: user.id_user,  id_variant: selectedVariant.id_variant, quantity: quantity, price: totalPrice };
+
+            //Kiểm tra trong cart đã có chưa, có ? updateToCart làm tăng số lượng : thêm mới
+            if (carts.find((c) => c.id_variant === cartItem.id_variant)) {
+                cartItem.quantity = cartItem.quantity + carts.find((c) => c.id_variant === cartItem.id_variant).quantity
+                await updateToCart(cartItem);
+                toast.current.show({ severity: "success", summary: "Thành công", detail: "Sản phẩm đã được thêm vào giỏ hàng!", life: 3000});
+            } else {
+                await addToCart(cartItem);
+                toast.current.show({ severity: "success", summary: "Thành công", detail: "Sản phẩm đã được thêm vào giỏ hàng!", life: 3000});
+            }
+        } catch (error) {
+            if (toast.current) {
+                toast.current.show({ severity: "error", summary: "Lỗi", detail: "Thêm vào giỏ hàng thất bại, vui lòng thử lại!", life: 3000});
+            }
+            console.log(error.message, "ở handleAddToCart");
+        }
+    };
+
     useEffect(() => {
         if (slug) {
             fetchProduct();
@@ -145,18 +181,18 @@ const ProductDetail = () => {
         }
     }, [selectedVariant, quantity]);
 
-    if (loading) return <div>Đang tải...</div>;
-    if (error) return <div>Error: {error}</div>;
-    if (!product) return <div>Sản phẩm không tồn tại</div>;
+    if (loading) return <div className="header__top">Đang tải...</div>; 
+    if (!product) return <div style={{display: "flex", justifyContent: "center", marginTop: "100px", color: "#8a6d3b"}}>Sản phẩm không tồn tại. Vui lòng kiểm tra lại lựa chọn của bạn hoặc thử một đường dẫn khác!</div>;
 
     return (
         <div className="product-detail">
+            <CustomToast ref={toast} />
             <div className="all__section-header">
                 <span className="all__section-header-text">
                     <Link href="/home">Trang chủ</Link>
                 </span>
                 <span className="all__section-header-text">
-                    <Link href={`/${categorie.slug}`}>{categorie.name}</Link>
+                    <Link href={`/category/${categorie.slug}`}>{categorie.name}</Link>
                 </span>
                 <span className="all__section-header-text">
                     <Link href={`/detail_product/${product.slug}`}>
@@ -171,23 +207,10 @@ const ProductDetail = () => {
                     {/* ảnh sản phẩm */}
                     <div className="product-detail__images">
                         <div className="product-detail__main-image">
-                            <img
-                                src={mainImage || product.image_url}
-                                alt={product.name}
-                            />
+                            <img src={mainImage || product.image_url} alt={product.name}/>
                         </div>
                         <div
-                            className="product-detail__thumbnails"
-                            style={
-                                {
-                                    // display: 'flex',
-                                    // overflowX: 'auto',
-                                    // whiteSpace: 'nowrap',
-                                    // gap: '10px',
-                                    // padding: '10px 0'
-                                }
-                            }
-                        >
+                            className="product-detail__thumbnails">
                             {productImages.map((img, index) => (
                                 <img
                                     key={index}
@@ -229,8 +252,7 @@ const ProductDetail = () => {
                                           Math.min(
                                               ...variants.map((v) => v.price)
                                           )
-                                      )}
-                                đ
+                                      )}đ
                             </span>
                             <span className="original-price">
                                 {formatPrice(
@@ -238,8 +260,7 @@ const ProductDetail = () => {
                                         Math.max(
                                             ...variants.map((v) => v.price)
                                         )
-                                )}
-                                đ
+                                )}đ
                             </span>
                         </div>
                         <div className="product-detail__promotion">
@@ -344,7 +365,7 @@ const ProductDetail = () => {
                             <button className="btn btn--buy-now">
                                 MUA NGAY <br />
                             </button>
-                            <button className="btn btn--add-to-cart">
+                            <button className="btn btn--add-to-cart" onClick={handleAddToCart}>
                                 THÊM VÀO GIỎ HÀNG
                             </button>
                         </div>
@@ -360,9 +381,6 @@ const ProductDetail = () => {
                             clear: "both",
                         }}
                     >
-                        {/* <div className="product-desc__image-container">
-                            <img src="https://rubikstore.vn/cdn/upload/images/1030392700x.jpg" alt="Rubik GAN 356" className="product-desc__image"/>
-                        </div> */}
 
                         <div className="article_content">
                             <p>
