@@ -9,14 +9,18 @@ import AppTopbar from './AppTopbar';
 import AppConfig from './AppConfig';
 import { LayoutContext } from './context/layoutcontext';
 import PrimeReact from 'primereact/api';
+import { useUser } from "../components/UserContext";
 
 
 
 
 const Layout = (props) => {
+    const { user, loading } = useUser();
     const { layoutConfig, layoutState, setLayoutState } = useContext(LayoutContext);
     const topbarRef = useRef(null);
     const sidebarRef = useRef(null);
+
+
 
     const router = useRouter();
     const [bindMenuOutsideClickListener, unbindMenuOutsideClickListener] = useEventListener({
@@ -103,6 +107,23 @@ const Layout = (props) => {
         'p-ripple-disabled': !layoutConfig.ripple
     });
 
+
+    // Kiểm tra và chuyển hướng ngay trước khi render
+    if (loading === false) { 
+        if (user.role === "abc") {
+            if (typeof window !== 'undefined') {
+                window.location.href = "/login";
+                return null;
+            }
+        }
+        if (user.role === 'customer') {
+            if (typeof window !== 'undefined') {
+                window.location.href = "/home";
+                return null;
+            }
+        }
+    }
+
     return (
         <React.Fragment>
             <Head>
@@ -119,9 +140,6 @@ const Layout = (props) => {
                 <meta property="og:image" content="https://www.primefaces.org/static/social/sakai-nextjs.png"></meta>
                 <meta property="og:ttl" content="604800"></meta>
                 <link rel="icon" href={`/faviconRubik.ico`} type="image/x-icon"></link>
-
-
-
 
             </Head>
 

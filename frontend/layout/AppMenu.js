@@ -1,44 +1,22 @@
 import React, { useEffect, useState, useRef } from "react";
-import { MenuProvider } from "./context/menucontext";
-import authService from "../services/authService";
 import { Toast } from "primereact/toast";
-import AppMenuitem from "./AppMenuitem";
 import Link from "next/link";
 
+import { MenuProvider } from "./context/menucontext";
+import AppMenuitem from "./AppMenuitem";
+import authService from "../services/authService";
+
+import { useUser } from "../components/UserContext";
+
 const AppMenu = () => {
-    const [user, setUser] = useState({ phone: "", role: "" });
-    const [loading, setLoading] = useState(true);
+    const { user, loading } = useUser();
     const toast = useRef(null);
-
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const user = await authService.getCurrentUser();
-                setUser({ phone: user.phone, role: user.role });
-                if (user.role === 'customer') {
-                    setLoading(true);
-                    window.location.href = '/home';
-                }
-            } catch (error) {
-                console.error("Không lấy được người dùng gần đây:", error);
-                setUser({ phone: "", role: "" });
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchUser();
-    }, []);
-
+    
     const handleLogout = async () => {
         try {
             await authService.logout();
             if (toast.current) {
-                toast.current.show({
-                    severity: "success",
-                    summary: "Thành công",
-                    detail: "Đăng xuất thành công",
-                    life: 30000,
-                });
+                toast.current.show({ severity: "success", summary: "Thành công", detail: "Đăng xuất thành công", life: 30000});
             }
             window.location.href = "/home";
         } catch (error) {
@@ -113,7 +91,7 @@ const AppMenu = () => {
         },
     ];
 
-    if (loading) return <div>Loading menu...</div>;
+    if (loading) return <div className="header__top">Đang tải...</div>; 
 
     return (
         <MenuProvider>

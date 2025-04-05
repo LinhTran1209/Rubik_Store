@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 import saleInvoiceDetailsService from "../../../services/sale_invoice_detailsService";
 import product_variantsService from "../../../services/product_variantService";
@@ -11,7 +12,6 @@ import { useUser } from "../../../components/UserContext";
 import CustomToast from "../../../components/CustomToast";
 import { formatDate } from "../../../utils/formatDate";
 import { formatPrice } from "../../../utils/formatPrice";
-import { useRouter } from "next/router";
 
 const Order = () => {
     const router = useRouter();
@@ -202,6 +202,7 @@ const Order = () => {
                                 <table className="order_details">
                                     <thead>
                                         <tr>
+                                            <th>Ảnh sản phẩm</th>
                                             <th>Sản phẩm</th>
                                             <th>Màu sắc</th>
                                             <th>Số lượng</th>
@@ -217,6 +218,7 @@ const Order = () => {
         
                                             return (
                                                 <tr className="td_account_order" key={index} onClick={() => handleRowClick(product.slug)}>
+                                                    <td><img style={{width: "70px"}} src={product.image_url} alt={product.name} /></td>
                                                     <td>{product.name || "N/A"}</td>
                                                     <td>{variant.color || "N/A"}</td>
                                                     <td>{detail.quantity}</td>

@@ -1,11 +1,9 @@
 .middle__address {
-    background-color: white;
-    height: auto;
+    background-color: white;;
 }
 
 .middle__address_main {
     margin: 30px 100px;
-    /* min-height: 700px; */
     height: 1200px;
 }
 

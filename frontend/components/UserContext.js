@@ -7,7 +7,7 @@ const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
     const [userRole, setUserRole] = useState({ phone: "", role: "" });
-    const [user, setUser] = useState({ id_user: "", role: "", name: "", email: "", phone: ""});
+    const [user, setUser] = useState({ id_user: "", role: "abc", name: "", email: "", phone: ""});
     const [loading, setLoading] = useState(true);
 
     const fetchUserRole = async () => {

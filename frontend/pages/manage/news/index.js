@@ -1,26 +1,28 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Toast } from 'primereact/toast';
+
+import newService from '../../../services/newService';
+
 import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDialog';
 import GenericTable from '../../../components/Admin_page/GenericTable';
 import GenericForm from '../../../components/Admin_page/GenericForm';
-import React, { useState, useEffect, useRef } from 'react';
-import authService from '../../../services/authService';
-import newService from '../../../services/newService';
-import { Toast } from 'primereact/toast';
+import { useUser } from "../../../components/UserContext";
 
 const New = () => {
-    const [new1s, setnews] = useState([]);
-    const [new1, setnew] = useState({ id_new: null, title: '', desc: '', image_url: '', href: '', created_at: '', updated_at: '' });
-
-    const [globalFilter, setGlobalFilter] = useState('');
-    const [newDialog, setnewDialog] = useState(false);
-    const [deletenewDialog, setdeletenewDialog] = useState(false);
-    const [deletenewsDialog, setDeletenewsDialog] = useState(false);
-    const [selectednews, setselectednews] = useState(null);
-    const [submitted, setSubmitted] = useState(false);
+    const { user, loading } = useUser();
     const toast = useRef(null);
 
-    // Kiểm tra quyền admin
-    const [userRole, setUserRole] = useState(null);
+    const [new1, setnew] = useState({ id_new: "", title: '', desc: '', image_url: '', href: '', created_at: '', updated_at: '' });
+    const [new1s, setnews] = useState([]);
 
+    const [deletenewsDialog, setDeletenewsDialog] = useState(false);
+    const [deletenewDialog, setdeletenewDialog] = useState(false);
+    const [selectednews, setselectednews] = useState(null);
+    const [globalFilter, setGlobalFilter] = useState('');
+    const [newDialog, setnewDialog] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+
+    
     const show = async () => {
         try {
             const data = await newService.getAllnews();
@@ -30,28 +32,15 @@ const New = () => {
             toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải dữ liệu', life: 3000 });
         }
     };
-
-    useEffect(() => {
-        const fetchUserRole = async () => {
-            try {
-                const user = await authService.getCurrentUser();
-                setUserRole(user.role);
-            } catch (error) {
-                toast.current.show({ severity: 'info', summary: 'Thông báo', detail: 'Bạn cần đăng nhập để vào trang này!', life: 3000 });
-                setUserRole(null);
-            } 
-        };
-        fetchUserRole();
-    }, []); // Chỉ chạy một lần khi component được mount
     
     useEffect(() => {
-        if (userRole === 'admin') {
+        if (user.role === 'admin') {
             show(); // Gọi show() khi userRole là 'admin'
         }
-    }, [userRole]);
+    }, [user]);
 
     const openNew = () => {
-        setnew({ id_new: null, title: '', desc: '', image_url: '', href: ''});
+        setnew({ id_new: "", title: '', desc: '', image_url: '', href: ''});
         setSubmitted(false);
         setnewDialog(true);
     };
@@ -161,11 +150,15 @@ const New = () => {
         { field: 'updated_at', header: 'Ngày cập nhật', format: 'date' },
     ];
 
+    if (loading) {
+        return <div>Đang tải...</div>;
+    }
+
     return (
         <div>
             <Toast ref={toast} />
             <GenericTable
-                visible={true ? userRole === 'admin' : false}
+                visible={true ? user.role === 'admin' : false}
                 data={new1s}
                 selectedItems={selectednews}
                 setSelectedItems={setselectednews}

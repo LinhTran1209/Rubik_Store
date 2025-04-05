@@ -1,11 +1,14 @@
 import React, { forwardRef, useContext, useImperativeHandle, useRef, useState, useEffect } from 'react';
-import { LayoutContext } from './context/layoutcontext';
 import { classNames } from 'primereact/utils';
 import Link from 'next/link';
 
-import authService from '../services/authService'
+import { LayoutContext } from './context/layoutcontext';
+
+import { useUser } from "../components/UserContext";
 
 const AppTopbar = forwardRef((props, ref) => {
+    const { user, loading } = useUser();
+
     const { layoutConfig, layoutState, onMenuToggle, showProfileSidebar } = useContext(LayoutContext);
     const menubuttonRef = useRef(null);
     const topbarmenuRef = useRef(null);
@@ -16,25 +19,6 @@ const AppTopbar = forwardRef((props, ref) => {
         topbarmenu: topbarmenuRef.current,
         topbarmenubutton: topbarmenubuttonRef.current
     }));
-
-
-
-    // Load người dùng
-    const [user, setUser] = useState({ phone: "", role: "" });
-
-    useEffect(() => {
-        const fetchUser = async () => {
-            try {
-                const user = await authService.getCurrentUser();
-                setUser({ phone: user.phone, role: user.role });
-            } catch (error) {
-                console.error("Không lấy được người dùng gần đây:", error);
-                setUser({ phone: "", role: "" });
-            }
-        };
-        fetchUser();
-    }, []);
-
 
     return (
         <div className="layout-topbar" style={{backgroundColor:'#438F23'}}>
@@ -55,7 +39,7 @@ const AppTopbar = forwardRef((props, ref) => {
                     <i className="pi pi-calendar"></i>
                     <span>Calendar</span>
                 </button> */}
-                {user.role === 'admin' ? <span style={{ color: 'white', marginTop: '8.5%' }}>{user.phone}</span> : null}
+                {user.role === 'admin' ? <span style={{ color: 'white', marginTop: '8.5%' }}>{user.name}</span> : null}
                 <button type="button" className="p-link layout-topbar-button" style={{marginRight: "50px"}}>
                     <i className="pi pi-user"></i>
                 </button>

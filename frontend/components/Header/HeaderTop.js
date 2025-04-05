@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import product_variantsService from '../../services/product_variantService'
 import productService from '../../services/productService';
+import authService from '../../services/authService';
 
 import SearchProduct from '../../components/SearchProduct';
 import { formatPrice } from '../../utils/formatPrice';
@@ -43,9 +44,8 @@ const HeaderTop = () => {
 
     const handleLogout = async () => {
         try {
-            await logout();
+            await authService.logout();
             toast.current.show({ severity: "success", summary: "Thành công", detail: "Đăng xuất thành công", life: 3000});
-            setUserId(null);
             window.location.href = "/home";
         } catch (error) {
             alert("Đăng xuất thất bại, vui lòng thử lại.");
@@ -130,11 +130,11 @@ const HeaderTop = () => {
 
             {/* Giỏ hàng khi hover */}
             <div className="header__top-cart">
-                <a className="header__top-a" href="#">
-                    <span id="count-in-cart">{carts.length}</span>
+                <Link className="header__top-a" href="/account/carts">
+                    <span className="count-in-cart">{carts.length}</span>
                     <i className="fa-solid fa-cart-shopping"></i>
                     <span style={{ lineHeight: '33px' }}>Giỏ hàng</span>
-                </a>
+                </Link>
                 <div className="detail-cart">
                     { carts.length > 0 ? 
                         (
@@ -148,7 +148,8 @@ const HeaderTop = () => {
                                         <div className='cart-products' key={index}>
                                             <Link href={`/detail_product/${product.slug}`}>
                                                 <div className="cart-product">
-                                                    <img src={product.image_url} alt={product.name}/>
+                                                    <img style={{position: ""}} src={product.image_url} alt={product.name}/>
+                                                    <span className="count-prouduct-in-cart">{cart.quantity}</span>
                                                     <div className="cart-product__info">
                                                         <p className="cart-product__name">{product.name}</p>
                                                         <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
@@ -162,8 +163,9 @@ const HeaderTop = () => {
                                     );
 
                                 })}
+
                                 <div className="class__cart-check">
-                                    <a id="a__cart-check" href="cart.html">Xem giỏ hàng</a>
+                                    <Link id="a__cart-check" href="/account/carts">Xem giỏ hàng</Link>
                                 </div>
                                 <div style={{marginBottom: "20px"}}></div>
                             </>

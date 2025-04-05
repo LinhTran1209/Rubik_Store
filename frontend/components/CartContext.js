@@ -43,8 +43,17 @@ export const CartProvider = ({ children }) => {
         }
     }
 
+    const deleteToCart = async (cartItem) => {
+        try {
+            await cartService.delete(cartItem.id_user, cartItem.id_variant);
+            fetchCarts(userId);
+        } catch (error) {
+            console.log(error.message, "ở cart context")
+        }
+    };
+
     return (
-        <CartContext.Provider value={{ carts, setCarts, addToCart, setUserId, updateToCart }}>
+        <CartContext.Provider value={{ carts, setCarts, addToCart, setUserId, updateToCart, deleteToCart }}>
             {children}
         </CartContext.Provider>
     );

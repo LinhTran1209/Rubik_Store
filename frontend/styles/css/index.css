@@ -87,18 +87,6 @@ body {
     position: relative;
 }
 
-#count-in-cart {
-    color: var(--white-color);
-    position: absolute;
-    background: #f70000;
-    width: 15px;
-    height: 15px;
-    font-size: 10px;
-    line-height: 15px;
-    border-radius: 50%;
-    text-align: center;
-    top: 0;
-}
 
 /* .detail-cart {
     width: 370px;
@@ -293,10 +281,9 @@ body {
 .middle {
     width: 100%;
     justify-content: center;
-    /* height: 2000px; */
-    min-height: 850px;
     flex: 1; 
     padding-bottom: 20px;
+    min-height: 800px
 }
 
 .middle__header {

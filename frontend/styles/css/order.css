@@ -1,12 +1,11 @@
 .middle__order {
     background-color: white;
-    height: 1000px;
+    min-height: 800px;
 }
 
 .middle__order_main {
     margin: 30px 100px;
-    /* min-height: 700px; */
-    height: 800px;
+    min-height: 700px;
 }
 
 .middle__order_main .order__create_at {

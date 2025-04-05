@@ -16,6 +16,7 @@ import '../styles/css/modal_login_register.css';
 import '../styles/css/detail_product.css';
 import '../styles/css/rubik2x2x2.css';
 import '../styles/css/account.css';
+import '../styles/css/cart_hover.css';
 import '../styles/css/cart.css';
 import '../styles/css/user_address.css';
 import '../styles/css/order.css';
@@ -46,11 +47,13 @@ export default function MyApp({ Component, pageProps }) {
         return <LayoutProvider>{Component.getLayout(<Component {...pageProps} />)}</LayoutProvider>;
     } else {
         return (
-            <LayoutProvider>
-                <Layout>
-                    <Component {...pageProps} />
-                </Layout>
-            </LayoutProvider>
+            <UserProvider>
+                <LayoutProvider>
+                    <Layout>
+                        <Component {...pageProps} />
+                    </Layout>
+                </LayoutProvider>
+            </UserProvider>
         );
     }
 }
