@@ -25,6 +25,7 @@
 .input_quantity_cart {
     display: flex;
     justify-content: left;
+    /* background-color: white !important; */
 }
 
 .btn-quantity_cart {
@@ -44,7 +45,7 @@
     width: 29px;
     height: 24px;
     border: 1px solid #ddd;
-    background: #fff;
+    background-color: white;
     text-align: center;
     outline: none;
 }

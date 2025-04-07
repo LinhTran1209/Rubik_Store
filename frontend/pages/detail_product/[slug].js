@@ -157,6 +157,16 @@ const ProductDetail = () => {
         }
     };
 
+    const handleBuyNow = async () => {
+        if (user.id_user === "") {
+            // Nếu chưa đăng nhập
+            toast.current.show({ severity: "warn", summary: "Cảnh báo", detail: "Vui lòng đăng nhập để mua hàng!",life: 3000});
+            return;
+        }
+        handleAddToCart();
+        router.push("/checkout");
+    };
+
     useEffect(() => {
         if (slug) {
             fetchProduct();
@@ -362,7 +372,7 @@ const ProductDetail = () => {
                             </p>
                         </div>
                         <div className="product-detail__actions">
-                            <button className="btn btn--buy-now">
+                            <button className="btn btn--buy-now" onClick={handleBuyNow}>
                                 MUA NGAY <br />
                             </button>
                             <button className="btn btn--add-to-cart" onClick={handleAddToCart}>

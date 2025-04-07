@@ -20,6 +20,7 @@ import '../styles/css/cart_hover.css';
 import '../styles/css/cart.css';
 import '../styles/css/user_address.css';
 import '../styles/css/order.css';
+import '../styles/css/checkout.css';
 
 import { CartProvider } from "../components/CartContext";
 import { UserProvider } from "../components/UserContext";
@@ -27,6 +28,7 @@ import { UserProvider } from "../components/UserContext";
 
 //LayoutWeb này là layout cho trang web bán hàng
 import LayoutWeb from '../components/LayoutWeb';
+import LayoutCheckout from '../components/LayoutCheckout';
 
 export default function MyApp({ Component, pageProps }) {
 
@@ -38,6 +40,18 @@ export default function MyApp({ Component, pageProps }) {
                     <LayoutWeb>
                         <Component {...pageProps} />
                     </LayoutWeb>
+                </CartProvider>
+            </UserProvider>
+        )
+    }
+
+    if (Component.getLayoutCheckout) {
+        return (
+            <UserProvider>
+                <CartProvider>
+                    <LayoutCheckout>
+                        <Component {...pageProps} />
+                    </LayoutCheckout>
                 </CartProvider>
             </UserProvider>
         )

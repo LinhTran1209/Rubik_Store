@@ -153,7 +153,7 @@ const HeaderTop = () => {
                                                     <div className="cart-product__info">
                                                         <p className="cart-product__name">{product.name}</p>
                                                         <div style={{display: "flex", justifyContent: "space-between", alignItems: "center"}}>
-                                                            <p style={{margin: "auto 0"}}>Màu sắc: {variant.color}</p>
+                                                            <p style={{margin: "auto 0"}}>{variant.color !== "không có" ? "Màu sắc: " + variant.color : null}</p>
                                                             <p className="cart-product__price">{formatPrice(variant.price)}đ</p>
                                                         </div>
                                                     </div>

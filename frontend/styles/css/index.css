@@ -282,7 +282,7 @@ body {
     width: 100%;
     justify-content: center;
     flex: 1; 
-    padding-bottom: 20px;
+    /* padding-bottom: 20px; */
     min-height: 800px
 }
 
@@ -498,6 +498,7 @@ body {
     display: flex;
     font-size: 14px;
     background-color: rgb(238, 238, 238);
+    margin-top: 30px;
 }
 
 .footer ul {
@@ -604,3 +605,29 @@ body {
     text-decoration: none;
 }
 
+
+
+/* Phần search  */
+
+.search-results {
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+.hidden_claim span {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    white-space: normal;
+    width: 300px;
+    text-overflow: ellipsis;
+}
+
+.search-results div {
+    transition: all 0.2s ease-in;
+}
+
+.search-results div:hover {
+    background-color: #f5f5f5;
+}

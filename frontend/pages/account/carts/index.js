@@ -179,7 +179,7 @@ const Carts = () => {
                                                 <td>
                                                     <div className="input_quantity_cart">
                                                         <button className="btn-quantity_cart btn-quantity-cart-reduce" onClick={handleDecreaseQuantity(cart)}>-</button>
-                                                        <input className="quantity_cart" type="text" value={cart.quantity} readOnly/>
+                                                        <input style={{backgroundColor: "white"}} className="quantity_cart" type="text" value={cart.quantity} readOnly/>
                                                         <button className="btn-quantity_cart btn-quantity-cart-increase" onClick={handleIncreaseQuantity( cart)}>+</button>
                                                     </div>
                                                 </td>
@@ -245,7 +245,7 @@ const Carts = () => {
                                             </table>
                                             <ul className="checkout">
                                                 <li>
-                                                    <button className="btn-checkout btn-checkout-order">
+                                                    <button className="btn-checkout btn-checkout-order" onClick={() => router.push("/checkout")}>
                                                         TIẾN HÀNH ĐẶT HÀNG
                                                     </button>
                                                 </li>

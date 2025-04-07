@@ -160,7 +160,7 @@ const Account = () => {
                         </li>
                     </ul>
                     <div className="buttons">
-                        <button className="address_user" onClick={() => handleAddress()}>ĐỊA CHỈ ({userAddress.length})</button>
+                        <button className="address_user" onClick={() => handleAddress()}>SỔ ĐỊA CHỈ ({userAddress.length})</button>
                         <button className="change_password" onClick={() => handleChangePassword()}>ĐỔI MẬT KHẨU</button>
                     </div>
                 </div>
