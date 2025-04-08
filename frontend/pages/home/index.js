@@ -15,8 +15,10 @@ const Home = () => {
 
     const fetchProducts = async () => {
         try {
-            const productsData = await productService.getAllproducts();
+            let productsData = await productService.getAllproducts();
             const variantsData = await product_variantsService.getAllVariants();
+
+            productsData = productsData.filter((product) => product.status === "hiện")
     
             // Lọc sản phẩm có biến thể và gán giá từ biến thể
             const productsWithVariants = productsData

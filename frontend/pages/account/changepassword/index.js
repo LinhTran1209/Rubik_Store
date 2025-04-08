@@ -20,22 +20,22 @@ const ChangePassword = () => {
 
         // Kiểm tra mật khẩu
         if (!password || !passwordNew || !confirmPasswordNew) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Vui lòng điền đầy đủ thông tin!',life: 3000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Vui lòng điền đầy đủ thông tin!',life: 1200,});
             return;
         }
         const matchPassword = await bcrypt.compare(password, user.password);
         if (!matchPassword) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu cũ không chính xác!',life: 3000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu cũ không chính xác!',life: 1200,});
             return;
         }
 
         if (passwordNew.length < 6 || confirmPasswordNew.length < 6) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu mới phải có ít nhất 6 ký tự!',life: 3000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu mới phải có ít nhất 6 ký tự!',life: 1200,});
             return;
         }
 
         if (confirmPasswordNew !== passwordNew) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu mới không khớp!',life: 3000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu mới không khớp!',life: 1200,});
             return;
         }
 
@@ -48,12 +48,12 @@ const ChangePassword = () => {
             console.log(userData)
             userService.updateuser(userData.id_user, userData)   
                 .then(() => {
-                    toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Thay đổi mật khẩu thành công!', life: 3000 });
+                    toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Thay đổi mật khẩu thành công!', life: 1200 });
                     authService.logout();
                     window.location.href = "/home";
                 })
                 .catch(error => {
-                    toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Thay đổi mật khẩu thất bại', life: 3000 });
+                    toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Thay đổi mật khẩu thất bại', life: 1200 });
                 });
         } catch (err) {
             const errorMessage = err.message || 'Thay đổi mật khẩu thất bại';toast.current.show({severity: 'error',summary: 'Lỗi',detail: errorMessage,life: 5000,});

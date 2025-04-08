@@ -1,10 +1,14 @@
 .middle__address {
-    background-color: white;;
+    background-color: white;
+    display: block;
+    padding-bottom: 50px;
 }
 
 .middle__address_main {
     margin: 30px 100px;
-    height: 1200px;
+    overflow: auto;
+    display: block;
+    min-height: 800px;
 }
 
 .middle__address_title {

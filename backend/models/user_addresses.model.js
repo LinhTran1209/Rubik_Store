@@ -7,6 +7,7 @@ const User_addresses = (user_address) => {
   this.address = user_address.address;
   this.phone = user_address.phone;
   this.is_default = user_address.is_default;
+  this.status = user_address.status;
   this.created_at = user_address.created_at;
   this.updated_at = user_address.updated_at;
 };
@@ -45,27 +46,20 @@ User_addresses.insert = async (user_address, callback) => {
 };
 
 User_addresses.update = async (user_address, id, callback) => {
-  const sqlString = "CALL UpdateUserAddress(?, ?, ?, ?, ?, ?)";
+  const sqlString = "CALL UpdateUserAddress(?, ?, ?, ?, ?, ?, ?)";
   const params = [
-    id,                          // id_address
-    user_address.id_user,        // id_user
-    user_address.name,           // name
-    user_address.address,        // address
-    user_address.phone,          // phone
-    user_address.is_default      // is_default
+    id,                      
+    user_address.id_user,       
+    user_address.name,        
+    user_address.address,       
+    user_address.phone,        
+    user_address.is_default,      
+    user_address.status
   ];
 
   db.query(sqlString, params, (err, res) => {
     if (err) return callback(err);
     callback(null, `Cập nhật User_addresses có id = ${id} thành công`);
-  });
-};
-
-User_addresses.delete = (id, callback) => {
-  const sqlString = "DELETE FROM User_addresses WHERE id_address = ?"; 
-  db.query(sqlString, [id], (err, res) => {
-    if (err) return callback(err);
-    callback(null, `Xóa User_addresses có id = ${id} thành công`); 
   });
 };
 

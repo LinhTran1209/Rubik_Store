@@ -44,7 +44,8 @@ const ProductCategoreis = () => {
     // Lấy sản phẩm theo id_categorie
     const fetchProducts = async () => {
         try {
-            const productsData = await productService.getDataproducts("id_categorie", categorie.id_categorie);
+            let productsData = await productService.getDataproducts("id_categorie", categorie.id_categorie);
+            productsData = productsData.filter((product) => product.status === "hiện");
             const productsWithVariants = await Promise.all(
                 productsData.map(async (product) => {
                     const variants = await product_variantsService.getData("id_product", product.id_product);

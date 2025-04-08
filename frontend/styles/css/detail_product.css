@@ -59,6 +59,7 @@
     display: flex;
     width: 100%;
     max-width: 400px;
+    position: relative;
 }
 
 .product-detail__main-image img {
@@ -196,9 +197,9 @@
     transition: all 0.6s ease; 
 }
 
-.btn--buy-now,
-.btn--add-to-cart:hover {
-    /* background-color: #333; */
+.btn[disabled] {
+    pointer-events: none;
+    opacity: 0.5;
 }
 
 .product-detail__contact {
@@ -297,6 +298,31 @@
     white-space: normal;
     font-size: 14px;
 }
+
+
+
+
+/* Hết hàng */
+.outofstock {
+    align-items: center;
+    background-color: rgba(0, 0, 0, .7);
+    border-radius: 60px;
+    color: #fff;
+    display: flex;
+    font-size: 20px;
+    height: 120px;
+    justify-content: center;
+    left: 50%;
+    position: absolute;
+    text-transform: capitalize;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    position: absolute;
+    margin-top: auto;
+}
+
+
 
 
 

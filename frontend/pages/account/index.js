@@ -57,6 +57,23 @@ const Account = () => {
         router.push(`/account/addresses`);
     };
 
+    const getStatusColor = (status) => {
+        switch(status) {
+            case 'Đang xác nhận':
+                return '#FFC107'; // Màu vàng
+            case 'Đang lấy hàng':
+                return '#00BCD4'; // Màu xanh dương
+            case 'Đang giao hàng':
+                return '#FF9800'; // Màu cam
+            case 'Hoàn thành':
+                return 'green'; // Màu xanh lá
+            case 'Đã hủy đơn':
+                return 'red'; // Màu đỏ
+            default:
+                return 'red'; 
+        }
+    };
+
     if (loading) return <div className="header__top">Đang tải...</div>; 
 
     return (
@@ -98,22 +115,24 @@ const Account = () => {
                                         </td>
                                     </tr>
                                 ) : (
-                                    sale_invoices.map((invoice) => (
-                                        <tr
-                                            key={invoice.id_sale_invoice}
-                                            onClick={() => handleRowClick(invoice.id_sale_invoice)} 
-                                        >
-                                            <td>{invoice.id_sale_invoice}</td>
-                                            <td>{formatDate(invoice.created_at)}</td>
-                                            <td>{formatPrice(invoice.total)}</td>
-                                            <td>
-                                                {invoice.pay}
-                                            </td>
-                                            <td>{userAddress.find((addr) => addr.id_address === invoice.id_address)?.address || "Không có địa chỉ"}</td>
-                                            <td>{invoice.desc}</td>
-                                            <td>{invoice.status}</td>
-                                        </tr>
-                                    ))
+                                    sale_invoices.map((invoice) => {
+                                        const st = invoice.status === "Đang xác nhận" && invoice.request === "Hủy đơn" ? "Yêu cầu hủy đơn" : invoice.status;
+                                        return (
+                                            <tr
+                                                key={invoice.id_sale_invoice}
+                                                onClick={() => handleRowClick(invoice.id_sale_invoice)} 
+                                            >
+                                                <td>{invoice.id_sale_invoice}</td>
+                                                <td>{formatDate(invoice.created_at)}</td>
+                                                <td>{formatPrice(invoice.total)}đ</td>
+                                                <td>{invoice.pay}</td>
+                                                <td>{userAddress.find((addr) => addr.id_address === invoice.id_address)?.address || "Không có địa chỉ"}</td>
+                                                <td>{invoice.desc}</td>
+                                                <td style={{ color: getStatusColor(st)}}>{st}</td>
+                                            </tr>
+                                        );
+                                    })
+                                    
                                 )
                             ) : (
                                 <tr>
@@ -140,7 +159,7 @@ const Account = () => {
                         </li>
                         <li>
                             <img src="https://bizweb.dktcdn.net/100/316/286/themes/757383/assets/home.svg?1738317141988" alt="icon"/>{" "}
-                            <strong>Địa chỉ:</strong> {userAddress.length}
+                            <strong>Địa chỉ:</strong> {userAddress.filter(addr => addr.status === "hiện").length}
                         </li>
                         <li>
                             <img src="https://bizweb.dktcdn.net/100/316/286/themes/757383/assets/telephone.svg?1738317141988" alt="icon"/>{" "}
@@ -153,14 +172,14 @@ const Account = () => {
                         <li>
                             <img src="https://bizweb.dktcdn.net/100/316/286/themes/757383/assets/map-marker.svg?1738317141988" alt="icon"/>{" "}
                             <strong>Địa chỉ mặc định:</strong>{" "}
-                            {userAddress.length > 0 && userAddress.find((address) => address.is_default === 1)
+                            {userAddress.length > 0 && userAddress.find((address) => address.is_default === 1 && address.status === "hiện")
                                 ? userAddress.find((address) => address.is_default === 1).address
                                 : null
                             }
                         </li>
                     </ul>
                     <div className="buttons">
-                        <button className="address_user" onClick={() => handleAddress()}>SỔ ĐỊA CHỈ ({userAddress.length})</button>
+                        <button className="address_user" onClick={() => handleAddress()}>SỔ ĐỊA CHỈ ({userAddress.filter(addr => addr.status === "hiện").length})</button>
                         <button className="change_password" onClick={() => handleChangePassword()}>ĐỔI MẬT KHẨU</button>
                     </div>
                 </div>

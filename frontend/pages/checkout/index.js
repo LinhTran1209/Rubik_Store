@@ -53,7 +53,8 @@ const Checkout = () => {
 
     const fetchUser_Addresses = async () => {
         try {
-            const user_addresses = await userAddressService.getData("id_user", user.id_user);
+            let user_addresses = await userAddressService.getData("id_user", user.id_user);
+            user_addresses = user_addresses.filter((addr) => addr.status === "hiện");
             setUserAddress(user_addresses);
             const defaultAddress = user_addresses.find(addr => addr.is_default);
             if (defaultAddress) {
@@ -132,7 +133,6 @@ const Checkout = () => {
                 updatedAddress.id_address = response.id;
                 await fetchUser_Addresses();
             }
-            console.log(updatedAddress);
 
             const subtotal = productVariants.reduce((sum, variant) => {
                 const cartItem = carts.find(item => item.id_variant === variant.id_variant);
@@ -148,6 +148,7 @@ const Checkout = () => {
                 total: total,
                 pay: document.querySelector('input[name="payment"]:checked').id === "payment-cod" ? "COD" : "QR",
                 status: "Đang xác nhận",
+                request: "Đặt hàng",
             };
             const responseInvoice = await sale_invoiceService.addsale_invoice(invoiceData);
             const invoiceID = responseInvoice.id;

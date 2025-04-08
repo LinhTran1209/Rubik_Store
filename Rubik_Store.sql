@@ -26,12 +26,17 @@ CREATE TABLE User_addresses (
     address TEXT NOT NULL,
     phone VARCHAR(10) NOT NULL,
     is_default BOOLEAN DEFAULT FALSE,
+	status ENUM('hiện', 'ẩn') DEFAULT 'hiện',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+
 insert into User_addresses  (id_address, id_user, name, address, phone, is_default) 
 value (1, 2, "Trần Hồng Lĩnh", "Trịnh Mỹ - Ngô Quyền - Tiên Lữ - Hưng Yên", '0344665810', true);
+
+update user_addresses set status = "hiện"
+where id_address = 1;
 
 -- Tạo bảng Categories
 CREATE TABLE Categories (
@@ -104,15 +109,15 @@ WHERE id_user = 2 AND id_variant = 6;
 CREATE TABLE Sale_invoices (
     id_sale_invoice INT AUTO_INCREMENT PRIMARY KEY,
     id_user INT NOT NULL,
-    id_address int,
+    id_address INT,
     `desc` TEXT,
     total INT,
     pay ENUM('COD', 'QR') DEFAULT 'COD',
-    status ENUM('Đang xác nhận', 'Đang lấy hàng', 'Đang giao hàng', 'Hoàn thành') DEFAULT 'Đang xác nhận',
+    status ENUM('Đang xác nhận', 'Đang lấy hàng', 'Đang giao hàng', 'Hoàn thành', 'Đã hủy đơn') DEFAULT 'Đang xác nhận',
+    request ENUM('Đặt hàng', 'Hủy đơn') DEFAULT NULL,  -- Trường yêu cầu
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP, 
-    updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-
 
 
 -- Tạo bảng Sale_invoice_details
@@ -283,6 +288,19 @@ END$$
 DELIMITER ;
 
 -- trigger thực hiện thay đổi dịa chỉ mặc định
+CREATE TABLE User_addresses (
+    id_address INT AUTO_INCREMENT PRIMARY KEY,
+    id_user INT NOT NULL,
+    name VARCHAR(200) NOT NULL,
+    address TEXT NOT NULL,
+    phone VARCHAR(10) NOT NULL,
+    is_default BOOLEAN DEFAULT FALSE,
+    status ENUM('hiện', 'ẩn') DEFAULT 'hiện',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- trigger thực hiện thay đổi địa chỉ mặc định
 DELIMITER //
 
 CREATE PROCEDURE UpdateUserAddress(
@@ -291,7 +309,8 @@ CREATE PROCEDURE UpdateUserAddress(
     IN p_name VARCHAR(200),
     IN p_address TEXT,
     IN p_phone VARCHAR(10),
-    IN p_is_default BOOLEAN
+    IN p_is_default BOOLEAN,
+    IN p_status ENUM('hiện', 'ẩn') -- Thêm tham số p_status để cập nhật trường status
 )
 BEGIN
     START TRANSACTION;
@@ -308,6 +327,7 @@ BEGIN
         address = p_address,
         phone = p_phone,
         is_default = p_is_default,
+        status = p_status, -- Cập nhật giá trị của status
         updated_at = CURRENT_TIMESTAMP
     WHERE id_address = p_id_address
     AND id_user = p_id_user;
@@ -316,6 +336,58 @@ BEGIN
 END;//
 
 DELIMITER ;
+
+-- trigger thay đổi giá trị của trường requier
+DELIMITER $$
+
+CREATE TRIGGER update_sale_invoice_status
+BEFORE UPDATE ON Sale_invoices
+FOR EACH ROW
+BEGIN
+    -- Kiểm tra nếu request thay đổi từ 'Đặt hàng' thành NULL
+    IF OLD.request = 'Đặt hàng' AND NEW.request IS NULL THEN
+        SET NEW.status = 'Đang lấy hàng';
+    -- Kiểm tra nếu request thay đổi từ 'Hủy đơn' thành NULL
+    ELSEIF OLD.request = 'Hủy đơn' AND NEW.request IS NULL THEN
+        SET NEW.status = 'Đã hủy đơn';
+    END IF;
+END$$
+
+DELIMITER ;
+
+-- Trigger khi sale_invoices bị update có status :"Đã hủy đơn" sẽ cộng lại số lượng cho product_variants
+DELIMITER $$
+
+CREATE TRIGGER after_update_sale_invoice_status
+AFTER UPDATE ON Sale_invoices
+FOR EACH ROW
+BEGIN
+    -- Kiểm tra nếu trạng thái mới là 'Đã hủy đơn' và trạng thái cũ không phải 'Đã hủy đơn'
+    IF NEW.status = 'Đã hủy đơn' AND OLD.status != 'Đã hủy đơn' THEN
+        -- Cộng lại số lượng vào Product_variants dựa trên Sale_invoice_details
+        UPDATE Product_variants pv
+        JOIN Sale_invoice_details sid ON pv.id_variant = sid.id_variant
+        SET pv.quantity = pv.quantity + sid.quantity
+        WHERE sid.id_sale_invoice = NEW.id_sale_invoice;
+    END IF;
+END$$
+
+DELIMITER ;
+
+UPDATE Sale_invoices 
+SET status = "Đang xác nhận"
+WHERE id_sale_invoice = 31;
+
+UPDATE Sale_invoices 
+SET request = "Đặt hàng"
+WHERE id_sale_invoice = 30;
+
+-- Kiểm tra kết quả
+SELECT * FROM Sale_invoices WHERE id_sale_invoice = 31;
+
+select * from sale_invoice_details where id_sale_invoice = 31;
+
+select * from product_variants where id_variant = 5;
 
 
 

@@ -13,7 +13,7 @@ import { Toast } from 'primereact/toast';
 const Product = () => {
     // State cho sản phẩm
     const [products, setProducts] = useState([]);
-    const [product, setProduct] = useState({ id_product: null, id_categorie: '', name: '', image_url: '', desc: '', slug: '', created_at: '', updated_at: '' });
+    const [product, setProduct] = useState({ id_product: null, id_categorie: '', name: '', image_url: '', desc: '', status: 'hiện', slug: '', created_at: '', updated_at: '' });
     const [productDialog, setProductDialog] = useState(false);
     const [deleteProductDialog, setDeleteProductDialog] = useState(false);
     const [deleteProductsDialog, setDeleteProductsDialog] = useState(false);
@@ -140,7 +140,7 @@ const Product = () => {
             return;
         }
         const productData = { ...product };
-        if (product.id_product) {
+        if (product.id_product) { // không có thì cập nhật
             if (products.some((p) => JSON.stringify(p) === JSON.stringify(productData))) {
                 toast.current.show({ severity: 'info', summary: 'Thông báo', detail: 'Không có thay đổi nào được thực hiện', life: 3000 });
                 return;
@@ -465,6 +465,15 @@ const Product = () => {
         { field: 'name', header: 'Tên sản phẩm' },
         { field: 'image_url', header: 'Ảnh chính', format: 'image' },
         { field: 'desc', header: 'Mô tả' },
+        {
+            field: 'status',
+            header: 'Trạng thái',
+            render: (rowData) => (
+                <span style={{ color: rowData.status === 'hiện' ? 'green' : 'red' }}>
+                    {rowData.status === 'hiện' ? 'Đang kinh doanh' : 'Ngừng kinh doanh'}
+                </span>
+            ),
+        },
         { field: 'created_at', header: 'Ngày tạo', format: 'date' },
         { field: 'updated_at', header: 'Ngày cập nhật', format: 'date' },
     ];
@@ -488,6 +497,11 @@ const Product = () => {
         label: `#${category.id_categorie} ${category.name}`,
         value: category.id_categorie,
     }));
+
+    const statusOptions = [
+        { label: "Đang kinh doanh", value: "hiện"},
+        { label: "Ngừng kinh doanh", value: "ẩn"}
+    ]
 
     const isMainOptions = [
         { label: "Yes", value: "Yes" },
@@ -564,6 +578,7 @@ const Product = () => {
                     { name: 'name', label: 'Tên sản phẩm', required: true },
                     { name: 'image_url', label: 'Link ảnh', required: true, type: 'image' },
                     { name: 'desc', label: 'Mô tả', required: true },
+                    { name: 'status', label: "Trạng thái", require: true, type: 'dropdown', options: statusOptions},
                     { name: 'created_at', label: 'Ngày tạo', disabled: true, hidden: !product.id_product, type: 'date' },
                     { name: 'updated_at', label: 'Ngày cập nhật', disabled: true, hidden: !product.id_product, type: 'date' },
                 ]}

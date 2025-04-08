@@ -1,6 +1,7 @@
 import AddInvoiceDetailForm from '../../../components/Admin_page/AddInvoiceDetailForm';
 import saleInvoiceDetailsService from '../../../services/sale_invoice_detailsService';
 import ConfirmDeleteDialog from '../../../components/Admin_page/ConfirmDeleteDialog';
+import InvoicePrintDialog from '../../../components/Admin_page/InvoicePrintDialog';
 import product_variantsService from '../../../services/product_variantService'
 import sale_invoiceService from '../../../services/sale_invoiceService';
 import GenericTable from '../../../components/Admin_page/GenericTable';
@@ -15,7 +16,7 @@ import { Toast } from 'primereact/toast';
 const SaleInvoice = () => {
     // các hook để sử lý phần hóa đơn
     const [sale_invoices, setSaleInvoices] = useState([]);
-    const [sale_invoice, setSaleInvoice] = useState({id_sale_invoice: null, id_user: '', id_address: '', desc: '', total: '', pay: '', status: '', created_at: '', updated_at: ''});
+    const [sale_invoice, setSaleInvoice] = useState({id_sale_invoice: null, id_user: '', id_address: '', desc: '', total: '', pay: '', status: '', request: null, created_at: '', updated_at: ''});
     const [sale_invoiceDialog, setSaleInvoiceDialog] = useState(false);
     const [selectedSaleInvoices, setSelectedSaleInvoices] = useState([]);
     const [deleteSaleInvoiceDialog, setDeleteSaleInvoiceDialog] = useState(false);
@@ -31,6 +32,13 @@ const SaleInvoice = () => {
     const [selectedSaleDetails, setSelectedSaleDetails] = useState([]);
     const [submittedSaleDetail, setSubmittedSaleDetail] = useState(false);
     const [globalFilterDetail, setGlobalFilterDetail] = useState('');
+
+
+    const [approveRequestDialog, setApproveRequestDialog] = useState(false);
+    const [saleInvoiceToApprove, setSaleInvoiceToApprove] = useState(null);
+
+    const [invoicePrintDialog, setInvoicePrintDialog] = useState(false);
+    const [selectedInvoiceForPrint, setSelectedInvoiceForPrint] = useState(null);
 
     // trạng thái để xác nhận thêm và tải dữ liệu product lên so sánh
     const [isAdd, setIsAdd] = useState(true);
@@ -282,7 +290,7 @@ const SaleInvoice = () => {
         setSaleInvoice({ ...sale_invoice });
         const userAddresses = userAddress.filter((addr) => addr.id_user === sale_invoice.id_user);
         setAddressOptions(userAddresses.map((addr) => ({
-            label: `#${addr.phone} ${addr.address}`, // Giả sử trường address chứa tên địa chỉ
+            label: `#${addr.name} | ${addr.phone} | ${addr.address}`, // Giả sử trường address chứa tên địa chỉ
             value: addr.id_address // Giả sử id_address là khóa chính của địa chỉ
         })));
         setSaleInvoiceDialog(true);
@@ -335,7 +343,7 @@ const SaleInvoice = () => {
             // Khi thay đổi id_user, cập nhật danh sách địa chỉ tương ứng
             const userAddresses = userAddress.filter((addr) => addr.id_user === val);
             setAddressOptions(userAddresses.map((addr) => ({
-                label: `#${addr.phone} ${addr.address}`,
+                label: `#${addr.name} | ${addr.phone} | ${addr.address}`,
                 value: addr.id_address
             })));
             setSaleInvoice((prev) => ({ ...prev, id_user: val, id_address: '' })); // Reset id_address khi đổi user
@@ -362,16 +370,8 @@ const SaleInvoice = () => {
         { label: 'Đang lấy hàng', value: 'Đang lấy hàng' },
         { label: 'Đang giao hàng', value: 'Đang giao hàng' },
         { label: 'Hoàn thành', value: 'Hoàn thành' },
+        { label: 'Đã hủy đơn', value: 'Đã hủy đơn'}
     ];
-
-    // {detail.id_variant && (
-    //     <CheckboxGroup
-    //         label="Chọn màu sắc"
-    //         value={detail.color}
-    //         options={colorOptions}
-    //         onChange={(e) => setDetail({ ...detail, color: e.value })}
-    //     />
-    // )}
 
     const paymentOptions = [
         { label: 'COD', value: 'COD' },
@@ -384,18 +384,41 @@ const SaleInvoice = () => {
         { field: 'id_user', header: 'Khách hàng',
             render: (rowData) => {
                 const user = users.find((u) => u.id_user === rowData.id_user);
-                return user ? user.name : rowData.id_user; // Chỉ hiển thị tên trong bảng
+                return user ? user.name : rowData.id_user; 
             },
         },
         { field: 'id_address', header: 'Địa chỉ',
             render: (rowData) => {
                 const address = userAddress.find((addr) => addr.id_address === rowData.id_address);
-                return address ? address.address : rowData.id_address; // Hiển thị tên địa chỉ
+                return address ? address.address : rowData.id_address;
             }
         },
         { field: 'total', header: 'Tổng tiền', format: 'price' },
+        { field: 'status', header: 'Trạng thái',
+            render: (rowData) => {
+                const statusColor = {
+                    'Đang xác nhận': '#FFC107', 
+                    'Đang lấy hàng': '#00BCD4', 
+                    'Đang giao hàng': '#FF9800', 
+                    'Hoàn thành': 'green', 
+                    'Đã hủy đơn': 'red', 
+                };
+        
+                return (
+                    <span style={{ color: statusColor[rowData.status] || 'black' }}>
+                        {rowData.status}
+                    </span>
+                );
+            },
+         },
+        { field: 'request', header: 'Yêu cầu', 
+            render: (rowData) => (
+                <span style={{color: rowData.request === 'Đặt hàng' ? 'green' : 'red' }}>
+                    {rowData.request}
+                </span>
+            ),
+        },
         { field: 'pay', header: 'Thanh toán' },
-        { field: 'status', header: 'Trạng thái' },
         { field: 'desc', header: 'Ghi chú' },
         { field: 'created_at', header: 'Ngày tạo', format: 'date' },
         { field: 'updated_at', header: 'Ngày cập nhật', format: 'date' },
@@ -406,7 +429,7 @@ const SaleInvoice = () => {
             render: (rowData) => {
                 const variant = variants.find((p) => p.id_variant === rowData.id_variant);
                 const product = products.find((p) => p.id_product === variant.id_product)
-                return product ? product.name : rowData.id_variant; // Chỉ hiển thị tên trong bảng
+                return product ? product.name : rowData.id_variant;
             },
         },
         { feild: 'color', header: 'Biến thể',
@@ -421,6 +444,31 @@ const SaleInvoice = () => {
         { field: 'updated_at', header: 'Ngày cập nhật', format: 'date' },
     ];
 
+    // Xử lý phần yêu cầu từ khách hàng
+    const confirmApproveRequest = (sale_invoice) => {
+        setSaleInvoiceToApprove(sale_invoice);
+        setApproveRequestDialog(true);
+    };
+
+    const approveRequest = () => {
+        const updatedInvoice = { ...saleInvoiceToApprove, request: null };
+        sale_invoiceService.updatesale_invoice(saleInvoiceToApprove.id_sale_invoice, updatedInvoice)
+            .then(() => {
+                show_invoices(); // Cập nhật lại danh sách hóa đơn
+                setApproveRequestDialog(false);
+                toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Duyệt yêu cầu thành công', life: 3000 });
+            })
+            .catch((error) => {
+                toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Duyệt yêu cầu thất bại', life: 3000 });
+            });
+    };
+
+    // Xử lý phần IN hóa đơn
+    const showInvoicePrintDialog = (invoice) => {
+        setSelectedInvoiceForPrint(invoice);
+        setInvoicePrintDialog(true);
+    };
+
     return (
         <div>
             <Toast ref={toast} />
@@ -433,7 +481,9 @@ const SaleInvoice = () => {
                 setGlobalFilter={setGlobalFilterInvoice}
                 columns={invoiceColumns}
                 onEdit={editsaleInvoice}
-                onDelete={confirmDeletesaleInvoice}
+                // onDelete={confirmDeletesaleInvoice}
+                onApproveRequest={confirmApproveRequest}
+                onView={showInvoicePrintDialog}
                 openNew={openNewInvoice}
                 dataKey="id_sale_invoice"
                 title="Quản lý danh sách hóa đơn bán"
@@ -467,11 +517,11 @@ const SaleInvoice = () => {
                 item={sale_invoice}
                 fields={[
                     { name: 'id_sale_invoice', label: 'ID', disabled: true, hidden: !sale_invoice.id_sale_invoice},
-                    { name: 'id_user', label: 'Khách hàng', required: true, type: 'dropdown', options: userOptions},
+                    { name: 'id_user', label: 'Khách hàng', required: true, type: 'dropdown', options: userOptions, disabled: sale_invoice.id_sale_invoice !== null},
                     { name: 'id_address', label: 'Địa chỉ', required: true, type: 'dropdown', options: addressOptions},
                     { name: 'total', label: 'Tổng tiền', disabled: true, hidden: !sale_invoice.id_sale_invoice, type: 'price'},
                     { name: 'status', label: 'Trạng thái', required: true, type: 'dropdown', options: statusOptions },
-                    { name: 'pay', label: 'Thanh toán', required: true, type: 'dropdown', options: paymentOptions,},
+                    { name: 'pay', label: 'Thanh toán', required: true, type: 'dropdown', options: paymentOptions, disabled: sale_invoice.id_sale_invoice !== null},
                     { name: 'desc', label: 'Ghi chú', required: true },
                     { name: 'created_at', label: 'Ngày tạo', disabled: true, hidden: !sale_invoice.id_sale_invoice, type: 'date'},
                     { name: 'updated_at', label: 'Ngày chỉnh sửa', disabled: true, hidden: !sale_invoice.id_sale_invoice, type: 'date'},
@@ -481,6 +531,17 @@ const SaleInvoice = () => {
                 onHide={hideDialogInvoice}
                 submitted={submittedSaleInvoice}
                 title={sale_invoice.id_sale_invoice ? 'Sửa hóa đơn bán' : 'Thêm hóa đơn bán'}
+            />
+
+            <InvoicePrintDialog
+                visible={invoicePrintDialog}
+                onHide={() => setInvoicePrintDialog(false)}
+                invoice={selectedInvoiceForPrint}
+                details={details}
+                users={users}
+                userAddress={userAddress}
+                products={products}
+                variants={variants}
             />
 
 
@@ -495,7 +556,27 @@ const SaleInvoice = () => {
                 invoiceId={selectedSaleInvoices ?  selectedSaleInvoices[0] : null}
                 title={isAdd ? 'Thêm chi tiết hóa đơn' : 'Chi tiết hóa đơn'}
             />
-
+            <ConfirmDeleteDialog
+                visible={approveRequestDialog}
+                onHide={() => setApproveRequestDialog(false)}
+                onConfirm={approveRequest}
+                item={saleInvoiceToApprove}
+                idField="id_sale_invoice"
+                title="Xác nhận duyệt yêu cầu"
+                renderMessage={(item) => {
+                    if (!item) {
+                        return <span>Đang tải dữ liệu...</span>; 
+                    }
+                    const user = users.find((u) => u.id_user === item.id_user);
+                    return (
+                        <span>
+                            Bạn có chắc muốn duyệt yêu cầu{' '}
+                            <b>{item.request}</b>{' '}cho khách hàng{' '}
+                            <b>{user ? user.name : item.id_user}</b> không?
+                        </span>
+                    );
+                }}
+            />
             <ConfirmDeleteDialog
                 visible={deleteSaleInvoiceDialog}
                 onHide={() => setDeleteSaleInvoiceDialog(false)}

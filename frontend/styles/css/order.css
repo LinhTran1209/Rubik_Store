@@ -9,7 +9,26 @@
 }
 
 .middle__order_main .order__create_at {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-top: 30px
+}
+
+.request_order {
+    box-sizing: border-box;
+    padding: 10px 20px;
+    border-radius: 4px;
+    outline: none;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease-in;
+}
+
+.request_order:hover {
+    background-color: #555;
 }
 
 .middle__order_main .row__info_sale_invoice {

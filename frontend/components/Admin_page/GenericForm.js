@@ -96,6 +96,7 @@ const GenericForm = ({
                             optionLabel="label"
                             optionValue="value"
                             style={{ width: '100%'}}
+                            disabled={field.disabled}
                             className={classNames({ 'p-invalid': submitted && field.required && !item[field.name] })}
                             appendTo="self"
 

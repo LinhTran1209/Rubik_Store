@@ -25,7 +25,7 @@ const Register = () => {
             setUsers(data);
         } catch (error) {
             console.error('Lỗi khi lấy dữ liệu:', error);
-            toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải dữ liệu', life: 3000 });
+            toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải dữ liệu', life: 1200 });
         }
     };
 
@@ -37,68 +37,68 @@ const Register = () => {
 
     const checkInputRegister = async () => {
         if (!name) {
-            toast.current.show({severity: 'warn', summary: 'Cảnh báo', detail: 'Họ và tên không được để trống', life: 3000,});
+            toast.current.show({severity: 'warn', summary: 'Cảnh báo', detail: 'Họ và tên không được để trống', life: 1200,});
             return;
         }
         if (name.length < 2) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Họ và tên phải có ít nhất 2 ký tự',life: 3000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Họ và tên phải có ít nhất 2 ký tự',life: 1200,});
             return;
         }
 
         // Kiểm tra số điện thoại
         const phoneRegex = /^0\d{9}$/;
         if (!phone) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Số điện thoại không được để trống',life: 3000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Số điện thoại không được để trống',life: 1200,});
             return;
         }
-        if (!phoneRegex.test(phone)) {toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Số điện thoại phải là 10 số',life: 3000,
+        if (!phoneRegex.test(phone)) {toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Số điện thoại phải là 10 số',life: 1200,
             });
             return;
         }
         if (users.some(user => user.phone === phone)) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Số điện thoại đã có trong danh sách',life: 3000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Số điện thoại đã có trong danh sách',life: 1200,});
             return;
         }
 
         // Kiểm tra email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Email không được để trống',life: 3000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Email không được để trống',life: 1200,});
             return;
         }
         if (!emailRegex.test(email)) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Email không hợp lệ',life: 3000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Email không hợp lệ',life: 1200,});
             return;
         }
         if (users.some(user => user.email === email)) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Email đã có trong danh sách',life: 3000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Email đã có trong danh sách',life: 1200,});
             return;
         }
 
         // Kiểm tra mật khẩu
         if (!password) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu không được để trống',life: 3000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu không được để trống',life: 1200,});
             return;
         }
         if (password.length < 6) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu phải có ít nhất 6 ký tự',life: 3000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu phải có ít nhất 6 ký tự',life: 1200,});
             return;
         }
 
         // Kiểm tra nhập lại mật khẩu
         if (!confirmPassword) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Vui lòng nhập lại mật khẩu',life: 3000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Vui lòng nhập lại mật khẩu',life: 1200,});
             return;
         }
         if (confirmPassword !== password) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu không khớp',life: 3000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu không khớp',life: 1200,});
             return;
         }
 
         // Kiểm tra mã xác nhận
         const correctCode = '9W5G';
         if (!verificationCode) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mã xác nhận không được để trống',life: 3000,});
+            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mã xác nhận không được để trống',life: 1200,});
             return;
         }
         if (verificationCode !== correctCode) {
@@ -110,14 +110,14 @@ const Register = () => {
         try {
             userService.adduser({ role: "customer", name: name, phone: phone, email: email , password: password })   
                 .then(() => {
-                    toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Đăng ký thành công', life: 3000 });
+                    toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Đăng ký thành công', life: 1200 });
                     window.location.href = '/home';
                 })
                 .catch(error => {
-                    toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Đăng ký thất bại', life: 3000 });
+                    toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Đăng ký thất bại', life: 1200 });
                 });
         } catch (err) {
-            const errorMessage = err.message || 'Đăng ký thất bại';toast.current.show({severity: 'error',summary: 'Lỗi',detail: errorMessage,life: 5000,});
+            const errorMessage = err.message || 'Đăng ký thất bại';toast.current.show({severity: 'error',summary: 'Lỗi',detail: errorMessage,life: 1200,});
         }
     };
 

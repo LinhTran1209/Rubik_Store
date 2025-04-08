@@ -13,7 +13,7 @@ const Sale_invoices = (sale_invoices) => {
 
 };
 Sale_invoices.getData = (col, querydata, callback) => {
-  const sqlString = `SELECT * FROM Sale_invoices WHERE ?? = ?`;
+  const sqlString = `SELECT * FROM Sale_invoices WHERE ?? = ? ORDER BY id_sale_invoice DESC`;
   db.query(sqlString, [col, querydata], (err, result) => {
     if (err) return callback(err);
     callback(null, result);
@@ -21,7 +21,7 @@ Sale_invoices.getData = (col, querydata, callback) => {
 };
 
 Sale_invoices.getById = (id, callback) => {
-  const sqlString = "SELECT * FROM sale_invoices WHERE id_sale_invoice = ?";
+  const sqlString = "SELECT * FROM sale_invoices WHERE id_sale_invoice = ? ORDER BY id_sale_invoice DESC";
   db.query(sqlString, [id], (err, result) => {
     if (err) return callback(err);
     callback(null, result);

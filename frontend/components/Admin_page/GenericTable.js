@@ -21,6 +21,8 @@ const GenericTable = ({
     onEdit,
     onDelete,
     onDeleteSelected,
+    onApproveRequest,
+    onView,
     dataKey,
     title = 'Quản lý danh sách',
     disabled = false,
@@ -30,7 +32,29 @@ const GenericTable = ({
     const dt = useRef(null);
     const actionBodyTemplate = (rowData) => {
         return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'end', alignItems: 'end' }}>
+
+                {(rowData.request === 'Đặt hàng' || rowData.request === 'Hủy đơn') && (
+                    <Button
+                        icon="pi pi-check"
+                        rounded
+                        outlined
+                        severity="success"
+                        className="mr-2"
+                        onClick={() => onApproveRequest(rowData)} 
+                        title="Duyệt yêu cầu"
+                        style={{color: rowData.request === "Đặt hàng" ? "green" : "red"}}
+                    />
+                )}
+                <Button
+                    icon="pi pi-eye" // Biểu tượng mắt để xem
+                    rounded
+                    outlined
+                    className="mr-2"
+                    onClick={() => onView(rowData)} // Gọi hàm onView
+                    title="Xem hóa đơn"
+                    disabled={!onView}
+                />
                 <Button
                     icon="pi pi-pencil"
                     rounded
@@ -40,15 +64,18 @@ const GenericTable = ({
                     title="Sửa"
                     disabled={!onEdit}
                 />
-                <Button
-                    icon="pi pi-trash"
-                    rounded
-                    outlined
-                    severity="danger"
-                    onClick={() => onDelete(rowData)}
-                    title="Xóa"
-                    disabled={!onDelete}
-                />
+                { (onDelete) &&(
+                    <Button
+                        icon="pi pi-trash"
+                        rounded
+                        outlined
+                        severity="danger"
+                        onClick={() => onDelete(rowData)}
+                        title="Xóa"
+                        disabled={!onDelete}
+                    />
+                )}
+                
             </div>
         );
     };
@@ -153,7 +180,7 @@ const GenericTable = ({
                         />
                     );
                 })}
-                <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '5rem' }} />
+                <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '13rem' }} />
             </DataTable>
         </div>
     );

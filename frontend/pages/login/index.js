@@ -12,7 +12,7 @@ const Login = () => {
 
     const handleLogin = async () => {
         if (!phone || !password) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Vui lòng điền đầy đủ thông tin', life: 3000 });
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Vui lòng điền đầy đủ thông tin', life: 1200 });
             return;
         }
 
@@ -25,19 +25,19 @@ const Login = () => {
             }
 
             if (user.role === 'admin') {
-                toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Đăng nhập thành công', life: 3000 });
+                toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Đăng nhập thành công', life: 1200 });
                 window.location.href = '/manage/news';
             } else if (user.role === 'customer') {
-                toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Đăng nhập thành công', life: 3000});
+                toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Đăng nhập thành công', life: 1200});
                 // localStorage.setItem('user_customer', JSON.stringify(user));
                 window.location.href = `/home`;
             } else {
-                toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Bạn không có quyền truy cập', life: 3000 });
+                toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Bạn không có quyền truy cập', life: 1200 });
                 window.location.href = '/';
             }
         } catch (err) {
             const errorMessage = err.message || 'Đăng nhập thất bại';
-            toast.current.show({ severity: 'info', summary: 'Thông báo', detail: errorMessage, life: 3000 });
+            toast.current.show({ severity: 'info', summary: 'Thông báo', detail: errorMessage, life: 1200 });
         }
     };
 

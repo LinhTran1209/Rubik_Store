@@ -5,14 +5,18 @@ import Link from "next/link";
 
 import userAddressService from "../../../services/userAddressService";
 
+import ConfirmDeleteDialogForUser from "../../../components/ConfirmDeleteDialogForUser";
 import CustomToast from "../../../components/CustomToast";
 import { useUser } from "../../../components/UserContext";
 
+
 const Address = () => {
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false); // State để hiển thị dialog xác nhận xóa
+    const [addressToDelete, setAddressToDelete] = useState(null); // lưu địa chỉ cần xóa
     const { user, loading } = useUser();
     const toast = useRef(null);
 
-    const [newAddress, setNewAddress] = useState({ id_address: "", id_user: "", name: "", address: "", phone: "", is_default: false, created_at: "", updated_at: "" });
+    const [newAddress, setNewAddress] = useState({ id_address: "", id_user: "", name: "", address: "", phone: "", is_default: false, status: "hiện", created_at: "", updated_at: "" });
     const [userAddress, setUserAddress] = useState([]);
     const [isEditMode, setIsEditMode] = useState(false);
     const [isAddMode, setIsAddMode] = useState(false); // Thêm state cho chế độ thêm địa chỉ
@@ -20,7 +24,13 @@ const Address = () => {
 
     const fetchUser_Addresses = async () => {
         try {
-            const user_addresses = await userAddressService.getData("id_user", user.id_user);
+            let user_addresses = await userAddressService.getData("id_user", user.id_user);
+            if (Array.isArray(user_addresses)) {
+                user_addresses = user_addresses.filter(addr => addr.status === "hiện");
+            } else {
+                user_addresses = [];
+            }
+            console.log(user_addresses)
             setUserAddress(user_addresses);
         } catch (err) {
             console.log(err.message, "ở account");
@@ -44,6 +54,7 @@ const Address = () => {
             address: address.address || "",
             phone: address.phone || "",
             is_default: address.is_default || false,
+            status: "hiện",
         });
     };
 
@@ -58,6 +69,7 @@ const Address = () => {
             address: "",
             phone: "",
             is_default: false,
+            status: "hiện",
         });
     };
 
@@ -72,20 +84,21 @@ const Address = () => {
             address: "",
             phone: "",
             is_default: false,
+            status: "hiện",
         });
     };
 
     const checkInput = () => {
         if (!newAddress.name.trim()) {
-            toast.current.show({ severity: "warn", summary: "Cảnh báo", detail: "Vui lòng nhập họ và tên", life: 3000 });
+            toast.current.show({ severity: "warn", summary: "Cảnh báo", detail: "Vui lòng nhập họ và tên", life: 1200 });
             return false;
         }
         if (!newAddress.phone.trim() || !/^\d{10}$/.test(newAddress.phone)) {
-            toast.current.show({ severity: "warn", summary: "Cảnh báo", detail: "Số điện thoại phải là 10 chữ số", life: 3000 });
+            toast.current.show({ severity: "warn", summary: "Cảnh báo", detail: "Số điện thoại phải là 10 chữ số", life: 1200 });
             return false;
         }
         if (!newAddress.address.trim()) {
-            toast.current.show({ severity: "warn", summary: "Cảnh báo", detail: "Vui lòng nhập địa chỉ", life: 3000 });
+            toast.current.show({ severity: "warn", summary: "Cảnh báo", detail: "Vui lòng nhập địa chỉ", life: 1200 });
             return false;
         }
         return true;
@@ -104,11 +117,11 @@ const Address = () => {
             if (isAddMode) {
                 // Thêm địa chỉ mới
                 await userAddressService.add(newAddress);
-                toast.current.show({ severity: "success", summary: "Thành công", detail: "Thêm địa chỉ thành công!", life: 3000 });
+                toast.current.show({ severity: "success", summary: "Thành công", detail: "Thêm địa chỉ thành công!", life: 1200 });
             } else if (isEditMode) {
                 // Cập nhật địa chỉ
                 await userAddressService.update(newAddress.id_address, newAddress);
-                toast.current.show({ severity: "success", summary: "Thành công", detail: "Cập nhật địa chỉ thành công!", life: 3000 });
+                toast.current.show({ severity: "success", summary: "Thành công", detail: "Cập nhật địa chỉ thành công!", life: 1200 });
             }
             setIsEditMode(false);
             setIsAddMode(false);
@@ -119,14 +132,28 @@ const Address = () => {
         }
     };
 
-    const handleDeleteClick = async (id_address) => {
+    const handleDeleteClick = async (address) => {
+        setAddressToDelete(address);
+        setShowDeleteDialog(true);
+    };
+
+    const confirmDelete = async () => {
         try {
-            await userAddressService.delete(id_address);
-            toast.current.show({ severity: "success", summary: "Thành công", detail: "Xóa địa chỉ thành công!", life: 3000 });
+            addressToDelete.status = "ẩn"
+            await userAddressService.update(addressToDelete.id_address, addressToDelete);
+            toast.current.show({ severity: "success", summary: "Thành công", detail: "Xóa địa chỉ thành công!", life: 1200 });
             await fetchUser_Addresses();
         } catch (err) {
-            toast.current.show({ severity: "error", summary: "Lỗi", detail: "Xóa địa chỉ thất bại.", life: 3000 });
+            toast.current.show({ severity: "error", summary: "Lỗi", detail: "Xóa địa chỉ thất bại.", life: 1200 });
+        } finally {
+            setShowDeleteDialog(false);
+            setAddressToDelete(null);
         }
+    };
+    
+    const cancelDelete = () => {
+        setShowDeleteDialog(false);
+        setAddressToDelete(null);
     };
 
     if (loading) return <div className="header__top">Đang tải...</div>; 
@@ -220,7 +247,13 @@ const Address = () => {
                                     </div>
                                 )}
                             </div>
-
+                            <ConfirmDeleteDialogForUser
+                                visible={showDeleteDialog}
+                                onHide={() => setShowDeleteDialog(false)}
+                                onConfirm={confirmDelete}
+                                item={addressToDelete}
+                                idField="id_address"
+                            />
                             <div className="row__address_main">
                                 {userAddress.length > 0 ? (
                                     userAddress.map((address) => (
@@ -243,7 +276,7 @@ const Address = () => {
                                                         (null) :
                                                         <button
                                                             className="btn-delete__address"
-                                                            onClick={() => handleDeleteClick(address.id_address)}
+                                                            onClick={() => handleDeleteClick(address)}
                                                         >
                                                             XÓA
                                                         </button>

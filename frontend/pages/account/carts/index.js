@@ -96,12 +96,24 @@ const Carts = () => {
         try {
             await deleteToCart(cartItem);
             if (toast.current) {
-                toast.current.show({ severity: "success", summary: "Thành công", detail: "Sản phẩm đã được xóa khỏi giỏ hàng!", life: 3000});
+                toast.current.show({ severity: "success", summary: "Thành công", detail: "Sản phẩm đã được xóa khỏi giỏ hàng!", life: 900});
             }
         } catch (error) {
             console.log(error.message, "Lỗi khi xóa sản phẩm khỏi giỏ hàng");
         }
     };
+
+    const checkOrder = () => {
+        const outOfStockItems = carts.filter(cart => {
+            const variant = productVariants.find((v) => v.id_variant === cart.id_variant) || {};
+            const product = products.find((p) => p.id_product === variant.id_product ) || {};
+            return product.status === "ẩn";
+        });
+        if (outOfStockItems.length === 0) 
+            router.push("/checkout");
+        else
+            toast.current.show({ severity: "info", summary: "Thông báo", detail: "Hãy loại bỏ những sản phẩm hết hàng để tiếp tục!", life: 1200});
+    }
 
     useEffect(() => {
         if (carts.length > 0) {
@@ -157,44 +169,88 @@ const Carts = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {carts.map((cart, index) => {
-                                        const variant = productVariants.find((v) => v.id_variant === cart.id_variant) || {};
-                                        const product = products.find((p) => p.id_product === variant.id_product ) || {};
-                                        const total = cart.quantity * cart.price;
+                                {carts.map((cart, index) => {
+                                    const variant = productVariants.find((v) => v.id_variant === cart.id_variant) || {};
+                                    const product = products.find((p) => p.id_product === variant.id_product ) || {};
+                                    const total = cart.quantity * cart.price;
 
-                                        return (
-                                            <tr
-                                                className="td_account_order"
-                                                key={index}
-                                            >
-                                                <td onClick={() => handleRowClick(product.slug)}>
-                                                    <img style={{ width: "70px",}} src={product.image_url} alt={product.name}/>
-                                                </td>
-                                                <td onClick={() => handleRowClick(product.slug)} >
-                                                    {product.name || "N/A"}
-                                                </td>
-                                                <td onClick={() => handleRowClick( product.slug)} >
-                                                    {variant.color || "N/A"}
-                                                </td>
-                                                <td>
-                                                    <div className="input_quantity_cart">
-                                                        <button className="btn-quantity_cart btn-quantity-cart-reduce" onClick={handleDecreaseQuantity(cart)}>-</button>
-                                                        <input style={{backgroundColor: "white"}} className="quantity_cart" type="text" value={cart.quantity} readOnly/>
-                                                        <button className="btn-quantity_cart btn-quantity-cart-increase" onClick={handleIncreaseQuantity( cart)}>+</button>
-                                                    </div>
-                                                </td>
-                                                <td onClick={() => handleRowClick(product.slug )}>
-                                                    {formatPrice(cart.price)}đ
-                                                </td>
-                                                <td onClick={() => handleRowClick( product.slug)}>
-                                                    {formatPrice(total)}đ
-                                                </td>
-                                                <td>
-                                                    <button className="remove-item-cart" title="Xóa" onClick={handleDeleteItem(cart)}>x</button>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
+                                    const isOutOfStock = product.status === "ẩn";
+
+                                    return (
+                                        <tr
+                                            className="td_account_order"
+                                            key={index}
+                                        >
+                                            <td onClick={() => handleRowClick(product.slug)} style={{ opacity: isOutOfStock ? 0.5 : 1 }}>
+                                                <div style={{ position: "relative" }}>
+                                                    <img style={{ width: "70px" }} src={product.image_url} alt={product.name} />
+                                                    {isOutOfStock && (
+                                                        <span
+                                                            style={{
+                                                                position: "absolute",
+                                                                bottom: "3px",
+                                                                color: "red",
+                                                                left: "0px",
+                                                                backgroundColor: "#d5d5d5",
+                                                                padding: "3px 9px",
+                                                                fontWeight: "500",
+                                                            }}
+                                                        >
+                                                            Hết hàng
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td onClick={() => handleRowClick(product.slug)} style={{ opacity: isOutOfStock ? 0.5 : 1 }}>
+                                                {product.name || "N/A"}
+                                            </td>
+                                            <td onClick={() => handleRowClick(product.slug)} style={{ opacity: isOutOfStock ? 0.5 : 1 }}>
+                                                {variant.color || "N/A"}
+                                            </td>
+                                            <td style={{ opacity: isOutOfStock ? 0.5 : 1 }}>
+                                                <div className="input_quantity_cart">
+                                                    <button
+                                                        className="btn-quantity_cart btn-quantity-cart-reduce"
+                                                        onClick={isOutOfStock ? null : handleDecreaseQuantity(cart)} // Vô hiệu hóa nếu hết hàng
+                                                        disabled={isOutOfStock}
+                                                    >
+                                                        -
+                                                    </button>
+                                                    <input
+                                                        style={{ backgroundColor: "white" }}
+                                                        className="quantity_cart"
+                                                        type="text"
+                                                        value={cart.quantity}
+                                                        readOnly
+                                                    />
+                                                    <button
+                                                        className="btn-quantity_cart btn-quantity-cart-increase"
+                                                        onClick={isOutOfStock ? null : handleIncreaseQuantity(cart)} // Vô hiệu hóa nếu hết hàng
+                                                        disabled={isOutOfStock}
+                                                    >
+                                                        +
+                                                    </button>
+                                                </div>
+                                            </td>
+                                            <td onClick={() => handleRowClick(product.slug)} style={{ opacity: isOutOfStock ? 0.5 : 1 }}>
+                                                {formatPrice(cart.price)}đ
+                                            </td>
+                                            <td onClick={() => handleRowClick(product.slug)} style={{ opacity: isOutOfStock ? 0.5 : 1 }}>
+                                                {formatPrice(total)}đ
+                                            </td>
+                                            <td>
+                                                <button
+                                                    className="remove-item-cart always-visible"
+                                                    title="Xóa"
+                                                    onClick={handleDeleteItem(cart)}
+                                                >
+                                                    x
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+
                                 </tbody>
                             </table>
 
@@ -245,7 +301,7 @@ const Carts = () => {
                                             </table>
                                             <ul className="checkout">
                                                 <li>
-                                                    <button className="btn-checkout btn-checkout-order" onClick={() => router.push("/checkout")}>
+                                                    <button className="btn-checkout btn-checkout-order" onClick={checkOrder}>
                                                         TIẾN HÀNH ĐẶT HÀNG
                                                     </button>
                                                 </li>

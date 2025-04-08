@@ -28,7 +28,6 @@ const saleInvoiceDetailsService = {
     },
     getAllByInvoiceId: async (invoiceId) => {
         try {
-            console.log(invoiceId)
             const response = await axios.get(`${API_URL}/${invoiceId}`);
             const data = response.data || [];
             return formatDateFields(data);

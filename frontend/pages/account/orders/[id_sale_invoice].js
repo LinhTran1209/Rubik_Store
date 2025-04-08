@@ -9,6 +9,7 @@ import userAddressService from "../../../services/userAddressService";
 import productService from "../../../services/productService";
 import { useUser } from "../../../components/UserContext";
 
+import ConfirmDeleteDialogForUser from "../../../components/ConfirmDeleteDialogForUser";
 import CustomToast from "../../../components/CustomToast";
 import { formatDate } from "../../../utils/formatDate";
 import { formatPrice } from "../../../utils/formatPrice";
@@ -17,6 +18,9 @@ const Order = () => {
     const router = useRouter();
     const { id_sale_invoice } = router.query;
 
+    const [ showDeleteDialog, setShowDeleteDialog ] = useState(false);
+    const [ invoiceToDelete, setInvoiceToDelete ] = useState(null);
+
     const { user, loading } = useUser();
     const toast = useRef(null);
    
@@ -24,7 +28,7 @@ const Order = () => {
     const [ userAddress, setUserAddress ] = useState({ id_address: "", id_user: "", name: "", address: "", phone: "", is_default: false });
     const [ products, setProducts ] = useState([{ id_product: "", id_categorie: "", name: "", image_url: "", desc: "", status: "", slug: "" }]);
     const [ productVariants, setProductVariants ] = useState([{ id_variant: "", id_product: "", name: "", price: "", stock: "" }]);
-    const [ saleInvoice, setSaleInvoice ] = useState({ id_sale_invoice: "", id_user: "", id_address: "", desc: "", total: 0, pay: "COD", status: "", created_at: "", updated_at: "" });
+    const [ saleInvoice, setSaleInvoice ] = useState({ id_sale_invoice: "", id_user: "", id_address: "", desc: "", total: 0, pay: "COD", status: "", request: null, created_at: "", updated_at: "" });
 
     const fetch_SaleInvoice = async () => {
         try {
@@ -72,7 +76,7 @@ const Order = () => {
 
     const fetchUser_Address = async () => {
         try {
-            const user_addresses = await userAddressService.getData("id_user", user.id_user);
+            const user_addresses = await userAddressService.getData("id_address", saleInvoice.id_address);
             if (user_addresses.length > 0) {
                 setUserAddress(user_addresses[0]);
             } else {
@@ -96,7 +100,7 @@ const Order = () => {
         if (user.id_user !== "") {
             fetchUser_Address();
         }
-    }, [user]);
+    }, [saleInvoice]);
 
     useEffect(() => {
         if (saleInvoiceDetails.length > 0) {
@@ -107,6 +111,44 @@ const Order = () => {
 
     const handleRowClick = (slug_product) => {
         router.push(`/detail_product/${slug_product}`);
+    };
+
+    const handleDeleteClick = async (invoice) => {
+        setInvoiceToDelete(invoice);
+        setShowDeleteDialog(true);
+    };
+
+    const handleRequestOrder = async () => {
+        if (saleInvoice.id_sale_invoice !== "") {
+            try {
+                let data = {...saleInvoice};
+                data.request = "Hủy đơn";
+                await sale_invoiceService.updatesale_invoice(data.id_sale_invoice, data);
+                if (toast.current) {
+                    toast.current.show({ severity: "success", summary: "Thành công", detail: "Đã gửi yêu cầu hủy đơn thành công!", life: 900});
+                }
+                fetch_SaleInvoice();
+            } catch (err) {
+                console.log(err.message, "ỏe order")
+            }
+        }
+    } 
+
+    const getStatusColor = (status) => {
+        switch(status) {
+            case 'Đang xác nhận':
+                return '#FFC107'; // Màu vàng
+            case 'Đang lấy hàng':
+                return '#00BCD4'; // Màu xanh dương
+            case 'Đang giao hàng':
+                return '#FF9800'; // Màu cam
+            case 'Hoàn thành':
+                return 'green'; // Màu xanh lá
+            case 'Đã hủy đơn':
+                return 'red'; // Màu đỏ
+            default:
+                return 'black'; // Mặc định là màu đen nếu không có trạng thái phù hợp
+        }
     };
 
     if (loading) {
@@ -161,6 +203,9 @@ const Order = () => {
         
                             <div className="order__create_at">
                                 <span>Ngày tạo — {formatDate(saleInvoice.created_at)}</span>
+                                { saleInvoice.status === "Đang xác nhận" && saleInvoice.request === "Đặt hàng" &&
+                                    <button className="request_order" onClick={() => handleDeleteClick(saleInvoice)}>Yêu cầu hủy đơn</button>
+                                }
                             </div>
         
                             <div className="row__info_sale_invoice">
@@ -187,8 +232,8 @@ const Order = () => {
                                     <h4 style={{ marginBottom: "15px", fontWeight: "bold" }}>TRẠNG THÁI ĐƠN HÀNG</h4>
                                     <p style={{ display: "flex", alignItems: "center" }}>
                                         <img style={{ width: "30px", marginLeft: "-5px", marginRight: "8px" }} src="https://res.cloudinary.com/dzweargsr/image/upload/v1743567262/car_ship_ggmu24.jpg" alt="icon ship" />
-                                        <strong style={{ textAlign: "center", marginRight: "5px" }}>Trạng thái vận chuyển:</strong>
-                                        <span style={{ color: "red" }}>{saleInvoice.status}</span>
+                                        <strong style={{ textAlign: "center", marginRight: "5px" }}>Trạng thái:</strong>
+                                        <span style={{ color: getStatusColor(saleInvoice.status) }}>{saleInvoice.status}</span>
                                     </p>
                                     <p style={{ display: "flex", alignItems: "center" }}>
                                         <img style={{ width: "25px", marginRight: "8px" }} src="https://res.cloudinary.com/dzweargsr/image/upload/v1743567639/pay_vyjlry.png" alt="icon thanh toán" />
@@ -265,6 +310,14 @@ const Order = () => {
                     )
                 )
             }
+            <ConfirmDeleteDialogForUser
+                visible={showDeleteDialog}
+                onHide={() => setShowDeleteDialog(false)}
+                onConfirm={handleRequestOrder}
+                item={invoiceToDelete}
+                idField="id_sale_invoice"
+                message="Bạn có chắc chắn muốn yêu hủy hóa đơn này không?"
+            />
 
         </div>
     );

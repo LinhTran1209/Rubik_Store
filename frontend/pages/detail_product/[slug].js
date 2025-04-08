@@ -18,7 +18,7 @@ const ProductDetail = () => {
     const toast = useRef(null);
     const { slug } = router.query;
     const { user, loading } = useUser();
-    const { carts, addToCart, updateToCart } = useCart();
+    const { carts, addToCart, updateToCart, deleteToCart } = useCart();
 
     const [product, setProduct] = useState(null); 
     const [products, setProducts] = useState([]);
@@ -124,10 +124,10 @@ const ProductDetail = () => {
     };
 
     // Hàm xử lý thêm vào giỏ hàng
-    const handleAddToCart = async () => {
+    const handleAddToCart = async (buynow = false) => {
         if (user.id_user === "") {
             // Nếu chưa đăng nhập
-            toast.current.show({ severity: "warn", summary: "Cảnh báo", detail: "Vui lòng đăng nhập để mua hàng!",life: 3000});
+            toast.current.show({ severity: "warn", summary: "Cảnh báo", detail: "Vui lòng đăng nhập để mua hàng!",life: 900});
             return;
         }
 
@@ -137,6 +137,7 @@ const ProductDetail = () => {
                 toast.current.show({ severity: "warn", summary: "Cảnh báo", detail: "Số lượng bạn yêu cầu không đủ. Vui lòng thay đổi số lượng!"})
                 return;
             }
+
             // Tạo cart để thêm
             const cartItem = { id_user: user.id_user,  id_variant: selectedVariant.id_variant, quantity: quantity, price: totalPrice };
 
@@ -144,14 +145,18 @@ const ProductDetail = () => {
             if (carts.find((c) => c.id_variant === cartItem.id_variant)) {
                 cartItem.quantity = cartItem.quantity + carts.find((c) => c.id_variant === cartItem.id_variant).quantity
                 await updateToCart(cartItem);
-                toast.current.show({ severity: "success", summary: "Thành công", detail: "Sản phẩm đã được thêm vào giỏ hàng!", life: 3000});
+                toast.current.show({ severity: "success", summary: "Thành công", detail: "Sản phẩm đã được thêm vào giỏ hàng!", life: 900});
             } else {
                 await addToCart(cartItem);
-                toast.current.show({ severity: "success", summary: "Thành công", detail: "Sản phẩm đã được thêm vào giỏ hàng!", life: 3000});
+                toast.current.show({ severity: "success", summary: "Thành công", detail: "Sản phẩm đã được thêm vào giỏ hàng!", life: 900});
+            }
+
+            if (buynow === true) {
+                router.push("/checkout");
             }
         } catch (error) {
             if (toast.current) {
-                toast.current.show({ severity: "error", summary: "Lỗi", detail: "Thêm vào giỏ hàng thất bại, vui lòng thử lại!", life: 3000});
+                toast.current.show({ severity: "error", summary: "Lỗi", detail: "Thêm vào giỏ hàng thất bại, vui lòng thử lại!", life: 900});
             }
             console.log(error.message, "ở handleAddToCart");
         }
@@ -159,12 +164,10 @@ const ProductDetail = () => {
 
     const handleBuyNow = async () => {
         if (user.id_user === "") {
-            // Nếu chưa đăng nhập
-            toast.current.show({ severity: "warn", summary: "Cảnh báo", detail: "Vui lòng đăng nhập để mua hàng!",life: 3000});
+            toast.current.show({ severity: "warn", summary: "Cảnh báo", detail: "Vui lòng đăng nhập để mua hàng!",life: 900});
             return;
         }
-        handleAddToCart();
-        router.push("/checkout");
+        handleAddToCart(true);
     };
 
     useEffect(() => {
@@ -193,6 +196,7 @@ const ProductDetail = () => {
 
     if (loading) return <div className="header__top">Đang tải...</div>; 
     if (!product) return <div style={{display: "flex", justifyContent: "center", marginTop: "100px", color: "#8a6d3b"}}>Sản phẩm không tồn tại. Vui lòng kiểm tra lại lựa chọn của bạn hoặc thử một đường dẫn khác!</div>;
+    const isOutOfStock = product?.status === "ẩn";
 
     return (
         <div className="product-detail">
@@ -218,6 +222,9 @@ const ProductDetail = () => {
                     <div className="product-detail__images">
                         <div className="product-detail__main-image">
                             <img src={mainImage || product.image_url} alt={product.name}/>
+                            {isOutOfStock && (
+                                <div className="outofstock">Hết hàng</div> // Hiển thị khi sản phẩm hết hàng
+                            )}
                         </div>
                         <div
                             className="product-detail__thumbnails">
@@ -344,7 +351,9 @@ const ProductDetail = () => {
                                 style={{
                                     width: "50px",
                                     marginLeft: "10px",
+                                    marginRight: "10px",
                                     textAlign: "center",
+                                    opacity: isOutOfStock ? 0.5 : 1
                                 }}
                                 type="number"
                                 id="quantity"
@@ -353,7 +362,9 @@ const ProductDetail = () => {
                                 onChange={(e) =>
                                     setQuantity(Number(e.target.value))
                                 }
+                                disabled={isOutOfStock}
                             />
+                            <span>{isOutOfStock ? "0" : selectedVariant?.quantity} sản phẩm có sẵn</span>
                         </div>
                         <div className="product-detail__total">
                             <p>
@@ -372,10 +383,10 @@ const ProductDetail = () => {
                             </p>
                         </div>
                         <div className="product-detail__actions">
-                            <button className="btn btn--buy-now" onClick={handleBuyNow}>
+                            <button className="btn btn--buy-now" onClick={handleBuyNow} disabled={isOutOfStock} >
                                 MUA NGAY <br />
                             </button>
-                            <button className="btn btn--add-to-cart" onClick={handleAddToCart}>
+                            <button className="btn btn--add-to-cart" onClick={handleAddToCart} disabled={isOutOfStock} >
                                 THÊM VÀO GIỎ HÀNG
                             </button>
                         </div>
