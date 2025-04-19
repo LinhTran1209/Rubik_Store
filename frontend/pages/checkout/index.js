@@ -26,6 +26,14 @@ const Checkout = () => {
     const [userAddress, setUserAddress] = useState([]);
     const [products, setProducts] = useState([]);
     const [isDifferentAddress, setIsDifferentAddress] = useState(false);
+    const [showQR, setShowQR] = useState(false);
+    const [isCheckoutDisabled, setIsCheckoutDisabled] = useState(false); // 
+
+    // Kiểm tra thông tin mua hàng có đầy đủ hay không
+    const isAddressValid = newAddress.name.trim() !== "" && 
+    newAddress.phone.trim() !== "" && 
+    /^\d{10}$/.test(newAddress.phone) && 
+    newAddress.address.trim() !== "";
 
     const fetchProducts = async () => {
         try {
@@ -422,6 +430,10 @@ const Checkout = () => {
                                             type="radio"
                                             id="payment-cod"
                                             name="payment"
+                                            onChange={() => {
+                                                setShowQR(false);
+                                                setIsCheckoutDisabled(false);
+                                            } }
                                             defaultChecked
                                         />
                                         <label htmlFor="payment-cod">
@@ -434,11 +446,28 @@ const Checkout = () => {
                                             type="radio"
                                             id="payment-qr"
                                             name="payment"
+                                            onChange={() => {
+                                                if (isAddressValid) {
+                                                    setShowQR(true);
+                                                    setIsCheckoutDisabled(true);
+                                                }
+                                            }}
                                         />
                                         <label htmlFor="payment-qr">
                                             Chuyển khoản (QR)
                                         </label>
                                     </div>
+
+                                    {showQR && (
+                                        <div className="qr-code" style={{ marginTop: "20px", textAlign: "center" }}>
+                                            <img
+                                                src={`https://qr.sepay.vn/img?acc=109877135768&bank=VietinBank&amount=10000&des=SEVQR+TKP9AZ+DH102969`}
+                                                alt="QR Code for Payment"
+                                                style={{ maxWidth: "200px", height: "auto" }}
+                                            />
+                                            <p>Vui lòng quét mã QR để thanh toán</p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </section>
@@ -500,7 +529,13 @@ const Checkout = () => {
                                     </svg>
                                     Quay về giỏ hàng
                                 </Link>
-                                <button className="checkout-button" onClick={handleCheckout}>ĐẶT HÀNG</button>
+                                <button className="checkout-button" 
+                                    onClick={handleCheckout}
+                                    disabled={isCheckoutDisabled}
+                                    style={{
+                                        opacity: isCheckoutDisabled ? 0.5 : 1
+                                    }}
+                                 >ĐẶT HÀNG</button>
                             </div>
                         </aside>
                     </main>

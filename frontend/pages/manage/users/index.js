@@ -63,7 +63,7 @@ function User() {
         setSubmitted(true);
 
         // Kiểm tra các trường bắt buộc
-        if (!user.name || !user.role || !user.email || !user.phone || !user.address) {
+        if (!user.name || !user.role || !user.email || !user.phone) {
             toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Vui lòng điền đầy đủ thông tin bắt buộc', life: 3000 });
             return;
         }

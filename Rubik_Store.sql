@@ -101,6 +101,7 @@ INSERT INTO Carts (id_user, id_variant, quantity, price) VALUES
 (2, 1, 2, 290000);
 
 
+
 DELETE FROM Carts 
 WHERE id_user = 2 AND id_variant = 6;
 
@@ -380,10 +381,10 @@ WHERE id_sale_invoice = 31;
 
 UPDATE Sale_invoices 
 SET request = "Đặt hàng"
-WHERE id_sale_invoice = 30;
+WHERE id_sale_invoice = 31;
 
 -- Kiểm tra kết quả
-SELECT * FROM Sale_invoices WHERE id_sale_invoice = 31;
+SELECT * FROM Sale_invoices WHERE id_sale_invoice = 30;
 
 select * from sale_invoice_details where id_sale_invoice = 31;
 

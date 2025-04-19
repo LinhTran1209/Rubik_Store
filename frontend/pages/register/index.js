@@ -3,21 +3,21 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 
 import userService from '../../services/userService';
-
 import CustomToast from '../../components/CustomToast';
 
 const Register = () => {
     const toast = useRef(null);
+    const router = useRouter();
     const [users, setUsers] = useState([]);
-    
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [verificationCode, setVerificationCode] = useState('');
-
-    // lấy thông tin tất cả người dùng để só sánh
+    const [generatedCode, setGeneratedCode] = useState('');
+    const [countdown, setCountdown] = useState(0);
+    const [isSendCodeDisabled, setIsSendCodeDisabled] = useState(false);
 
     const getAllusers = async () => {
         try {
@@ -25,99 +25,142 @@ const Register = () => {
             setUsers(data);
         } catch (error) {
             console.error('Lỗi khi lấy dữ liệu:', error);
-            toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải dữ liệu', life: 1200 });
+            toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Không thể tải dữ liệu người dùng', life: 1200 });
         }
     };
 
     useEffect(() => {
         getAllusers();
-    }, []); 
+    }, []);
 
+    useEffect(() => {
+        let timer;
+        if (countdown > 0) {
+            timer = setInterval(() => {
+                setCountdown((prev) => {
+                    if (prev <= 1) {
+                        clearInterval(timer);
+                        setGeneratedCode('');
+                        setIsSendCodeDisabled(false);
+                        toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mã xác nhận đã hết hiệu lực', life: 1200 });
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        }
+        return () => clearInterval(timer);
+    }, [countdown]);
 
+    const sendVerificationCode = async () => {
+        if (!email) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Vui lòng nhập email trước', life: 1200 });
+            return;
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Email không hợp lệ', life: 1200 });
+            return;
+        }
+
+        if (users.some((user) => user.email === email)) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Email đã được sử dụng', life: 1200 });
+            return;
+        }
+
+        const newCode = Math.random().toString(36).substring(2, 6).toUpperCase();
+        setGeneratedCode(newCode);
+        setCountdown(60);
+        setIsSendCodeDisabled(true);
+
+        try {
+            await userService.sendVerificationEmail(email, newCode);
+            toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Mã xác nhận đã được gửi tới email của bạn', life: 1200 });
+        } catch (error) {
+            console.error('Lỗi khi gửi email:', error.message);
+            toast.current.show({ severity: 'error', summary: 'Lỗi', detail: error.message || 'Không thể gửi mã xác nhận, vui lòng thử lại', life: 1200 });
+            setIsSendCodeDisabled(false);
+            setCountdown(0);
+            setGeneratedCode('');
+        }
+    };
 
     const checkInputRegister = async () => {
         if (!name) {
-            toast.current.show({severity: 'warn', summary: 'Cảnh báo', detail: 'Họ và tên không được để trống', life: 1200,});
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Họ và tên không được để trống', life: 1200 });
             return;
         }
         if (name.length < 2) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Họ và tên phải có ít nhất 2 ký tự',life: 1200,});
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Họ và tên phải có ít nhất 2 ký tự', life: 1200 });
             return;
         }
 
-        // Kiểm tra số điện thoại
         const phoneRegex = /^0\d{9}$/;
         if (!phone) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Số điện thoại không được để trống',life: 1200,});
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Số điện thoại không được để trống', life: 1200 });
             return;
         }
-        if (!phoneRegex.test(phone)) {toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Số điện thoại phải là 10 số',life: 1200,
-            });
+        if (!phoneRegex.test(phone)) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Số điện thoại phải có đúng 10 số', life: 1200 });
             return;
         }
-        if (users.some(user => user.phone === phone)) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Số điện thoại đã có trong danh sách',life: 1200,});
+        if (users.some((user) => user.phone === phone)) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Số điện thoại đã được sử dụng', life: 1200 });
             return;
         }
 
-        // Kiểm tra email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!email) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Email không được để trống',life: 1200,});
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Email không được để trống', life: 1200 });
             return;
         }
         if (!emailRegex.test(email)) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Email không hợp lệ',life: 1200,});
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Email không hợp lệ', life: 1200 });
             return;
         }
-        if (users.some(user => user.email === email)) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Email đã có trong danh sách',life: 1200,});
+        if (users.some((user) => user.email === email)) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Email đã được sử dụng', iife: 1200 });
             return;
         }
 
-        // Kiểm tra mật khẩu
         if (!password) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu không được để trống',life: 1200,});
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mật khẩu không được để trống', life: 1200 });
             return;
         }
         if (password.length < 6) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu phải có ít nhất 6 ký tự',life: 1200,});
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mật khẩu phải có ít nhất 6 ký tự', life: 1200 });
             return;
         }
 
-        // Kiểm tra nhập lại mật khẩu
         if (!confirmPassword) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Vui lòng nhập lại mật khẩu',life: 1200,});
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Vui lòng nhập lại mật khẩu', life: 1200 });
             return;
         }
         if (confirmPassword !== password) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mật khẩu không khớp',life: 1200,});
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mật khẩu nhập lại không khớp', life: 1200 });
             return;
         }
 
-        // Kiểm tra mã xác nhận
-        const correctCode = '9W5G';
         if (!verificationCode) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mã xác nhận không được để trống',life: 1200,});
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mã xác nhận không được để trống', life: 1200 });
             return;
         }
-        if (verificationCode !== correctCode) {
-            toast.current.show({severity: 'warn',summary: 'Cảnh báo',detail: 'Mã xác nhận không đúng',life: 5000,});
+        if (verificationCode !== generatedCode) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mã xác nhận không đúng', life: 1200 });
+            return;
+        }
+        if (countdown === 0 && generatedCode) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mã xác nhận đã hết hiệu lực', life: 1200 });
             return;
         }
 
-        // Nếu không có lỗi, tiến hành đăng ký
         try {
-            userService.adduser({ role: "customer", name: name, phone: phone, email: email , password: password })   
-                .then(() => {
-                    toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Đăng ký thành công', life: 1200 });
-                    window.location.href = '/home';
-                })
-                .catch(error => {
-                    toast.current.show({ severity: 'error', summary: 'Lỗi', detail: 'Đăng ký thất bại', life: 1200 });
-                });
+            await userService.adduser({ role: 'customer', name, phone, email, password });
+            toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Đăng ký tài khoản thành công', life: 1200 });
+            router.push('/home');
         } catch (err) {
-            const errorMessage = err.message || 'Đăng ký thất bại';toast.current.show({severity: 'error',summary: 'Lỗi',detail: errorMessage,life: 1200,});
+            const errorMessage = err.message || 'Đăng ký thất bại';
+            toast.current.show({ severity: 'error', summary: 'Lỗi', detail: errorMessage, life: 1200 });
         }
     };
 
@@ -128,7 +171,7 @@ const Register = () => {
                 <div className="auth-form auth-form__register">
                     <div className="auth-form__container">
                         <div className="auth-form__header">
-                            <h3 className="auth-form__heading">ĐĂNG KÝ</h3>
+                            <h3 className="auth-form__heading">ĐĂNG KÝ TÀI KHOẢN</h3>
                         </div>
 
                         <div className="auth-form__form">
@@ -149,7 +192,7 @@ const Register = () => {
                                     id="input-phone-register"
                                     type="tel"
                                     className="auth-form__input"
-                                    placeholder="Số điện thoại"
+                                    placeholder=" Số điện thoại"
                                 />
                             </div>
                             <div className="auth-form__group">
@@ -192,7 +235,20 @@ const Register = () => {
                                         className="auth-form__input auth-form__input-veri"
                                         placeholder="Mã xác nhận"
                                     />
-                                    <img className="img-veri" src="/assets/img/verification.png" alt="Mã xác nhận" />
+                                    <button
+                                        className="btn-very"
+                                        onClick={sendVerificationCode}
+                                        disabled={isSendCodeDisabled}
+                                    >
+                                        {isSendCodeDisabled ? 'Đã gửi mã' : 'Nhận mã qua Email'}
+                                    </button>
+                                    {countdown > 0 && (
+                                        <span className="countdown" style={{
+                                            margin: "auto"
+                                        }}>
+                                            Hết hiệu lực sau: {countdown} giây
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                             <div className="auth-form__group">
@@ -233,7 +289,7 @@ const Register = () => {
 
                             <div className="auth-form__agree-policy">
                                 <div className="text-policy">
-                                    Bằng việc đăng kí, bạn đã đồng ý với Rubik Ocean về <br />
+                                    Khi đăng ký, bạn đồng ý với Rubik Ocean về <br />
                                     <a className="link-policy" href="">
                                         Điều khoản dịch vụ
                                     </a>{' '}
@@ -241,7 +297,7 @@ const Register = () => {
                                 </div>
 
                                 <div className="have_account">
-                                    Bạn đã có tài khoản?{' '}
+                                    Đã có tài khoản?{' '}
                                     <Link href="/login" className="btn-login" style={{ color: 'red', textDecoration: 'none' }}>
                                         Đăng nhập
                                     </Link>

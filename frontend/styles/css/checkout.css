@@ -330,9 +330,8 @@ textarea {
     padding: 12px 20px;
     border-radius: 4px;
     font-weight: 500;
-    cursor: pointer;
     text-transform: uppercase;
-    transition: all 0.4s ease;
+    /* transition: all 0.4s ease; */
 }
 
 .apdung,
@@ -343,6 +342,12 @@ textarea {
 .apdung:hover,
 .checkout-button:hover {
     background: #555;
+    cursor: pointer;
+}
+
+.checkout-button:disabled {
+    pointer-events: none;
+    opacity: 0.6;
 }
 
 /* .footer {

@@ -1,5 +1,6 @@
 const db = require("../common/db");
 const bcrypt = require('bcrypt'); // Mã hóa mật khẩu bằng bcrypt
+const nodemailer = require('nodemailer');
 
 const Users = (users) => {
   this.id_user = users.id_user;
@@ -11,6 +12,29 @@ const Users = (users) => {
   this.status = users.status;
   this.created_at = users.created_at;
   this.updated_at = users.updated_at;
+};
+
+// Gửi xác nhận email
+Users.sendVerificationEmail = async (email, code) => {
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    service: "Gmail",
+    port: 465,
+    secure: true,
+      auth: {
+          user: process.env.EMAIL_ADMIN, 
+          pass: process.env.EMAIL_PASS, 
+      },
+  });
+
+  const mailOptions = {
+      from: process.env.EMAIL_ADMIN,
+      to: email,
+      subject: 'Mã xác thực',
+      text: `Mã xác thực của bạn là: ${code}`,
+  };
+
+  return transporter.sendMail(mailOptions);
 };
 
 // Tìm kiếm mọi col sản phẩm theo querydata và trả về object

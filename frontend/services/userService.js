@@ -17,6 +17,16 @@ const formatDateFields = (data) => {
 };
 
 const userService = {
+    // Gửi mã xác thực
+    sendVerificationEmail: async (email, code) => {
+        try {
+            const response = await axios.post(`${API_URL}/sendVerificationEmail`, { email, code});
+            return response.data;
+        } catch(err) {
+            throw new Error('Không thể gửi mã xác thực người dùng');
+        }
+    },
+
     // Bên back có làm hàm gọi theo cột và tìm trường dữ liệu
     getData: async (col, querydata) => {
         try {

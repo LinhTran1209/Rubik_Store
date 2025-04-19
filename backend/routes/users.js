@@ -11,6 +11,7 @@ router.post('/', users_controller.insert);
 router.put('/:id', users_controller.update);
 router.delete('/:id', users_controller.delete);
 
+router.post('/sendVerificationEmail', users_controller.sendVerificationEmail)
 router.get('/getData/:col/:querydata', users_controller.getData)
 
 module.exports = router;

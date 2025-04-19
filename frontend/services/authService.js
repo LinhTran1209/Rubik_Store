@@ -10,6 +10,7 @@ const authService = {
                 { phone, password },
                 { withCredentials: true } 
             );
+            console.log(response.data)
             return response.data; // Trả về { message, user: { phone, role } }
         } catch (error) {
             if (error.response) {

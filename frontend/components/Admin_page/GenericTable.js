@@ -46,15 +46,18 @@ const GenericTable = ({
                         style={{color: rowData.request === "Đặt hàng" ? "green" : "red"}}
                     />
                 )}
-                <Button
-                    icon="pi pi-eye" // Biểu tượng mắt để xem
-                    rounded
-                    outlined
-                    className="mr-2"
-                    onClick={() => onView(rowData)} // Gọi hàm onView
-                    title="Xem hóa đơn"
-                    disabled={!onView}
-                />
+                { onView &&
+                    <Button
+                        icon="pi pi-eye" // Biểu tượng mắt để xem
+                        rounded
+                        outlined
+                        className="mr-2"
+                        onClick={() => onView(rowData)} // Gọi hàm onView
+                        title="Xem hóa đơn"
+                        disabled={!onView}
+                    />
+
+                }
                 <Button
                     icon="pi pi-pencil"
                     rounded

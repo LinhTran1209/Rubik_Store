@@ -20,8 +20,8 @@ const InvoiceContent = ({ invoice, details, users, userAddress, products, varian
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
                 <div>
                     <h4 style={{fontWeight: "bold", marginBottom: "10px"}}>ĐỊA CHỈ GIAO HÀNG</h4>
-                    <p><strong>Người nhận:</strong> {user?.name || 'Không xác định'}</p>
-                    <p><strong>Số điện thoại:</strong> {user?.phone || 'Không xác định'}</p>
+                    <p><strong>Người nhận:</strong> {address?.name || 'Không xác định'}</p>
+                    <p><strong>Số điện thoại:</strong> {address?.phone || 'Không xác định'}</p>
                     <p><strong>Địa chỉ:</strong> {address?.address || 'Không xác định'}</p>
                 </div>
                 <div>

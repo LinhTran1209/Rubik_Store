@@ -2,6 +2,14 @@
 const Users = require("../models/users.model");
 
 module.exports = {
+  sendVerificationEmail: (req, res) => {
+    console.log('Nhận yêu cầu gửi email:', req.body);
+    const { email, code} = req.body;
+    Users.sendVerificationEmail(email, code, (err, result) => {
+      if (err) return res.status(500).send(err);
+      res.send(result);
+    });
+  },
 
     // Lấy id sản phẩm theo tên 
   getData: (req, res) => {

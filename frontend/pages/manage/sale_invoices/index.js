@@ -152,6 +152,14 @@ const SaleInvoice = () => {
             }
             return true;
         }
+        return false;
+    };
+
+    const isDisableInvoice = (data) => {
+        if (data.status === 'Hoàn thành' || data.status === 'Đã hủy đơn') {
+            return true;
+        }
+        return false;
     };
 
     const openNewInvoice = () => {
@@ -518,11 +526,11 @@ const SaleInvoice = () => {
                 fields={[
                     { name: 'id_sale_invoice', label: 'ID', disabled: true, hidden: !sale_invoice.id_sale_invoice},
                     { name: 'id_user', label: 'Khách hàng', required: true, type: 'dropdown', options: userOptions, disabled: sale_invoice.id_sale_invoice !== null},
-                    { name: 'id_address', label: 'Địa chỉ', required: true, type: 'dropdown', options: addressOptions},
+                    { name: 'id_address', label: 'Địa chỉ', required: true, type: 'dropdown', options: addressOptions, disabled: isDisableInvoice(sale_invoice)},
                     { name: 'total', label: 'Tổng tiền', disabled: true, hidden: !sale_invoice.id_sale_invoice, type: 'price'},
-                    { name: 'status', label: 'Trạng thái', required: true, type: 'dropdown', options: statusOptions },
+                    { name: 'status', label: 'Trạng thái', required: true, type: 'dropdown', options: statusOptions, disabled: isDisableInvoice(sale_invoice)},
                     { name: 'pay', label: 'Thanh toán', required: true, type: 'dropdown', options: paymentOptions, disabled: sale_invoice.id_sale_invoice !== null},
-                    { name: 'desc', label: 'Ghi chú', required: true },
+                    { name: 'desc', label: 'Ghi chú', required: true, disabled: isDisableInvoice(sale_invoice)},
                     { name: 'created_at', label: 'Ngày tạo', disabled: true, hidden: !sale_invoice.id_sale_invoice, type: 'date'},
                     { name: 'updated_at', label: 'Ngày chỉnh sửa', disabled: true, hidden: !sale_invoice.id_sale_invoice, type: 'date'},
                 ]}

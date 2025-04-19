@@ -189,3 +189,20 @@
     animation: animate1 ease-in 0.3s, fadeOut linear 1s 1.5s forwards;
     display:none;
 }
+
+/* css button Nhận mã xác nhận */
+
+.btn-very {
+    border:  none;
+    background-color: #438F23;
+    border-radius: 4px;
+    color: white;
+    padding: 0 10px;
+    margin-left: 10px;
+    transition: all 0.4s ease;
+    cursor: pointer;
+}
+
+.btn-very:hover {
+    background-color: #555;
+}

@@ -79,9 +79,9 @@ const SearchProduct = () => {
                 </button>
             </form>
 
-            {/* Hiển thị kết quả tìm kiếm */}
+            {/* Kết quả tìm kiếm */}
             {searchWord && (
-                <div className="search-results" style={{position: 'absolute', backgroundColor: 'white', border: '1px solid #ddd', width: '100%', maxHeight: '300px', overflowY: 'auto', zIndex: 1000 }}>
+                <div className="search-results" style={{position: 'absolute', backgroundColor: 'white', border: '1px solid #ddd', width: '100%', maxHeight: '300px', overflowY: 'auto', zIndex: 100 }}>
                     {filteredProducts.length > 0 ? (
                         filteredProducts.map(product => (
                             <Link href={`/detail_product/${product.slug}`} key={product.id_product} onClick={handleProductClick}>
