@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/carts';
+const API_URL = process.env.API_URL_BACK_END +"/carts";
 
 const formatDateFields = (data) => {
     if (Array.isArray(data)) {

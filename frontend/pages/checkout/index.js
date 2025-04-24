@@ -31,9 +31,11 @@ const Checkout = () => {
 
     // Kiểm tra thông tin mua hàng có đầy đủ hay không
     const isAddressValid = newAddress.name.trim() !== "" && 
-    newAddress.phone.trim() !== "" && 
-    /^\d{10}$/.test(newAddress.phone) && 
-    newAddress.address.trim() !== "";
+                            newAddress.phone.trim() !== "" && 
+                            /^\d{10}$/.test(newAddress.phone) && 
+                            newAddress.address.trim() !== "";
+
+    const [generatedCode, setGeneratedCode] = useState('');
 
     const fetchProducts = async () => {
         try {
@@ -174,6 +176,7 @@ const Checkout = () => {
             for (const detail of invoiceDetails) {
                 await saleInvoiceDetailsService.addDetail(detail);
             }
+            
 
             toast.current.show({ severity: "success", summary: "Thành công", detail: "Đặt hàng thành công!", life: 1000 });
             await new Promise(resolve => setTimeout(resolve, 2000));
@@ -433,6 +436,7 @@ const Checkout = () => {
                                             onChange={() => {
                                                 setShowQR(false);
                                                 setIsCheckoutDisabled(false);
+                                                setGeneratedCode('')
                                             } }
                                             defaultChecked
                                         />
@@ -450,6 +454,7 @@ const Checkout = () => {
                                                 if (isAddressValid) {
                                                     setShowQR(true);
                                                     setIsCheckoutDisabled(true);
+                                                    setGeneratedCode(Math.random().toString(36).substring(2, 12).toUpperCase());
                                                 }
                                             }}
                                         />
@@ -461,7 +466,7 @@ const Checkout = () => {
                                     {showQR && (
                                         <div className="qr-code" style={{ marginTop: "20px", textAlign: "center" }}>
                                             <img
-                                                src={`https://qr.sepay.vn/img?acc=109877135768&bank=VietinBank&amount=10000&des=SEVQR+TKP9AZ+DH102969`}
+                                                src={`https://qr.sepay.vn/img?acc=109877135768&template=compact&bank=VietinBank&amount=${total}&des=RUBIKSTORE${generatedCode}`}
                                                 alt="QR Code for Payment"
                                                 style={{ maxWidth: "200px", height: "auto" }}
                                             />
@@ -510,15 +515,15 @@ const Checkout = () => {
                             <div className="order-totals">
                                 <div className="subtotal">
                                     <span>Tạm tính</span>
-                                    <span>{formatPrice(subtotal)}</span>
+                                    <span>{formatPrice(subtotal)+"đ"}</span>
                                 </div>
                                 <div className="shipping-fee">
                                     <span>Phí vận chuyển</span>
-                                    <span>{shippingFee === 0 ? "Miễn phí" : formatPrice(shippingFee)}</span>
+                                    <span>{shippingFee === 0 ? "Miễn phí" : formatPrice(shippingFee) + "đ"}</span>
                                 </div>
                                 <div className="total">
                                     <span>Tổng cộng</span>
-                                    <span>{formatPrice(total)}</span>
+                                    <span>{formatPrice(total)+"đ"}</span>
                                 </div>
                             </div>
 

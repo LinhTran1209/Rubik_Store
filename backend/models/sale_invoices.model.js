@@ -12,6 +12,8 @@ const Sale_invoices = (sale_invoices) => {
   this.updated_at = sale_invoices.updated_at;
 
 };
+
+
 Sale_invoices.getData = (col, querydata, callback) => {
   const sqlString = `SELECT * FROM Sale_invoices WHERE ?? = ? ORDER BY id_sale_invoice DESC`;
   db.query(sqlString, [col, querydata], (err, result) => {

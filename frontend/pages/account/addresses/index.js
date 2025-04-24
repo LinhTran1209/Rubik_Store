@@ -253,6 +253,7 @@ const Address = () => {
                                 onConfirm={confirmDelete}
                                 item={addressToDelete}
                                 idField="id_address"
+                                message="Bạn có chắc chắn muốn xóa địa chỉ này không?"
                             />
                             <div className="row__address_main">
                                 {userAddress.length > 0 ? (

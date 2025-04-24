@@ -182,15 +182,15 @@ const Thankyou = () => {
                         <div className="order-totals">
                             <div className="subtotal">
                                 <span>Tạm tính</span>
-                                <span>{formatPrice(subtotal)}</span>
+                                <span>{formatPrice(subtotal)+"đ"}</span>
                             </div>
                             <div className="shipping-fee">
                                 <span>Phí vận chuyển</span>
-                                <span>{shippingFee === 0 ? "Miễn phí" : formatPrice(shippingFee)}</span>
+                                <span>{shippingFee === 0 ? "Miễn phí" : formatPrice(shippingFee)+"đ"}</span>
                             </div>
                             <div className="total">
                                 <span>Tổng cộng</span>
-                                <span>{formatPrice(total)}</span>
+                                <span>{formatPrice(total)+"đ"}</span>
                             </div>
                         </div>
                     </aside>

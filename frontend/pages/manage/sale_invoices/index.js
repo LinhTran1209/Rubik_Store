@@ -54,6 +54,8 @@ const SaleInvoice = () => {
     const [userAddress, setUserAddress] = useState([])
     const [addressOptions, setAddressOptions] = useState([]);
 
+    // Thêm state mới để lưu trạng thái ban đầu
+    const [initialInvoiceStatus, setInitialInvoiceStatus] = useState(null);
 
 
     const fetchUsers = async () => {
@@ -156,7 +158,7 @@ const SaleInvoice = () => {
     };
 
     const isDisableInvoice = (data) => {
-        if (data.status === 'Hoàn thành' || data.status === 'Đã hủy đơn') {
+        if (initialInvoiceStatus === 'Hoàn thành' || initialInvoiceStatus === 'Đã hủy đơn') {
             return true;
         }
         return false;
@@ -302,6 +304,7 @@ const SaleInvoice = () => {
             value: addr.id_address // Giả sử id_address là khóa chính của địa chỉ
         })));
         setSaleInvoiceDialog(true);
+        setInitialInvoiceStatus(sale_invoice.status);
     };
 
     const editsaleDetail = (detail) => {

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/news';
+const API_URL = process.env.API_URL_BACK_END +"/news";
 
 const formatDateFields = (data) => {
     if (Array.isArray(data)) {

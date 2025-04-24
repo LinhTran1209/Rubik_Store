@@ -30,11 +30,11 @@ const ConfirmDeleteDialog = ({
     ) : (
         item && <span>Bạn có chắc muốn xóa bản ghi này?</span>
     );
-
+    // console.log(item.name)
     return (
         <Dialog
             visible={visible}
-            style={{ width: '45rem', fontSize: "14px" }} // Đặt fontSize cho toàn bộ dialog
+            style={{ width: '45rem', fontSize: "14px" }} 
             breakpoints={{ '960px': '75vw', '641px': '90vw' }}
             header={<div style={{ fontSize: '17px' }}>{title}</div>} 
             modal
@@ -44,6 +44,7 @@ const ConfirmDeleteDialog = ({
             <div className={styles.confirmationContent} style={{fontSize: "14px"}}>
                 <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2.5rem' }} />
                 {renderMessage ? renderMessage(item) : defaultMessage}
+                {/* <span>Bạn có chắc muốn xóa bản ghi này? </span> */}
             </div>
         </Dialog>
     );

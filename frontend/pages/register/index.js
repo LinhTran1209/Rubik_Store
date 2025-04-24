@@ -52,21 +52,80 @@ const Register = () => {
         return () => clearInterval(timer);
     }, [countdown]);
 
-    const sendVerificationCode = async () => {
-        if (!email) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Vui lòng nhập email trước', life: 1200 });
-            return;
+    
+    const checkInput = () => {
+        if (!name) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Họ và tên không được để trống', life: 1200 });
+            return false;
         }
+        if (name.length < 2) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Họ và tên phải có ít nhất 2 ký tự', life: 1200 });
+            return false;
+        }
+        
+        const phoneRegex = /^0\d{9}$/;
+        if (!phone) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Số điện thoại không được để trống', life: 1200 });
+            return false;
+        }
+        if (!phoneRegex.test(phone)) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Số điện thoại phải có đúng 10 số', life: 1200 });
+            return false;
+        }
+        if (users.some((user) => user.phone === phone)) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Số điện thoại đã được sử dụng', life: 1200 });
+            return false;
+        }
+        
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Email không được để trống', life: 1200 });
+            return false;
+        }
         if (!emailRegex.test(email)) {
             toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Email không hợp lệ', life: 1200 });
-            return;
+            return false;
         }
-
         if (users.some((user) => user.email === email)) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Email đã được sử dụng', life: 1200 });
-            return;
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Email đã được sử dụng', iife: 1200 });
+            return false;
         }
+        
+        if (!password) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mật khẩu không được để trống', life: 1200 });
+            return false;
+        }
+        if (password.length < 6) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mật khẩu phải có ít nhất 6 ký tự', life: 1200 });
+            return false;
+        }
+        
+        if (!confirmPassword) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Vui lòng nhập lại mật khẩu', life: 1200 });
+            return false;
+        }
+        if (confirmPassword !== password) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mật khẩu nhập lại không khớp', life: 1200 });
+            return false;
+        }
+        
+        if (!verificationCode) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mã xác nhận không được để trống', life: 1200 });
+            return false;
+        }
+        if (verificationCode !== generatedCode) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mã xác nhận không đúng', life: 1200 });
+            return false;
+        }
+        if (countdown === 0 && generatedCode) {
+            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mã xác nhận đã hết hiệu lực', life: 1200 });
+            return false;
+        }
+        return true;
+    }
+    
+    const sendVerificationCode = async () => {
+        if (checkInput() === false) return;
 
         const newCode = Math.random().toString(36).substring(2, 6).toUpperCase();
         setGeneratedCode(newCode);
@@ -84,76 +143,9 @@ const Register = () => {
             setGeneratedCode('');
         }
     };
-
-    const checkInputRegister = async () => {
-        if (!name) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Họ và tên không được để trống', life: 1200 });
-            return;
-        }
-        if (name.length < 2) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Họ và tên phải có ít nhất 2 ký tự', life: 1200 });
-            return;
-        }
-
-        const phoneRegex = /^0\d{9}$/;
-        if (!phone) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Số điện thoại không được để trống', life: 1200 });
-            return;
-        }
-        if (!phoneRegex.test(phone)) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Số điện thoại phải có đúng 10 số', life: 1200 });
-            return;
-        }
-        if (users.some((user) => user.phone === phone)) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Số điện thoại đã được sử dụng', life: 1200 });
-            return;
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!email) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Email không được để trống', life: 1200 });
-            return;
-        }
-        if (!emailRegex.test(email)) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Email không hợp lệ', life: 1200 });
-            return;
-        }
-        if (users.some((user) => user.email === email)) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Email đã được sử dụng', iife: 1200 });
-            return;
-        }
-
-        if (!password) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mật khẩu không được để trống', life: 1200 });
-            return;
-        }
-        if (password.length < 6) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mật khẩu phải có ít nhất 6 ký tự', life: 1200 });
-            return;
-        }
-
-        if (!confirmPassword) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Vui lòng nhập lại mật khẩu', life: 1200 });
-            return;
-        }
-        if (confirmPassword !== password) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mật khẩu nhập lại không khớp', life: 1200 });
-            return;
-        }
-
-        if (!verificationCode) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mã xác nhận không được để trống', life: 1200 });
-            return;
-        }
-        if (verificationCode !== generatedCode) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mã xác nhận không đúng', life: 1200 });
-            return;
-        }
-        if (countdown === 0 && generatedCode) {
-            toast.current.show({ severity: 'warn', summary: 'Cảnh báo', detail: 'Mã xác nhận đã hết hiệu lực', life: 1200 });
-            return;
-        }
-
+    
+    const handleRegister = async () => {
+        if (checkInput() === false) return; 
         try {
             await userService.adduser({ role: 'customer', name, phone, email, password });
             toast.current.show({ severity: 'success', summary: 'Thành công', detail: 'Đăng ký tài khoản thành công', life: 1200 });
@@ -253,7 +245,7 @@ const Register = () => {
                             </div>
                             <div className="auth-form__group">
                                 <div className="group-btn">
-                                    <button onClick={checkInputRegister} className="btn btn-register">
+                                    <button onClick={handleRegister} className="btn btn-register">
                                         ĐĂNG KÝ
                                     </button>
                                 </div>

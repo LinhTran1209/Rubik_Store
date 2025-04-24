@@ -278,7 +278,7 @@ const Order = () => {
                                 </table>
         
         
-                                <div className="order_summary" style={{ marginTop: "20px", textAlign: "right" }}>
+                                <div className="order_summary" style={{ marginTop: "20px", textAlign: "right", paddingBottom: "50px" }}>
                                     <table>
                                         <tbody>
                                             <tr>
